@@ -242,6 +242,17 @@ h2 {
   pointer-events: none;
 }
 
+/* Hybrid mode: authored sprite overlaid on procedural canvas */
+.viewport.is-hybrid .scene-assets {
+  display: block;
+  z-index: 1;
+}
+
+.viewport.is-hybrid .scene-bg,
+.viewport.is-hybrid .scene-fg {
+  display: none;
+}
+
 .viewport::before,
 .viewport::after {
   content: "";

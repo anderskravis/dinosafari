@@ -249,6 +249,21 @@ const AUTHORED_DINOSAURS = {
     contact: "./assets/authored/brachiosaurus/contact.png",
     guide: "./assets/authored/brachiosaurus/guide.png",
   },
+  tyrannosaurus: {
+    contact: "./assets/authored/tyrannosaurus/contact.png",
+    guide: "./assets/authored/tyrannosaurus/guide.png",
+    sprite: {
+      src: "./assets/authored/tyrannosaurus/strip.png",
+      frames: 8,
+      fps: 6,
+      frameWidth: 72,
+      frameHeight: 96,
+      left: 70,
+      top: 24,
+      width: 50,
+      height: 68,
+    },
+  },
 };
 
 const AUTHORED_SCENES = {
@@ -279,8 +294,8 @@ const AUTHORED_SCENES = {
 
 const STORAGE_KEY = "dino-safari-tribute-state-v1";
 const ATTACK_ROAR_SRC = "./sounds/trexroar.mp3";
-const SCENE_BUFFER_WIDTH = 480;
-const SCENE_BUFFER_HEIGHT = 300;
+const SCENE_BUFFER_WIDTH = 240;
+const SCENE_BUFFER_HEIGHT = 150;
 
 const BIOME_PALETTES = {
   fern: {
@@ -1239,39 +1254,66 @@ function updateSceneNameplate() {
 
 function renderAuthoredScene() {
   const scene = currentAuthoredScene();
-  elements.viewport.classList.toggle("is-authored", Boolean(scene));
+  const hybridSprite = getHybridSprite();
+  const hasFullScene = Boolean(scene);
+  const hasHybrid = Boolean(hybridSprite);
 
-  if (!scene) {
+  elements.viewport.classList.toggle("is-authored", hasFullScene);
+  elements.viewport.classList.toggle("is-hybrid", !hasFullScene && hasHybrid);
+
+  if (!hasFullScene && !hasHybrid) {
     elements.sceneBg.removeAttribute("src");
     elements.sceneFg.removeAttribute("src");
     elements.sceneSprite.classList.remove("is-visible");
     return;
   }
 
-  if (elements.sceneBg.getAttribute("src") !== scene.background) {
-    elements.sceneBg.src = scene.background;
-  }
+  // --- Full authored scene mode ---
+  if (hasFullScene) {
+    if (elements.sceneBg.getAttribute("src") !== scene.background) {
+      elements.sceneBg.src = scene.background;
+    }
 
-  if (elements.sceneFg.getAttribute("src") !== scene.foreground) {
-    elements.sceneFg.src = scene.foreground;
-  }
+    if (elements.sceneFg.getAttribute("src") !== scene.foreground) {
+      elements.sceneFg.src = scene.foreground;
+    }
 
-  const spriteAsset = state.visibleDinoId ? scene.dinosaurs[state.visibleDinoId] : null;
-  if (!spriteAsset) {
-    elements.sceneSprite.classList.remove("is-visible");
-    elements.sceneSpriteStrip.removeAttribute("src");
-    elements.sceneSpriteStrip.style.transform = "translateX(0)";
+    const spriteAsset = state.visibleDinoId ? scene.dinosaurs[state.visibleDinoId] : null;
+    if (!spriteAsset) {
+      elements.sceneSprite.classList.remove("is-visible");
+      elements.sceneSpriteStrip.removeAttribute("src");
+      elements.sceneSpriteStrip.style.transform = "translateX(0)";
+      return;
+    }
+
+    applySpriteLayout(spriteAsset, scene.resolution.width, scene.resolution.height);
     return;
   }
 
-  if (elements.sceneSpriteStrip.getAttribute("src") !== spriteAsset.sprite) {
-    elements.sceneSpriteStrip.src = spriteAsset.sprite;
+  // --- Hybrid mode: authored sprite on procedural canvas ---
+  elements.sceneBg.removeAttribute("src");
+  elements.sceneFg.removeAttribute("src");
+  applySpriteLayout(hybridSprite, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
+}
+
+function getHybridSprite() {
+  if (!state.visibleDinoId) return null;
+  const authored = AUTHORED_DINOSAURS[state.visibleDinoId];
+  if (!authored?.sprite) return null;
+  // Don't use hybrid if a full authored scene already covers this dino
+  if (currentAuthoredScene()) return null;
+  return authored.sprite;
+}
+
+function applySpriteLayout(spriteAsset, refWidth, refHeight) {
+  if (elements.sceneSpriteStrip.getAttribute("src") !== spriteAsset.src && elements.sceneSpriteStrip.getAttribute("src") !== spriteAsset.sprite) {
+    elements.sceneSpriteStrip.src = spriteAsset.src || spriteAsset.sprite;
   }
 
-  const widthPercent = (spriteAsset.width / scene.resolution.width) * 100;
-  const heightPercent = (spriteAsset.height / scene.resolution.height) * 100;
-  const leftPercent = (spriteAsset.left / scene.resolution.width) * 100;
-  const topPercent = (spriteAsset.top / scene.resolution.height) * 100;
+  const widthPercent = (spriteAsset.width / refWidth) * 100;
+  const heightPercent = (spriteAsset.height / refHeight) * 100;
+  const leftPercent = (spriteAsset.left / refWidth) * 100;
+  const topPercent = (spriteAsset.top / refHeight) * 100;
 
   elements.sceneSprite.style.width = `${widthPercent}%`;
   elements.sceneSprite.style.height = `${heightPercent}%`;
@@ -2206,13 +2248,17 @@ function blitBuffer(outputContext, buffer, canvas) {
 }
 
 function updateAuthoredSceneAnimation(time) {
-  const scene = currentAuthoredScene();
-  if (!scene || !state.visibleDinoId) {
+  if (!state.visibleDinoId || !elements.sceneSprite.classList.contains("is-visible")) {
     return;
   }
 
-  const spriteAsset = scene.dinosaurs[state.visibleDinoId];
-  if (!spriteAsset || !elements.sceneSprite.classList.contains("is-visible")) {
+  // Resolve sprite asset from full scene or hybrid mode
+  const scene = currentAuthoredScene();
+  const spriteAsset = scene
+    ? scene.dinosaurs[state.visibleDinoId]
+    : getHybridSprite();
+
+  if (!spriteAsset) {
     return;
   }
 
@@ -2226,7 +2272,7 @@ function drawSceneFrame(context, time) {
   const palette = scenePalette(state.periodId, biome);
   const seed = hashString(`${state.periodId}:${state.x}:${state.y}`);
   const rng = mulberry32(seed);
-  const horizonY = biome === "coast" ? 150 : biome === "marsh" ? 158 : 166;
+  const horizonY = biome === "coast" ? 75 : biome === "marsh" ? 79 : 83;
 
   context.clearRect(0, 0, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
 
@@ -2235,7 +2281,7 @@ function drawSceneFrame(context, time) {
   drawMidground(context, palette, rng, horizonY, biome, time);
   drawGround(context, palette, rng, horizonY, biome, time);
 
-  if (state.visibleDinoId) {
+  if (state.visibleDinoId && !getHybridSprite()) {
     const dino = dinoById[state.visibleDinoId];
     const placement = scenePlacement(dino, biome, seed);
 
