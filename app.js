@@ -410,6 +410,12 @@ const state = {
   attackLock: false,
   sessionStarted: false,
   hasRestorableProgress: false,
+  lives: 3,
+  maxLives: 3,
+  gameOver: false,
+  photoCelebrationActive: false,
+  dinoExiting: false,
+  dinoExitStart: 0,
 };
 
 const VIEWPORT_FIT = {
@@ -452,6 +458,16 @@ const elements = {
   logList: document.getElementById("log-list"),
   startOverlay: document.getElementById("start-overlay"),
   startCopy: document.getElementById("start-copy"),
+  livesHearts: document.getElementById("lives-hearts"),
+  photoCelebration: document.getElementById("photo-celebration"),
+  photoCelebrationSnapshot: document.getElementById("photo-celebration-snapshot"),
+  photoCelebrationLabel: document.getElementById("photo-celebration-label"),
+  photoCelebrationName: document.getElementById("photo-celebration-name"),
+  photoCelebrationNote: document.getElementById("photo-celebration-note"),
+  victoryOverlay: document.getElementById("victory-overlay"),
+  victoryGrid: document.getElementById("victory-grid"),
+  gameoverOverlay: document.getElementById("gameover-overlay"),
+  gameoverProgress: document.getElementById("gameover-progress"),
 };
 
 const buttons = {
@@ -468,6 +484,8 @@ const buttons = {
   clearLog: document.getElementById("clear-log-btn"),
   resetGame: document.getElementById("reset-game-btn"),
   start: document.getElementById("start-btn"),
+  playAgain: document.getElementById("play-again-btn"),
+  retry: document.getElementById("retry-btn"),
 };
 
 const byPeriod = PERIODS.reduce((accumulator, period) => {
@@ -493,6 +511,7 @@ function init() {
   bindEvents();
   syncViewportFit();
   syncStartOverlay();
+  renderLives();
   renderer.start();
   setPeriod(state.periodId, true, true);
   addLog("Field rig online. Render grid calibrated.");
@@ -527,6 +546,7 @@ function bindEvents() {
   }
 
   elements.periodSwitcher.addEventListener("click", (event) => {
+    if (isInputBlocked()) return;
     const button = event.target.closest(".period-btn");
     if (!button) {
       return;
@@ -567,6 +587,8 @@ function bindEvents() {
   });
   buttons.closeJournal.addEventListener("click", () => elements.journalDialog.close());
   buttons.resetGame.addEventListener("click", resetGameProgress);
+  buttons.playAgain.addEventListener("click", dismissVictoryAndRestart);
+  buttons.retry.addEventListener("click", dismissGameOverAndRetry);
   buttons.clearLog.addEventListener("click", () => {
     state.log = [];
     renderLog();
@@ -654,32 +676,7 @@ function resetGameProgress() {
     return;
   }
 
-  try {
-    window.localStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    // Ignore storage errors and still reset the in-memory expedition.
-  }
-
-  state.periodId = "jurassic";
-  state.x = 0;
-  state.y = 0;
-  state.visibleDinoId = null;
-  state.contactDinoId = null;
-  state.contactVisible = false;
-  state.captured = new Set();
-  state.log = [];
-  state.encounterToken = 0;
-  state.searchProgress = {};
-  state.encounterCooldowns = {};
-  state.hasRestorableProgress = false;
-  clearVisibleEncounterTimer();
-  clearAttackEffect();
-
-  syncPeriodButtons();
-  renderLog();
-  renderScene();
-  queueEncounter(true);
-  addLog("Expedition reset. Fresh survey loaded.");
+  resetGameState();
 }
 
 function setPeriod(periodId, force = false, preservePosition = false) {
@@ -698,6 +695,12 @@ function setPeriod(periodId, force = false, preservePosition = false) {
   state.contactDinoId = null;
   state.contactVisible = false;
 
+  // Restore 1 heart when switching periods
+  if (!force && state.lives < state.maxLives) {
+    state.lives = Math.min(state.lives + 1, state.maxLives);
+    renderLives();
+  }
+
   syncPeriodButtons();
 
   addLog(`Temporal gate shifted to the ${currentPeriod().name}.`);
@@ -706,7 +709,12 @@ function setPeriod(periodId, force = false, preservePosition = false) {
   queueEncounter(true);
 }
 
+function isInputBlocked() {
+  return state.gameOver || state.photoCelebrationActive;
+}
+
 function move(dx, dy) {
+  if (isInputBlocked()) return;
   const nextX = clamp(state.x + dx, 0, 4);
   const nextY = clamp(state.y + dy, 0, 4);
 
@@ -720,6 +728,7 @@ function move(dx, dy) {
 }
 
 function moveToSector(targetX, targetY) {
+  if (isInputBlocked()) return;
   const nextX = clamp(targetX, 0, 4);
   const nextY = clamp(targetY, 0, 4);
 
@@ -789,6 +798,7 @@ function queueEncounter(isPeriodChange) {
 }
 
 function scanArea() {
+  if (isInputBlocked()) return;
   const nearest = nearestDinoForPeriod();
   renderStatus(nearest);
 
@@ -839,6 +849,7 @@ function scanArea() {
 }
 
 function takePhoto() {
+  if (isInputBlocked()) return;
   if (state.attackLock) {
     updateMessage("Too late. The predator is already charging.");
     playTone("blocked");
@@ -859,13 +870,11 @@ function takePhoto() {
   state.captured.add(dino.id);
   state.searchProgress[searchKeyFor(dino)] = 0;
   state.encounterCooldowns[dino.id] = Date.now() + 2800;
-  state.visibleDinoId = null;
-  state.contactVisible = false;
+  state.photoCelebrationActive = true;
 
   triggerFlash();
   renderCaptureStrip();
   renderGuide();
-  renderScene();
   renderStatus(dino);
 
   updateMessage(
@@ -876,6 +885,202 @@ function takePhoto() {
   addLog(`${dino.name} photographed at ${locationName()}.`);
   persistState();
   playTone("photo");
+
+  window.setTimeout(() => {
+    showPhotoCelebration(dino, isNewCapture);
+  }, 400);
+}
+
+function showPhotoCelebration(dino, isNewCapture) {
+  // Capture a snapshot of the scene canvas
+  const snapshotCanvas = document.createElement("canvas");
+  snapshotCanvas.width = elements.sceneCanvas.width;
+  snapshotCanvas.height = elements.sceneCanvas.height;
+  snapshotCanvas.getContext("2d").drawImage(elements.sceneCanvas, 0, 0);
+  elements.photoCelebrationSnapshot.innerHTML = "";
+  elements.photoCelebrationSnapshot.appendChild(snapshotCanvas);
+
+  elements.photoCelebrationLabel.textContent = isNewCapture
+    ? "New Species Discovered!"
+    : "Photo Updated!";
+  elements.photoCelebrationName.textContent = dino.name;
+  elements.photoCelebrationNote.textContent = isNewCapture
+    ? "Added to Field Guide"
+    : "Album entry refreshed";
+
+  elements.photoCelebration.classList.toggle("is-new", isNewCapture);
+  elements.photoCelebration.classList.add("is-active");
+
+  if (isNewCapture) {
+    playTone("celebrate");
+  }
+
+  const dismiss = () => {
+    elements.photoCelebration.removeEventListener("click", dismiss);
+    dismissPhotoCelebration(dino);
+  };
+
+  elements.photoCelebration.addEventListener("click", dismiss);
+  window.setTimeout(dismiss, 2500);
+}
+
+function dismissPhotoCelebration(dino) {
+  if (!state.photoCelebrationActive) return;
+
+  elements.photoCelebration.classList.remove("is-active");
+
+  // Start dino exit animation
+  state.dinoExiting = true;
+  state.dinoExitStart = performance.now();
+
+  // For authored scenes, use CSS transition
+  if (elements.sceneSprite.classList.contains("is-visible")) {
+    elements.sceneSprite.classList.add("is-exiting");
+  }
+
+  window.setTimeout(() => {
+    state.visibleDinoId = null;
+    state.contactVisible = false;
+    state.dinoExiting = false;
+    state.photoCelebrationActive = false;
+
+    elements.sceneSprite.classList.remove("is-exiting");
+
+    renderCaptureStrip();
+    renderGuide();
+    renderScene();
+    renderStatus(dino);
+
+    // Check for win
+    if (state.captured.size === DINOSAURS.length) {
+      window.setTimeout(() => showVictoryScreen(), 600);
+    }
+  }, 800);
+}
+
+// --- Lives / Energy ---
+
+function renderLives() {
+  elements.livesHearts.innerHTML = "";
+  for (let i = 0; i < state.maxLives; i++) {
+    const heart = document.createElement("span");
+    heart.className = "heart" + (i >= state.lives ? " is-lost" : "");
+    heart.textContent = "\u2764";
+    elements.livesHearts.appendChild(heart);
+  }
+}
+
+function loseLife() {
+  if (state.lives <= 0) return;
+
+  state.lives = Math.max(0, state.lives - 1);
+
+  // Animate the losing heart
+  const hearts = elements.livesHearts.querySelectorAll(".heart");
+  const losingHeart = hearts[state.lives];
+  if (losingHeart) {
+    losingHeart.classList.add("is-losing");
+    losingHeart.addEventListener("animationend", () => {
+      losingHeart.classList.remove("is-losing");
+      losingHeart.classList.add("is-lost");
+    }, { once: true });
+  }
+
+  persistState();
+
+  if (state.lives === 0) {
+    window.setTimeout(() => showGameOver(), 1000);
+  }
+}
+
+function showGameOver() {
+  state.gameOver = true;
+  elements.gameoverProgress.textContent =
+    `You photographed ${state.captured.size} of ${DINOSAURS.length} dinosaurs.`;
+  elements.gameoverOverlay.classList.add("is-active");
+  playTone("gameover");
+}
+
+function dismissGameOverAndRetry() {
+  elements.gameoverOverlay.classList.remove("is-active");
+  state.lives = state.maxLives;
+  state.gameOver = false;
+  state.x = 0;
+  state.y = 0;
+  state.visibleDinoId = null;
+  state.contactDinoId = null;
+  state.contactVisible = false;
+  clearVisibleEncounterTimer();
+  clearAttackEffect();
+
+  renderLives();
+  renderScene();
+  persistState();
+  queueEncounter(true);
+  addLog("Rover repaired. Expedition continues.");
+}
+
+// --- Victory ---
+
+function showVictoryScreen() {
+  elements.victoryGrid.innerHTML = "";
+
+  DINOSAURS.forEach((dino, index) => {
+    const cell = document.createElement("div");
+    cell.className = "victory-dino";
+    cell.style.animationDelay = `${index * 150}ms`;
+
+    const imgSrc = guidePreviewSource(dino, true);
+    cell.innerHTML = `<img src="${imgSrc}" alt="${dino.name}" /><p>${dino.name}</p>`;
+    elements.victoryGrid.appendChild(cell);
+  });
+
+  elements.victoryOverlay.classList.add("is-active");
+  playVictoryTones();
+}
+
+function playVictoryTones() {
+  playTone("celebrate");
+  window.setTimeout(() => playTone("celebrate"), 200);
+  window.setTimeout(() => playTone("celebrate"), 400);
+}
+
+function dismissVictoryAndRestart() {
+  elements.victoryOverlay.classList.remove("is-active");
+  resetGameState();
+}
+
+function resetGameState() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    // Ignore
+  }
+
+  state.periodId = "jurassic";
+  state.x = 0;
+  state.y = 0;
+  state.visibleDinoId = null;
+  state.contactDinoId = null;
+  state.contactVisible = false;
+  state.captured = new Set();
+  state.log = [];
+  state.encounterToken = 0;
+  state.searchProgress = {};
+  state.encounterCooldowns = {};
+  state.hasRestorableProgress = false;
+  state.lives = state.maxLives;
+  state.gameOver = false;
+  state.photoCelebrationActive = false;
+  clearVisibleEncounterTimer();
+  clearAttackEffect();
+
+  syncPeriodButtons();
+  renderLog();
+  renderLives();
+  renderScene();
+  queueEncounter(true);
+  addLog("Expedition reset. Fresh survey loaded.");
 }
 
 function renderScene() {
@@ -1320,6 +1525,7 @@ function scheduleVisibleEncounterResolution(dino, encounterToken) {
         clearAttackEffect();
         renderScene();
         renderStatus(dino);
+        loseLife();
       }, 640);
       return;
     }
@@ -1396,6 +1602,8 @@ function playTone(type) {
     encounter: { frequency: 140, endFrequency: 92, duration: 0.55, wave: "sawtooth" },
     blocked: { frequency: 220, endFrequency: 170, duration: 0.12, wave: "square" },
     attack: { frequency: 120, endFrequency: 62, duration: 0.42, wave: "sawtooth" },
+    celebrate: { frequency: 523, endFrequency: 1047, duration: 0.35, wave: "square" },
+    gameover: { frequency: 260, endFrequency: 80, duration: 0.6, wave: "sawtooth" },
   };
 
   const profile = profiles[type];
@@ -1890,6 +2098,9 @@ function loadSavedProgress() {
     if (Array.isArray(saved.log)) {
       state.log = saved.log.slice(0, 8);
     }
+    if (Number.isInteger(saved.lives)) {
+      state.lives = clamp(saved.lives, 0, state.maxLives);
+    }
     state.hasRestorableProgress = (
       state.periodId !== "jurassic"
       || state.x !== 0
@@ -1912,6 +2123,7 @@ function persistState() {
     y: state.y,
     captured: Array.from(state.captured),
     log: state.log,
+    lives: state.lives,
   };
 
   try {
@@ -2026,11 +2238,27 @@ function drawSceneFrame(context, time) {
   if (state.visibleDinoId) {
     const dino = dinoById[state.visibleDinoId];
     const placement = scenePlacement(dino, biome, seed);
-    drawDinosaur(context, dino, placement, {
-      lighting: palette,
-      monochrome: false,
-      phase: time * 0.0024 + seed * 0.001,
-    });
+
+    // Handle exit animation
+    if (state.dinoExiting) {
+      const elapsed = time - state.dinoExitStart;
+      const alpha = Math.max(0, 1 - elapsed / 800);
+      const drift = elapsed * 0.04;
+      context.save();
+      context.globalAlpha = alpha;
+      drawDinosaur(context, dino, { ...placement, x: placement.x + drift }, {
+        lighting: palette,
+        monochrome: false,
+        phase: time * 0.0024 + seed * 0.001,
+      });
+      context.restore();
+    } else {
+      drawDinosaur(context, dino, placement, {
+        lighting: palette,
+        monochrome: false,
+        phase: time * 0.0024 + seed * 0.001,
+      });
+    }
   }
 
   drawForeground(context, palette, rng, horizonY, biome, time);
