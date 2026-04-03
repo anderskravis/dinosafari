@@ -258,10 +258,10 @@ const AUTHORED_DINOSAURS = {
       fps: 6,
       frameWidth: 72,
       frameHeight: 96,
-      left: 70,
-      top: 24,
-      width: 50,
-      height: 68,
+      left: 140,
+      top: 48,
+      width: 100,
+      height: 136,
     },
   },
 };
@@ -294,8 +294,12 @@ const AUTHORED_SCENES = {
 
 const STORAGE_KEY = "dino-safari-tribute-state-v1";
 const ATTACK_ROAR_SRC = "./sounds/trexroar.mp3";
-const SCENE_BUFFER_WIDTH = 240;
-const SCENE_BUFFER_HEIGHT = 150;
+const SCENE_BUFFER_WIDTH = 480;
+const SCENE_BUFFER_HEIGHT = 300;
+const SCENE_LOGICAL_WIDTH = 480;
+const SCENE_LOGICAL_HEIGHT = 300;
+const SCENE_PIXEL_WIDTH = 160;
+const SCENE_PIXEL_HEIGHT = 100;
 
 const BIOME_PALETTES = {
   fern: {
@@ -1293,7 +1297,7 @@ function renderAuthoredScene() {
   // --- Hybrid mode: authored sprite on procedural canvas ---
   elements.sceneBg.removeAttribute("src");
   elements.sceneFg.removeAttribute("src");
-  applySpriteLayout(hybridSprite, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
+  applySpriteLayout(hybridSprite, SCENE_LOGICAL_WIDTH, SCENE_LOGICAL_HEIGHT);
 }
 
 function getHybridSprite() {
@@ -2194,6 +2198,13 @@ function createRetroRenderer() {
   sceneBuffer.height = SCENE_BUFFER_HEIGHT;
   const sceneContext = sceneBuffer.getContext("2d");
 
+  // Pixelation buffer: downsample the full-res scene to this smaller canvas,
+  // then upscale with nearest-neighbor for a chunky pixel-art look
+  const pixelBuffer = document.createElement("canvas");
+  pixelBuffer.width = SCENE_PIXEL_WIDTH;
+  pixelBuffer.height = SCENE_PIXEL_HEIGHT;
+  const pixelContext = pixelBuffer.getContext("2d");
+
   const contactOutputContext = elements.contactCanvas.getContext("2d");
   const contactBuffer = document.createElement("canvas");
   contactBuffer.width = 210;
@@ -2212,7 +2223,10 @@ function createRetroRenderer() {
 
       if (!currentAuthoredScene()) {
         drawSceneFrame(sceneContext, time);
-        blitBuffer(sceneOutputContext, sceneBuffer, elements.sceneCanvas);
+        // Downsample to pixel buffer, then upscale with nearest-neighbor
+        pixelContext.imageSmoothingEnabled = true;
+        pixelContext.drawImage(sceneBuffer, 0, 0, SCENE_PIXEL_WIDTH, SCENE_PIXEL_HEIGHT);
+        blitBuffer(sceneOutputContext, pixelBuffer, elements.sceneCanvas);
       }
 
       if (!elements.silhouetteCard.classList.contains("is-authored")) {
@@ -2272,7 +2286,7 @@ function drawSceneFrame(context, time) {
   const palette = scenePalette(state.periodId, biome);
   const seed = hashString(`${state.periodId}:${state.x}:${state.y}`);
   const rng = mulberry32(seed);
-  const horizonY = biome === "coast" ? 75 : biome === "marsh" ? 79 : 83;
+  const horizonY = biome === "coast" ? 150 : biome === "marsh" ? 158 : 166;
 
   context.clearRect(0, 0, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
 
@@ -2415,7 +2429,7 @@ function drawSky(context, palette, rng, horizonY, time, biome) {
   skyGradient.addColorStop(0.55, mixColor(palette.skyBottom, "#ffffff", 0.12));
   skyGradient.addColorStop(1, palette.skyBottom);
   context.fillStyle = skyGradient;
-  context.fillRect(0, 0, SCENE_BUFFER_WIDTH, horizonY + 30);
+  context.fillRect(0, 0, SCENE_LOGICAL_WIDTH, horizonY + 30);
 
   const glowX = 80 + rng() * 260;
   const glowY = 42 + rng() * 24;
@@ -2443,14 +2457,14 @@ function drawFarTerrain(context, palette, rng, horizonY, biome, time) {
     waterGradient.addColorStop(0, mixColor(palette.water, "#ffffff", 0.26));
     waterGradient.addColorStop(1, mixColor(palette.water, "#243546", 0.16));
     context.fillStyle = waterGradient;
-    context.fillRect(0, horizonY - 2, SCENE_BUFFER_WIDTH, 34);
+    context.fillRect(0, horizonY - 2, SCENE_LOGICAL_WIDTH, 34);
   }
 
   drawRidgeLayer(context, horizonY - 8, 42, mixColor(palette.ridge, "#ffffff", 0.08), rng, 0.8, time * 0.00006);
   drawRidgeLayer(context, horizonY + 8, 24, palette.ridgeShadow, rng, 1.2, time * 0.00009);
 
   context.fillStyle = withAlpha(palette.haze, 0.6);
-  context.fillRect(0, horizonY - 2, SCENE_BUFFER_WIDTH, 34);
+  context.fillRect(0, horizonY - 2, SCENE_LOGICAL_WIDTH, 34);
 }
 
 function drawMidground(context, palette, rng, horizonY, biome, time) {
@@ -2476,15 +2490,15 @@ function drawMidground(context, palette, rng, horizonY, biome, time) {
 }
 
 function drawGround(context, palette, rng, horizonY, biome, time) {
-  const groundGradient = context.createLinearGradient(0, horizonY, 0, SCENE_BUFFER_HEIGHT);
+  const groundGradient = context.createLinearGradient(0, horizonY, 0, SCENE_LOGICAL_HEIGHT);
   groundGradient.addColorStop(0, mixColor(palette.groundTop, "#d4d08e", 0.18));
   groundGradient.addColorStop(0.35, palette.groundTop);
   groundGradient.addColorStop(1, palette.groundBottom);
   context.fillStyle = groundGradient;
-  context.fillRect(0, horizonY, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT - horizonY);
+  context.fillRect(0, horizonY, SCENE_LOGICAL_WIDTH, SCENE_LOGICAL_HEIGHT - horizonY);
 
   if (biome !== "badlands" && biome !== "volcanic") {
-    for (let x = 0; x < SCENE_BUFFER_WIDTH; x += 3) {
+    for (let x = 0; x < SCENE_LOGICAL_WIDTH; x += 3) {
       const bladeHeight = 6 + ((x * 13) % 9);
       context.strokeStyle = x % 2 === 0 ? withAlpha(palette.grass, 0.56) : withAlpha(palette.grassDark, 0.5);
       context.beginPath();
@@ -2503,14 +2517,14 @@ function drawGround(context, palette, rng, horizonY, biome, time) {
   }
 
   for (let index = 0; index < 20; index += 1) {
-    const tuftX = rng() * SCENE_BUFFER_WIDTH;
+    const tuftX = rng() * SCENE_LOGICAL_WIDTH;
     const tuftY = horizonY + 8 + rng() * 86;
     const radius = 10 + rng() * 18;
     drawSoftEllipse(context, tuftX, tuftY, radius, radius * 0.45, withAlpha(palette.grassDark, 0.08));
   }
 
   context.fillStyle = "rgba(10, 8, 6, 0.06)";
-  context.fillRect(0, horizonY + 72 + Math.sin(time * 0.0003) * 2, SCENE_BUFFER_WIDTH, 1);
+  context.fillRect(0, horizonY + 72 + Math.sin(time * 0.0003) * 2, SCENE_LOGICAL_WIDTH, 1);
 }
 
 function drawForeground(context, palette, rng, horizonY, biome, time) {
@@ -2528,7 +2542,7 @@ function drawForeground(context, palette, rng, horizonY, biome, time) {
 
   for (let index = 0; index < 6; index += 1) {
     const x = 18 + index * 76 + Math.sin(time * 0.00024 + index) * 2;
-    const y = SCENE_BUFFER_HEIGHT - 8 - (index % 2) * 3;
+    const y = SCENE_LOGICAL_HEIGHT - 8 - (index % 2) * 3;
     drawForegroundFronds(context, palette, x, y, 1 + (index % 3) * 0.18);
   }
 }
@@ -2537,15 +2551,15 @@ function drawRidgeLayer(context, baseline, amplitude, color, rng, roughness, off
   context.beginPath();
   context.moveTo(0, baseline);
 
-  for (let x = 0; x <= SCENE_BUFFER_WIDTH; x += 18) {
+  for (let x = 0; x <= SCENE_LOGICAL_WIDTH; x += 18) {
     const waveA = Math.sin((x + offset * 80) * 0.024 * roughness + rng() * 2);
     const waveB = Math.sin((x + offset * 130) * 0.011 * roughness + rng() * 3);
     const y = baseline - amplitude * (0.5 + waveA * 0.28 + waveB * 0.22);
     context.lineTo(x, y);
   }
 
-  context.lineTo(SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
-  context.lineTo(0, SCENE_BUFFER_HEIGHT);
+  context.lineTo(SCENE_LOGICAL_WIDTH, SCENE_LOGICAL_HEIGHT);
+  context.lineTo(0, SCENE_LOGICAL_HEIGHT);
   context.closePath();
   context.fillStyle = color;
   context.fill();
@@ -2553,7 +2567,7 @@ function drawRidgeLayer(context, baseline, amplitude, color, rng, roughness, off
 
 function drawForestBand(context, palette, baseY, rng, treeCount, time) {
   for (let index = 0; index < treeCount; index += 1) {
-    const x = 10 + index * (SCENE_BUFFER_WIDTH / treeCount) + rng() * 14;
+    const x = 10 + index * (SCENE_LOGICAL_WIDTH / treeCount) + rng() * 14;
     const trunkWidth = 10 + rng() * 10;
     const trunkHeight = 74 + rng() * 68;
     const crownWidth = 44 + rng() * 24;
@@ -2583,9 +2597,9 @@ function drawForestBand(context, palette, baseY, rng, treeCount, time) {
 
 function drawReedBand(context, palette, baseY, rng, time) {
   context.fillStyle = withAlpha(palette.water, 0.34);
-  context.fillRect(0, baseY + 8, SCENE_BUFFER_WIDTH, 18);
+  context.fillRect(0, baseY + 8, SCENE_LOGICAL_WIDTH, 18);
 
-  for (let x = 0; x < SCENE_BUFFER_WIDTH; x += 4) {
+  for (let x = 0; x < SCENE_LOGICAL_WIDTH; x += 4) {
     const reedHeight = 24 + ((x * 11) % 20);
     context.strokeStyle = x % 3 === 0 ? withAlpha(palette.midDark, 0.75) : withAlpha(palette.midLight, 0.68);
     context.beginPath();
@@ -2618,7 +2632,7 @@ function drawMesaBand(context, palette, baseY, rng, isVolcanic) {
 
 function drawCoastalBand(context, palette, baseY, rng, time) {
   context.fillStyle = withAlpha(palette.water, 0.42);
-  context.fillRect(0, baseY + 6, SCENE_BUFFER_WIDTH, 24);
+  context.fillRect(0, baseY + 6, SCENE_LOGICAL_WIDTH, 24);
 
   for (let index = 0; index < 5; index += 1) {
     const x = 40 + index * 88 + rng() * 20;
@@ -2664,8 +2678,8 @@ function drawForegroundFronds(context, palette, x, y, scale) {
 function drawNoise(context, seed, time) {
   const rng = mulberry32(seed + Math.floor(time / 100));
   for (let index = 0; index < 240; index += 1) {
-    const x = Math.floor(rng() * SCENE_BUFFER_WIDTH);
-    const y = Math.floor(rng() * SCENE_BUFFER_HEIGHT);
+    const x = Math.floor(rng() * SCENE_LOGICAL_WIDTH);
+    const y = Math.floor(rng() * SCENE_LOGICAL_HEIGHT);
     const alpha = 0.02 + rng() * 0.045;
     context.fillStyle = rng() > 0.5 ? `rgba(255, 255, 255, ${alpha})` : `rgba(0, 0, 0, ${alpha})`;
     context.fillRect(x, y, 1, 1);
