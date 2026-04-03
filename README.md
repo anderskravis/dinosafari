@@ -6,7 +6,9 @@ A small browser prototype inspired by the 1996 `Dinosaur Safari` loop: move thro
 
 - `index.html`: the single-page shell and UI
 - `styles.css`: retro control panel styling and responsive layout
-- `app.js`: map data, encounter logic, scanner, photo capture, and a low-res canvas renderer for faux prerendered scenes
+- `app.js`: map data, encounter logic, scanner, photo capture, renderer fallback, and authored-scene loading
+- `scripts/generate_authored_assets.js`: emits raster PNG assets for the authored vertical slice
+- `assets/authored/`: generated background, foreground, sprite, and preview art
 
 ## Running it
 
@@ -23,16 +25,26 @@ Then open `http://localhost:8000`.
 ## Current gameplay
 
 - Switch between Triassic, Jurassic, and Cretaceous zones
-- Move around each 5x5 survey map
+- Move around each 5x5 survey map with the arrow controls or by clicking sectors on the survey map
 - Use `Scan` for hints about nearby dinosaurs
 - Use `Photo` when a dinosaur enters the scene
-- Open the `Field Guide` to see captured species and locked entries
+- Open the `Field Guide` to see captured species fill in from locked silhouettes to colored entries
 - Use arrow keys to move, `S` to scan, and `P` to take a photo
+- Procedural jungle/river ambience starts automatically after your first interaction with the page
+- `Jurassic / Shadow Grove` now uses fixed-camera raster plates and a sprite strip for Brachiosaurus instead of the procedural scene renderer
+
+## Asset Workflow
+
+Regenerate the authored slice assets with:
+
+```sh
+node scripts/generate_authored_assets.js
+```
 
 ## Good next steps
 
-- Replace generated SVG dinosaurs with sprite sheets or prerendered scenes
-- Push the current procedural renderer further with location-specific matte backgrounds
+- Add more authored rooms and dinosaur strips so the fallback renderer becomes unnecessary
+- Replace the generated raster art with Blender renders or painted-over plates
 - Add point-and-click hotspot movement instead of direct grid controls
 - Add voiced facts, ambient loops, and better encounter timing
 - Capture scene thumbnails instead of only unlocking species entries

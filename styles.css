@@ -1,4 +1,8 @@
 :root {
+  --shell-width: 1380px;
+  --shell-height: 860px;
+  --stage-padding: 14px;
+  --game-scale: 1;
   --panel-bg: #8b8884;
   --panel-edge-hi: #d6d4cf;
   --panel-edge-lo: #5b5855;
@@ -21,9 +25,14 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  min-height: 100vh;
+  overflow: hidden;
   font-family: "Geneva", "Verdana", sans-serif;
   color: var(--ink);
   background:
@@ -36,16 +45,36 @@ dialog {
   font: inherit;
 }
 
-.game-shell {
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 20px;
+.game-stage {
+  width: 100vw;
+  height: 100dvh;
+  padding: var(--stage-padding);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
 }
 
-.game-header,
+.game-scale-wrap {
+  position: relative;
+  width: calc(var(--shell-width) * var(--game-scale));
+  height: calc(var(--shell-height) * var(--game-scale));
+}
+
+.game-shell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--shell-width);
+  height: var(--shell-height);
+  margin: 0;
+  padding: 12px;
+  transform: scale(var(--game-scale));
+  transform-origin: top left;
+}
+
 .main-panel,
 .status-panel,
-.journal-panel,
+.journal-shell,
 .guide-shell {
   background: linear-gradient(180deg, #908d88 0%, var(--panel-bg) 100%);
 }
@@ -69,15 +98,6 @@ dialog {
   background: linear-gradient(180deg, #9a9792 0%, #86827d 100%);
 }
 
-.game-header {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 18px 22px;
-  margin-bottom: 20px;
-}
-
 .eyebrow {
   margin: 0 0 6px;
   text-transform: uppercase;
@@ -85,15 +105,9 @@ dialog {
   font-size: 0.7rem;
 }
 
-h1,
 h2 {
   margin: 0;
   font-family: "American Typewriter", "Georgia", serif;
-}
-
-.subhead {
-  margin: 10px 0 0;
-  max-width: 58ch;
 }
 
 .period-switcher {
@@ -104,8 +118,8 @@ h2 {
 }
 
 .period-btn {
-  min-width: 132px;
-  padding: 10px 14px;
+  min-width: 110px;
+  padding: 8px 12px;
   border: 3px solid;
   border-color: var(--panel-edge-hi) var(--panel-edge-lo) var(--panel-edge-lo) var(--panel-edge-hi);
   background: linear-gradient(180deg, #a4a098 0%, #857f79 100%);
@@ -129,24 +143,45 @@ h2 {
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 318px;
+  gap: 14px;
+  min-height: 0;
+  height: 100%;
 }
 
 .main-panel {
-  padding: 18px;
+  min-height: 0;
+  padding: 12px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px;
 }
 
 .viewport-frame {
-  padding: 12px;
+  min-height: 0;
+  padding: 8px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .scene-meta {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
-  padding: 4px 6px 14px;
+  gap: 14px;
+  padding: 2px 4px 10px;
+}
+
+.scene-heading {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.scene-period-switcher {
+  justify-content: flex-start;
+  gap: 8px;
 }
 
 .scene-label {
@@ -157,8 +192,9 @@ h2 {
 }
 
 .objective-card {
-  min-width: 210px;
-  padding: 10px 12px;
+  min-width: 310px;
+  max-width: 390px;
+  padding: 8px 10px;
   display: grid;
   gap: 2px;
 }
@@ -171,10 +207,33 @@ h2 {
 
 .viewport {
   position: relative;
+  width: 100%;
+  align-self: stretch;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border: 3px solid var(--viewport-border);
   background: linear-gradient(180deg, #cad3df 0%, #aab6cb 100%);
+}
+
+.scene-assets,
+.scene-canvas,
+.flash-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-assets {
+  display: none;
+  z-index: 0;
+}
+
+.viewport.is-authored .scene-assets {
+  display: block;
+}
+
+.viewport.is-authored .scene-canvas {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .viewport::before,
@@ -205,12 +264,6 @@ h2 {
     linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 30%);
 }
 
-.scene-canvas,
-.flash-overlay {
-  position: absolute;
-  inset: 0;
-}
-
 .scene-canvas {
   width: 100%;
   height: 100%;
@@ -218,6 +271,43 @@ h2 {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   z-index: 0;
+}
+
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.scene-sprite {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  opacity: 0;
+  transform-origin: top left;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
+}
+
+.scene-sprite.is-visible {
+  opacity: 1;
+}
+
+.scene-sprite-strip {
+  height: 100%;
+  width: auto;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  transform: translateX(0);
 }
 
 .scene-nameplate {
@@ -278,9 +368,8 @@ h2 {
 
 .controls-panel {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 16px;
-  margin-top: 16px;
+  grid-template-columns: 236px 1fr;
+  gap: 14px;
 }
 
 .nav-controls {
@@ -363,16 +452,17 @@ h2 {
 }
 
 .status-panel {
-  padding: 18px;
+  min-height: 0;
+  padding: 12px;
   display: grid;
-  gap: 16px;
+  gap: 12px;
   align-content: start;
 }
 
 .profile-card,
 .radar-card,
 .progress-card {
-  padding: 16px;
+  padding: 12px;
 }
 
 .profile-top,
@@ -407,12 +497,26 @@ h2 {
   overflow: hidden;
 }
 
+.contact-image,
 .contact-canvas {
+  grid-area: 1 / 1;
   width: 100%;
   height: auto;
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+.contact-image {
+  display: none;
+}
+
+.silhouette-card.is-authored .contact-image {
+  display: block;
+}
+
+.silhouette-card.is-authored .contact-canvas {
+  display: none;
 }
 
 .meter-header {
@@ -446,11 +550,30 @@ h2 {
 
 .radar-cell {
   aspect-ratio: 1;
+  padding: 0;
   border: 2px solid rgba(20, 16, 13, 0.5);
   background: linear-gradient(180deg, #4d8848 0%, #295d2e 100%);
   display: grid;
   place-items: center;
   font-size: 0.72rem;
+  color: var(--ink);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+.radar-cell:hover {
+  filter: brightness(1.08);
+}
+
+.radar-cell:focus-visible {
+  outline: 3px solid rgba(250, 230, 102, 0.96);
+  outline-offset: 1px;
+}
+
+.radar-cell:active {
+  transform: translateY(1px);
 }
 
 .radar-cell.is-player {
@@ -493,16 +616,13 @@ h2 {
   background: linear-gradient(180deg, rgba(255, 240, 186, 0.72), rgba(219, 189, 111, 0.56));
 }
 
-.journal-panel {
-  margin-top: 20px;
-  padding: 16px 18px;
-}
-
 .log-list {
   margin: 14px 0 0;
   padding-left: 22px;
   display: grid;
   gap: 10px;
+  max-height: min(58vh, 420px);
+  overflow: auto;
 }
 
 .log-list li {
@@ -520,12 +640,26 @@ h2 {
   background: transparent;
 }
 
+.journal-dialog {
+  width: min(760px, calc(100vw - 32px));
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.journal-dialog::backdrop,
 .guide-dialog::backdrop {
   background: rgba(15, 12, 10, 0.66);
 }
 
+.journal-shell,
 .guide-shell {
   padding: 18px;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .guide-grid {
@@ -546,6 +680,18 @@ h2 {
 .guide-entry h3,
 .guide-entry p {
   margin: 0;
+}
+
+.guide-entry.is-captured {
+  background: linear-gradient(180deg, #a8a39d 0%, #8a857f 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 238, 176, 0.28);
+}
+
+.guide-entry.is-captured .guide-art {
+  border-color: rgba(92, 67, 24, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 246, 206, 0.32), rgba(255, 255, 255, 0.18)),
+    rgba(255, 248, 226, 0.26);
 }
 
 .guide-art {
@@ -571,6 +717,21 @@ h2 {
   opacity: 0.45;
 }
 
+.guide-capture-status {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.guide-entry.is-captured .guide-capture-status {
+  color: var(--accent-dim);
+}
+
+.guide-entry.is-missing .guide-capture-status {
+  color: rgba(23, 18, 15, 0.62);
+}
+
 .guide-stat {
   font-size: 0.82rem;
 }
@@ -586,7 +747,7 @@ h2 {
   text-transform: uppercase;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 480px) {
   .game-layout {
     grid-template-columns: 1fr;
   }
@@ -596,12 +757,11 @@ h2 {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 420px) {
   .game-shell {
     padding: 12px;
   }
 
-  .game-header,
   .scene-meta,
   .controls-panel,
   .journal-header,
@@ -620,6 +780,10 @@ h2 {
   .objective-card {
     width: 100%;
     min-width: 0;
+  }
+
+  .scene-period-switcher {
+    justify-content: stretch;
   }
 
   .action-strip {

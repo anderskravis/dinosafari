@@ -7,135 +7,143 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="game-shell">
-      <header class="game-header bevel">
-        <div>
-          <p class="eyebrow">Field Prototype</p>
-          <h1>Dino Safari Tribute</h1>
-          <p class="subhead">
-            Explore lost ages, wait for movement, and photograph every dinosaur.
-          </p>
-        </div>
+    <div class="game-stage">
+      <div class="game-scale-wrap">
+        <main class="game-shell" id="game-shell">
+          <section class="game-layout">
+            <section class="main-panel bevel">
+              <div class="viewport-frame bevel-inset">
+                <div class="scene-meta">
+                  <div class="scene-heading">
+                    <div>
+                      <p class="scene-label" id="scene-period">Late Jurassic</p>
+                      <h2 id="scene-location">Fern Basin</h2>
+                    </div>
+                    <div class="period-switcher scene-period-switcher" id="period-switcher" aria-label="Time period selector"></div>
+                  </div>
+                  <div class="objective-card bevel-inset">
+                    <span class="objective-label">Target</span>
+                    <strong id="target-dino">Stegosaurus</strong>
+                    <span id="target-hint">Try low fern country.</span>
+                  </div>
+                </div>
 
-        <div class="period-switcher" id="period-switcher" aria-label="Time period selector"></div>
-      </header>
-
-      <section class="game-layout">
-        <section class="main-panel bevel">
-          <div class="viewport-frame bevel-inset">
-            <div class="scene-meta">
-              <div>
-                <p class="scene-label" id="scene-period">Late Jurassic</p>
-                <h2 id="scene-location">Fern Basin</h2>
+                <div class="viewport" id="viewport">
+                  <div class="scene-assets" id="scene-assets" aria-hidden="true">
+                    <img class="scene-layer scene-bg" id="scene-bg" alt="" />
+                    <div class="scene-sprite" id="scene-sprite" aria-hidden="true">
+                      <img class="scene-sprite-strip" id="scene-sprite-strip" alt="" />
+                    </div>
+                    <img class="scene-layer scene-fg" id="scene-fg" alt="" />
+                  </div>
+                  <canvas
+                    class="scene-canvas"
+                    id="scene-canvas"
+                    width="960"
+                    height="600"
+                    aria-label="Prehistoric scene"
+                  ></canvas>
+                  <div class="scene-nameplate bevel-inset" id="scene-nameplate" aria-live="polite"></div>
+                  <div class="flash-overlay" id="flash-overlay" aria-hidden="true"></div>
+                  <div class="message-banner bevel-inset" id="message-banner">
+                    Begin in the Jurassic and sweep the valley for movement.
+                  </div>
+                </div>
               </div>
-              <div class="objective-card bevel-inset">
-                <span class="objective-label">Target</span>
-                <strong id="target-dino">Stegosaurus</strong>
-                <span id="target-hint">Try low fern country.</span>
+
+              <div class="controls-panel">
+                <div class="nav-controls">
+                  <button class="diamond-btn" id="move-north" aria-label="Move north">
+                    <span>▲</span>
+                  </button>
+                  <button class="diamond-btn" id="move-west" aria-label="Move west">
+                    <span>◀</span>
+                  </button>
+                  <button class="diamond-btn" id="move-south" aria-label="Move south">
+                    <span>▼</span>
+                  </button>
+                  <button class="diamond-btn" id="move-east" aria-label="Move east">
+                    <span>▶</span>
+                  </button>
+                </div>
+
+                <div class="action-strip">
+                  <button class="action-btn" id="scan-btn">Scan</button>
+                  <button class="action-btn action-btn-primary" id="photo-btn">Photo</button>
+                  <button class="action-btn" id="guide-btn">Field Guide</button>
+                  <button class="action-btn" id="journal-btn">Journal</button>
+                </div>
               </div>
-            </div>
+            </section>
 
-            <div class="viewport" id="viewport">
-              <canvas
-                class="scene-canvas"
-                id="scene-canvas"
-                width="960"
-                height="600"
-                aria-label="Prehistoric scene"
-              ></canvas>
-              <div class="scene-nameplate bevel-inset" id="scene-nameplate" aria-live="polite"></div>
-              <div class="flash-overlay" id="flash-overlay" aria-hidden="true"></div>
-              <div class="message-banner bevel-inset" id="message-banner">
-                Begin in the Jurassic and sweep the valley for movement.
-              </div>
-            </div>
-          </div>
+            <aside class="status-panel bevel">
+              <section class="profile-card bevel-inset">
+                <div class="profile-top">
+                  <div>
+                    <p class="eyebrow">Contact</p>
+                    <h2 id="contact-name">No dinosaur visible</h2>
+                  </div>
+                  <p class="contact-status" id="contact-status">Searching</p>
+                </div>
+                <div class="silhouette-card" id="silhouette-card" aria-hidden="true">
+                  <img class="contact-image" id="contact-image" alt="" />
+                  <canvas
+                    class="contact-canvas"
+                    id="contact-canvas"
+                    width="420"
+                    height="240"
+                    aria-hidden="true"
+                  ></canvas>
+                </div>
+                <div>
+                  <div class="meter-header">
+                    <span>Signal</span>
+                    <span id="signal-value">12%</span>
+                  </div>
+                  <div class="meter-track">
+                    <div class="meter-fill" id="signal-fill"></div>
+                  </div>
+                </div>
+              </section>
 
-          <div class="controls-panel">
-            <div class="nav-controls">
-              <button class="diamond-btn" id="move-north" aria-label="Move north">
-                <span>▲</span>
-              </button>
-              <button class="diamond-btn" id="move-west" aria-label="Move west">
-                <span>◀</span>
-              </button>
-              <button class="diamond-btn" id="move-south" aria-label="Move south">
-                <span>▼</span>
-              </button>
-              <button class="diamond-btn" id="move-east" aria-label="Move east">
-                <span>▶</span>
-              </button>
-            </div>
+              <section class="radar-card bevel-inset">
+                <div class="card-header">
+                  <p class="eyebrow">Survey Map</p>
+                  <span id="coordinates">X 1 / Y 1</span>
+                </div>
+                <div class="radar-grid" id="radar-grid" aria-label="Map grid"></div>
+                <p class="radar-hint" id="radar-hint">
+                  Radar is quiet. Try a nearby clearing.
+                </p>
+              </section>
 
-            <div class="action-strip">
-              <button class="action-btn" id="scan-btn">Scan</button>
-              <button class="action-btn action-btn-primary" id="photo-btn">Photo</button>
-              <button class="action-btn" id="guide-btn">Field Guide</button>
-              <button class="action-btn" id="journal-btn">Journal</button>
-            </div>
-          </div>
-        </section>
+              <section class="progress-card bevel-inset">
+                <div class="card-header">
+                  <p class="eyebrow">Collection</p>
+                  <span id="capture-count">0 / 9 captured</span>
+                </div>
+                <div class="capture-strip" id="capture-strip"></div>
+              </section>
+            </aside>
+          </section>
+        </main>
+      </div>
 
-        <aside class="status-panel bevel">
-          <section class="profile-card bevel-inset">
-            <div class="profile-top">
-              <div>
-                <p class="eyebrow">Contact</p>
-                <h2 id="contact-name">No dinosaur visible</h2>
-              </div>
-              <p class="contact-status" id="contact-status">Searching</p>
-            </div>
-            <div class="silhouette-card" id="silhouette-card" aria-hidden="true">
-              <canvas
-                class="contact-canvas"
-                id="contact-canvas"
-                width="420"
-                height="240"
-                aria-hidden="true"
-              ></canvas>
-            </div>
+      <dialog class="journal-dialog" id="journal-dialog">
+        <div class="journal-shell bevel">
+          <div class="journal-header">
             <div>
-              <div class="meter-header">
-                <span>Signal</span>
-                <span id="signal-value">12%</span>
-              </div>
-              <div class="meter-track">
-                <div class="meter-fill" id="signal-fill"></div>
-              </div>
+              <p class="eyebrow">Expedition Log</p>
+              <h2>Recent Notes</h2>
             </div>
-          </section>
-
-          <section class="radar-card bevel-inset">
-            <div class="card-header">
-              <p class="eyebrow">Survey Map</p>
-              <span id="coordinates">X 1 / Y 1</span>
+            <div class="dialog-actions">
+              <button class="mini-btn" id="clear-log-btn">Clear</button>
+              <button class="mini-btn" id="close-journal-btn">Close</button>
             </div>
-            <div class="radar-grid" id="radar-grid" aria-label="Map grid"></div>
-            <p class="radar-hint" id="radar-hint">
-              Radar is quiet. Try a nearby clearing.
-            </p>
-          </section>
-
-          <section class="progress-card bevel-inset">
-            <div class="card-header">
-              <p class="eyebrow">Collection</p>
-              <span id="capture-count">0 / 9 captured</span>
-            </div>
-            <div class="capture-strip" id="capture-strip"></div>
-          </section>
-        </aside>
-      </section>
-
-      <section class="journal-panel bevel" id="journal-panel">
-        <div class="journal-header">
-          <div>
-            <p class="eyebrow">Expedition Log</p>
-            <h2>Recent Notes</h2>
           </div>
-          <button class="mini-btn" id="clear-log-btn">Clear</button>
+          <ol class="log-list" id="log-list"></ol>
         </div>
-        <ol class="log-list" id="log-list"></ol>
-      </section>
+      </dialog>
 
       <dialog class="guide-dialog" id="guide-dialog">
         <div class="guide-shell bevel">
@@ -149,7 +157,7 @@
           <div class="guide-grid" id="guide-grid"></div>
         </div>
       </dialog>
-    </main>
+    </div>
 
     <script src="./app.js"></script>
   </body>

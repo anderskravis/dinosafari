@@ -244,6 +244,39 @@ const DINOSAURS = [
   },
 ];
 
+const AUTHORED_DINOSAURS = {
+  brachiosaurus: {
+    contact: "./assets/authored/brachiosaurus/contact.png",
+    guide: "./assets/authored/brachiosaurus/guide.png",
+  },
+};
+
+const AUTHORED_SCENES = {
+  "jurassic:3:1": {
+    id: "shadow-grove",
+    ambience: "shadow-grove",
+    background: "./assets/authored/shadow-grove/background.png",
+    foreground: "./assets/authored/shadow-grove/foreground.png",
+    resolution: {
+      width: 320,
+      height: 200,
+    },
+    dinosaurs: {
+      brachiosaurus: {
+        sprite: "./assets/authored/brachiosaurus/shadow-grove-strip.png",
+        frames: 8,
+        fps: 6,
+        frameWidth: 72,
+        frameHeight: 96,
+        left: 124,
+        top: 54,
+        width: 90,
+        height: 126,
+      },
+    },
+  },
+};
+
 const STORAGE_KEY = "dino-safari-tribute-state-v1";
 const SCENE_BUFFER_WIDTH = 480;
 const SCENE_BUFFER_HEIGHT = 300;
@@ -371,6 +404,11 @@ const state = {
   encounterToken: 0,
 };
 
+const VIEWPORT_FIT = {
+  shellWidth: 1380,
+  shellHeight: 860,
+};
+
 const elements = {
   periodSwitcher: document.getElementById("period-switcher"),
   scenePeriod: document.getElementById("scene-period"),
@@ -378,6 +416,11 @@ const elements = {
   targetDino: document.getElementById("target-dino"),
   targetHint: document.getElementById("target-hint"),
   viewport: document.getElementById("viewport"),
+  sceneAssets: document.getElementById("scene-assets"),
+  sceneBg: document.getElementById("scene-bg"),
+  sceneFg: document.getElementById("scene-fg"),
+  sceneSprite: document.getElementById("scene-sprite"),
+  sceneSpriteStrip: document.getElementById("scene-sprite-strip"),
   sceneCanvas: document.getElementById("scene-canvas"),
   sceneNameplate: document.getElementById("scene-nameplate"),
   flashOverlay: document.getElementById("flash-overlay"),
@@ -385,6 +428,7 @@ const elements = {
   contactName: document.getElementById("contact-name"),
   contactStatus: document.getElementById("contact-status"),
   silhouetteCard: document.getElementById("silhouette-card"),
+  contactImage: document.getElementById("contact-image"),
   contactCanvas: document.getElementById("contact-canvas"),
   signalValue: document.getElementById("signal-value"),
   signalFill: document.getElementById("signal-fill"),
@@ -394,9 +438,9 @@ const elements = {
   captureCount: document.getElementById("capture-count"),
   captureStrip: document.getElementById("capture-strip"),
   guideDialog: document.getElementById("guide-dialog"),
+  journalDialog: document.getElementById("journal-dialog"),
   guideGrid: document.getElementById("guide-grid"),
   logList: document.getElementById("log-list"),
-  journalPanel: document.getElementById("journal-panel"),
 };
 
 const buttons = {
@@ -409,6 +453,7 @@ const buttons = {
   guide: document.getElementById("guide-btn"),
   closeGuide: document.getElementById("close-guide-btn"),
   journal: document.getElementById("journal-btn"),
+  closeJournal: document.getElementById("close-journal-btn"),
   clearLog: document.getElementById("clear-log-btn"),
 };
 
@@ -424,6 +469,7 @@ const dinoById = DINOSAURS.reduce((accumulator, dino) => {
 
 const guidePreviewCache = new Map();
 const renderer = createRetroRenderer();
+const ambientAudio = createAmbientAudio();
 
 init();
 
@@ -431,6 +477,7 @@ function init() {
   loadSavedProgress();
   renderPeriodButtons();
   bindEvents();
+  syncViewportFit();
   renderer.start();
   setPeriod(state.periodId, true, true);
   addLog("Field rig online. Render grid calibrated.");
@@ -453,12 +500,21 @@ function renderPeriodButtons() {
 }
 
 function bindEvents() {
+  window.addEventListener("pointerdown", () => {
+    ambientAudio.userGesture();
+  }, { passive: true });
+  window.addEventListener("resize", syncViewportFit);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", syncViewportFit);
+  }
+
   elements.periodSwitcher.addEventListener("click", (event) => {
     const button = event.target.closest(".period-btn");
     if (!button) {
       return;
     }
 
+    ambientAudio.userGesture();
     setPeriod(button.dataset.period);
   });
 
@@ -466,9 +522,19 @@ function bindEvents() {
   buttons.south.addEventListener("click", () => move(0, 1));
   buttons.east.addEventListener("click", () => move(1, 0));
   buttons.west.addEventListener("click", () => move(-1, 0));
+  elements.radarGrid.addEventListener("click", (event) => {
+    const cell = event.target.closest(".radar-cell");
+    if (!cell) {
+      return;
+    }
+
+    ambientAudio.userGesture();
+    moveToSector(Number(cell.dataset.x), Number(cell.dataset.y));
+  });
   buttons.scan.addEventListener("click", scanArea);
   buttons.photo.addEventListener("click", takePhoto);
   buttons.guide.addEventListener("click", () => {
+    ambientAudio.userGesture();
     renderGuide();
     if (!elements.guideDialog.open) {
       elements.guideDialog.showModal();
@@ -476,8 +542,11 @@ function bindEvents() {
   });
   buttons.closeGuide.addEventListener("click", () => elements.guideDialog.close());
   buttons.journal.addEventListener("click", () => {
-    elements.journalPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!elements.journalDialog.open) {
+      elements.journalDialog.showModal();
+    }
   });
+  buttons.closeJournal.addEventListener("click", () => elements.journalDialog.close());
   buttons.clearLog.addEventListener("click", () => {
     state.log = [];
     renderLog();
@@ -485,7 +554,7 @@ function bindEvents() {
   });
 
   window.addEventListener("keydown", (event) => {
-    if (elements.guideDialog.open && event.key === "Escape") {
+    if ((elements.guideDialog.open || elements.journalDialog.open) && event.key === "Escape") {
       return;
     }
 
@@ -498,18 +567,33 @@ function bindEvents() {
 
     if (directionMap[event.key]) {
       event.preventDefault();
+      ambientAudio.userGesture();
       move(...directionMap[event.key]);
       return;
     }
 
     if (event.key.toLowerCase() === "s") {
+      ambientAudio.userGesture();
       scanArea();
     }
 
     if (event.key.toLowerCase() === "p") {
+      ambientAudio.userGesture();
       takePhoto();
     }
   });
+}
+
+function syncViewportFit() {
+  const viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+  const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const stagePadding = 28;
+  const horizontalScale = (viewportWidth - stagePadding) / VIEWPORT_FIT.shellWidth;
+  const verticalScale = (viewportHeight - stagePadding) / VIEWPORT_FIT.shellHeight;
+  const nextScale = Math.min(horizontalScale, verticalScale, 1);
+  const safeScale = Number.isFinite(nextScale) ? Math.max(nextScale, 0.32) : 1;
+
+  document.documentElement.style.setProperty("--game-scale", safeScale.toFixed(4));
 }
 
 function setPeriod(periodId, force = false, preservePosition = false) {
@@ -546,12 +630,28 @@ function move(dx, dy) {
     return;
   }
 
+  updatePosition(nextX, nextY, `Moved to ${currentPeriod().locations[nextY][nextX]} in the ${currentPeriod().name}.`);
+}
+
+function moveToSector(targetX, targetY) {
+  const nextX = clamp(targetX, 0, 4);
+  const nextY = clamp(targetY, 0, 4);
+
+  if (nextX === state.x && nextY === state.y) {
+    updateMessage("You are already surveying this sector.");
+    return;
+  }
+
+  updatePosition(nextX, nextY, `Survey map jump to ${currentPeriod().locations[nextY][nextX]}.`);
+}
+
+function updatePosition(nextX, nextY, logMessage) {
   state.x = nextX;
   state.y = nextY;
   state.visibleDinoId = null;
 
   renderScene();
-  addLog(`Moved to ${locationName()} in the ${currentPeriod().name}.`);
+  addLog(logMessage);
   persistState();
   queueEncounter(false);
 }
@@ -667,6 +767,8 @@ function renderScene() {
     renderGuide();
   }
   updateSceneNameplate();
+  renderAuthoredScene();
+  ambientAudio.setProfile(currentAmbientProfile());
 }
 
 function renderStatus(referenceDino) {
@@ -690,6 +792,7 @@ function renderStatus(referenceDino) {
   elements.captureCount.textContent = `${state.captured.size} / ${DINOSAURS.length} captured`;
   elements.radarHint.textContent = radarHint(visible || referenceDino);
   updateSceneNameplate();
+  renderContactPreview();
 }
 
 function renderRadar() {
@@ -698,13 +801,19 @@ function renderRadar() {
 
   for (let y = 0; y < 5; y += 1) {
     for (let x = 0; x < 5; x += 1) {
-      const cell = document.createElement("div");
+      const cell = document.createElement("button");
       cell.className = "radar-cell";
+      cell.type = "button";
       cell.textContent = `${x + 1}:${y + 1}`;
+      cell.dataset.x = String(x);
+      cell.dataset.y = String(y);
+      cell.title = `Travel to sector ${x + 1}:${y + 1}`;
+      cell.setAttribute("aria-label", `Travel to sector ${x + 1}:${y + 1}`);
 
       if (x === state.x && y === state.y) {
         cell.classList.add("is-player");
         cell.textContent = "YOU";
+        cell.setAttribute("aria-current", "true");
       }
 
       if (nearest && isNearby(x, y, nearest)) {
@@ -742,6 +851,7 @@ function renderGuide() {
     const entry = document.createElement("article");
     entry.className = "guide-entry bevel-inset";
     entry.classList.toggle("is-missing", !captured);
+    entry.classList.toggle("is-captured", captured);
     entry.innerHTML = `
       <div class="guide-art">
         <img src="${guidePreviewSource(dino, captured)}" alt="${captured ? dino.name : "Unknown species"} preview" />
@@ -749,6 +859,7 @@ function renderGuide() {
       <div>
         <p class="period-badge">${labelForPeriod(dino.period)}</p>
         <h3>${captured ? dino.name : "Unknown Species"}</h3>
+        <p class="guide-capture-status">${captured ? "Photographed" : "Unseen"}</p>
       </div>
       <p class="guide-stat"><strong>Diet:</strong> ${captured ? dino.diet : "Classified"}</p>
       <p class="guide-stat"><strong>Size:</strong> ${captured ? dino.size : "Classified"}</p>
@@ -759,6 +870,11 @@ function renderGuide() {
 }
 
 function guidePreviewSource(dino, captured) {
+  const authored = AUTHORED_DINOSAURS[dino.id];
+  if (captured && authored?.guide) {
+    return authored.guide;
+  }
+
   const key = `${dino.id}:${captured ? "full" : "locked"}`;
   if (!guidePreviewCache.has(key)) {
     guidePreviewCache.set(key, renderer.renderGuidePreview(dino, captured));
@@ -785,6 +901,86 @@ function updateSceneNameplate() {
 
   elements.sceneNameplate.textContent = dinoById[state.visibleDinoId].name;
   elements.sceneNameplate.classList.add("is-visible");
+}
+
+function renderAuthoredScene() {
+  const scene = currentAuthoredScene();
+  elements.viewport.classList.toggle("is-authored", Boolean(scene));
+
+  if (!scene) {
+    elements.sceneBg.removeAttribute("src");
+    elements.sceneFg.removeAttribute("src");
+    elements.sceneSprite.classList.remove("is-visible");
+    return;
+  }
+
+  if (elements.sceneBg.getAttribute("src") !== scene.background) {
+    elements.sceneBg.src = scene.background;
+  }
+
+  if (elements.sceneFg.getAttribute("src") !== scene.foreground) {
+    elements.sceneFg.src = scene.foreground;
+  }
+
+  const spriteAsset = state.visibleDinoId ? scene.dinosaurs[state.visibleDinoId] : null;
+  if (!spriteAsset) {
+    elements.sceneSprite.classList.remove("is-visible");
+    elements.sceneSpriteStrip.removeAttribute("src");
+    elements.sceneSpriteStrip.style.transform = "translateX(0)";
+    return;
+  }
+
+  if (elements.sceneSpriteStrip.getAttribute("src") !== spriteAsset.sprite) {
+    elements.sceneSpriteStrip.src = spriteAsset.sprite;
+  }
+
+  const widthPercent = (spriteAsset.width / scene.resolution.width) * 100;
+  const heightPercent = (spriteAsset.height / scene.resolution.height) * 100;
+  const leftPercent = (spriteAsset.left / scene.resolution.width) * 100;
+  const topPercent = (spriteAsset.top / scene.resolution.height) * 100;
+
+  elements.sceneSprite.style.width = `${widthPercent}%`;
+  elements.sceneSprite.style.height = `${heightPercent}%`;
+  elements.sceneSprite.style.left = `${leftPercent}%`;
+  elements.sceneSprite.style.top = `${topPercent}%`;
+  elements.sceneSpriteStrip.style.width = `${spriteAsset.frames * 100}%`;
+  elements.sceneSpriteStrip.style.transform = "translateX(0)";
+  elements.sceneSprite.dataset.frames = String(spriteAsset.frames);
+  elements.sceneSprite.dataset.fps = String(spriteAsset.fps);
+  elements.sceneSprite.classList.add("is-visible");
+}
+
+function renderContactPreview() {
+  const authored = state.contactDinoId ? AUTHORED_DINOSAURS[state.contactDinoId] : null;
+  const canUseAuthored = Boolean(authored?.contact);
+
+  elements.silhouetteCard.classList.toggle("is-authored", canUseAuthored);
+
+  if (!canUseAuthored) {
+    elements.contactImage.removeAttribute("src");
+    return;
+  }
+
+  if (elements.contactImage.getAttribute("src") !== authored.contact) {
+    elements.contactImage.src = authored.contact;
+  }
+}
+
+function currentAuthoredScene() {
+  return AUTHORED_SCENES[sceneKey()] || null;
+}
+
+function currentAmbientProfile() {
+  const scene = currentAuthoredScene();
+  if (scene?.ambience) {
+    return scene.ambience;
+  }
+
+  return currentBiome();
+}
+
+function sceneKey(periodId = state.periodId, x = state.x, y = state.y) {
+  return `${periodId}:${x}:${y}`;
 }
 
 function currentPeriod() {
@@ -938,6 +1134,451 @@ function playTone(type) {
   oscillator.addEventListener("ended", () => audioContext.close());
 }
 
+function createAmbientAudio() {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioContextClass) {
+    return {
+      setEnabled() {},
+      setProfile() {},
+      userGesture() {},
+    };
+  }
+
+  const profileSettings = {
+    fern: {
+      water: 0.018,
+      waterMod: 0.006,
+      air: 0.012,
+      airMod: 0.003,
+      insect: 0.006,
+      insectMod: 0.003,
+      bird: 0.8,
+      birdMinDelay: 4200,
+      birdMaxDelay: 7600,
+      birdMinFreq: 900,
+      birdMaxFreq: 1500,
+      frog: 0.12,
+      frogMinDelay: 6000,
+      frogMaxDelay: 10000,
+      rustle: 0.3,
+      riverCutoff: 1250,
+      insectCenter: 4700,
+    },
+    woodland: {
+      water: 0.014,
+      waterMod: 0.004,
+      air: 0.014,
+      airMod: 0.004,
+      insect: 0.005,
+      insectMod: 0.002,
+      bird: 0.85,
+      birdMinDelay: 4200,
+      birdMaxDelay: 7800,
+      birdMinFreq: 820,
+      birdMaxFreq: 1350,
+      frog: 0.08,
+      frogMinDelay: 6500,
+      frogMaxDelay: 11000,
+      rustle: 0.45,
+      riverCutoff: 980,
+      insectCenter: 4300,
+    },
+    marsh: {
+      water: 0.02,
+      waterMod: 0.008,
+      air: 0.01,
+      airMod: 0.003,
+      insect: 0.01,
+      insectMod: 0.004,
+      bird: 0.45,
+      birdMinDelay: 5200,
+      birdMaxDelay: 8800,
+      birdMinFreq: 760,
+      birdMaxFreq: 1200,
+      frog: 0.7,
+      frogMinDelay: 3200,
+      frogMaxDelay: 5800,
+      rustle: 0.25,
+      riverCutoff: 1080,
+      insectCenter: 3600,
+    },
+    coast: {
+      water: 0.028,
+      waterMod: 0.01,
+      air: 0.015,
+      airMod: 0.004,
+      insect: 0.002,
+      insectMod: 0.001,
+      bird: 0.32,
+      birdMinDelay: 6200,
+      birdMaxDelay: 9800,
+      birdMinFreq: 620,
+      birdMaxFreq: 980,
+      frog: 0.04,
+      frogMinDelay: 7000,
+      frogMaxDelay: 12000,
+      rustle: 0.16,
+      riverCutoff: 880,
+      insectCenter: 3200,
+    },
+    badlands: {
+      water: 0.004,
+      waterMod: 0.002,
+      air: 0.02,
+      airMod: 0.006,
+      insect: 0.001,
+      insectMod: 0.001,
+      bird: 0.18,
+      birdMinDelay: 7000,
+      birdMaxDelay: 11000,
+      birdMinFreq: 700,
+      birdMaxFreq: 1000,
+      frog: 0,
+      frogMinDelay: 0,
+      frogMaxDelay: 0,
+      rustle: 0.1,
+      riverCutoff: 720,
+      insectCenter: 2800,
+    },
+    volcanic: {
+      water: 0.002,
+      waterMod: 0.001,
+      air: 0.024,
+      airMod: 0.006,
+      insect: 0,
+      insectMod: 0,
+      bird: 0.05,
+      birdMinDelay: 9000,
+      birdMaxDelay: 14000,
+      birdMinFreq: 480,
+      birdMaxFreq: 760,
+      frog: 0,
+      frogMinDelay: 0,
+      frogMaxDelay: 0,
+      rustle: 0.05,
+      riverCutoff: 620,
+      insectCenter: 2400,
+    },
+    "shadow-grove": {
+      water: 0.016,
+      waterMod: 0.006,
+      air: 0.012,
+      airMod: 0.004,
+      insect: 0.004,
+      insectMod: 0.002,
+      bird: 0.75,
+      birdMinDelay: 3400,
+      birdMaxDelay: 6400,
+      birdMinFreq: 820,
+      birdMaxFreq: 1280,
+      frog: 0.08,
+      frogMinDelay: 6800,
+      frogMaxDelay: 10200,
+      rustle: 0.58,
+      riverCutoff: 1120,
+      insectCenter: 4100,
+    },
+  };
+
+  let context = null;
+  let enabled = true;
+  let profileName = "fern";
+  let currentSettings = profileSettings.fern;
+
+  let masterGain = null;
+  let riverGain = null;
+  let riverFilter = null;
+  let riverLfoDepth = null;
+  let airGain = null;
+  let airLfoDepth = null;
+  let insectGain = null;
+  let insectFilter = null;
+  let insectLfoDepth = null;
+  let birdTimer = 0;
+  let frogTimer = 0;
+  let rustleTimer = 0;
+  let whiteNoiseBuffer = null;
+  let brownNoiseBuffer = null;
+
+  function setEnabled(nextEnabled) {
+    enabled = nextEnabled;
+    if (masterGain && context) {
+      const target = enabled ? 0.95 : 0.0001;
+      masterGain.gain.setTargetAtTime(target, context.currentTime, 0.25);
+    }
+  }
+
+  function setProfile(nextProfile) {
+    profileName = profileSettings[nextProfile] ? nextProfile : "fern";
+    currentSettings = profileSettings[profileName];
+    if (context) {
+      applyProfile();
+    }
+  }
+
+  function userGesture() {
+    if (!enabled) {
+      return;
+    }
+
+    ensureContext();
+    if (!context) {
+      return;
+    }
+
+    if (context.state === "suspended") {
+      context.resume();
+    }
+    applyProfile();
+  }
+
+  function ensureContext() {
+    if (context) {
+      return;
+    }
+
+    context = new AudioContextClass();
+    whiteNoiseBuffer = createNoiseBuffer(context, "white");
+    brownNoiseBuffer = createNoiseBuffer(context, "brown");
+
+    masterGain = context.createGain();
+    masterGain.gain.value = enabled ? 0.95 : 0.0001;
+    masterGain.connect(context.destination);
+
+    const riverSource = createLoopingNoiseSource(context, brownNoiseBuffer);
+    riverFilter = context.createBiquadFilter();
+    riverFilter.type = "lowpass";
+    riverFilter.Q.value = 0.7;
+    const riverHighpass = context.createBiquadFilter();
+    riverHighpass.type = "highpass";
+    riverHighpass.frequency.value = 140;
+    riverGain = context.createGain();
+    riverGain.gain.value = currentSettings.water;
+    riverLfoDepth = context.createGain();
+    riverLfoDepth.gain.value = currentSettings.waterMod;
+    const riverLfo = context.createOscillator();
+    riverLfo.type = "sine";
+    riverLfo.frequency.value = 0.12;
+    riverLfo.connect(riverLfoDepth);
+    riverLfoDepth.connect(riverGain.gain);
+    riverSource.connect(riverFilter);
+    riverFilter.connect(riverHighpass);
+    riverHighpass.connect(riverGain);
+    riverGain.connect(masterGain);
+    riverSource.start();
+    riverLfo.start();
+
+    const airSource = createLoopingNoiseSource(context, brownNoiseBuffer);
+    const airFilter = context.createBiquadFilter();
+    airFilter.type = "lowpass";
+    airFilter.frequency.value = 960;
+    airGain = context.createGain();
+    airGain.gain.value = currentSettings.air;
+    airLfoDepth = context.createGain();
+    airLfoDepth.gain.value = currentSettings.airMod;
+    const airLfo = context.createOscillator();
+    airLfo.type = "triangle";
+    airLfo.frequency.value = 0.08;
+    airLfo.connect(airLfoDepth);
+    airLfoDepth.connect(airGain.gain);
+    airSource.connect(airFilter);
+    airFilter.connect(airGain);
+    airGain.connect(masterGain);
+    airSource.start();
+    airLfo.start();
+
+    const insectSource = createLoopingNoiseSource(context, whiteNoiseBuffer);
+    insectFilter = context.createBiquadFilter();
+    insectFilter.type = "bandpass";
+    insectFilter.Q.value = 0.9;
+    insectGain = context.createGain();
+    insectGain.gain.value = currentSettings.insect;
+    insectLfoDepth = context.createGain();
+    insectLfoDepth.gain.value = currentSettings.insectMod;
+    const insectLfo = context.createOscillator();
+    insectLfo.type = "sine";
+    insectLfo.frequency.value = 0.31;
+    insectLfo.connect(insectLfoDepth);
+    insectLfoDepth.connect(insectGain.gain);
+    insectSource.connect(insectFilter);
+    insectFilter.connect(insectGain);
+    insectGain.connect(masterGain);
+    insectSource.start();
+    insectLfo.start();
+
+    scheduleBirds();
+    scheduleFrogs();
+    scheduleRustle();
+    applyProfile();
+  }
+
+  function applyProfile() {
+    if (!context) {
+      return;
+    }
+
+    riverGain.gain.setTargetAtTime(currentSettings.water, context.currentTime, 0.5);
+    riverLfoDepth.gain.setTargetAtTime(currentSettings.waterMod, context.currentTime, 0.6);
+    riverFilter.frequency.setTargetAtTime(currentSettings.riverCutoff, context.currentTime, 0.5);
+    airGain.gain.setTargetAtTime(currentSettings.air, context.currentTime, 0.5);
+    airLfoDepth.gain.setTargetAtTime(currentSettings.airMod, context.currentTime, 0.6);
+    insectGain.gain.setTargetAtTime(currentSettings.insect, context.currentTime, 0.45);
+    insectLfoDepth.gain.setTargetAtTime(currentSettings.insectMod, context.currentTime, 0.5);
+    insectFilter.frequency.setTargetAtTime(currentSettings.insectCenter, context.currentTime, 0.45);
+  }
+
+  function scheduleBirds() {
+    birdTimer = window.setTimeout(() => {
+      if (context && enabled && context.state === "running" && Math.random() < currentSettings.bird) {
+        playBirdCall(context, currentSettings, masterGain);
+      }
+      scheduleBirds();
+    }, randomInRange(currentSettings.birdMinDelay, currentSettings.birdMaxDelay));
+  }
+
+  function scheduleFrogs() {
+    const minDelay = currentSettings.frogMinDelay || 8000;
+    const maxDelay = currentSettings.frogMaxDelay || 12000;
+    frogTimer = window.setTimeout(() => {
+      if (context && enabled && context.state === "running" && currentSettings.frog > 0 && Math.random() < currentSettings.frog) {
+        playFrogCall(context, masterGain);
+      }
+      scheduleFrogs();
+    }, randomInRange(minDelay, maxDelay));
+  }
+
+  function scheduleRustle() {
+    rustleTimer = window.setTimeout(() => {
+      if (context && enabled && context.state === "running" && Math.random() < currentSettings.rustle) {
+        playRustle(context, whiteNoiseBuffer, masterGain);
+      }
+      scheduleRustle();
+    }, randomInRange(2400, 5200));
+  }
+
+  return {
+    setEnabled,
+    setProfile,
+    userGesture,
+  };
+}
+
+function createLoopingNoiseSource(context, buffer) {
+  const source = context.createBufferSource();
+  source.buffer = buffer;
+  source.loop = true;
+  return source;
+}
+
+function createNoiseBuffer(context, type) {
+  const length = context.sampleRate * 2.5;
+  const buffer = context.createBuffer(1, length, context.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  if (type === "brown") {
+    let last = 0;
+    for (let index = 0; index < length; index += 1) {
+      const white = Math.random() * 2 - 1;
+      last = (last + 0.02 * white) / 1.02;
+      data[index] = last * 3.5;
+    }
+    return buffer;
+  }
+
+  for (let index = 0; index < length; index += 1) {
+    data[index] = Math.random() * 2 - 1;
+  }
+
+  return buffer;
+}
+
+function playBirdCall(context, settings, output) {
+  const start = context.currentTime;
+  const attack = 0.02;
+  const duration = 0.18 + Math.random() * 0.14;
+  const base = randomInRange(settings.birdMinFreq, settings.birdMaxFreq);
+  const overtone = base * 1.82;
+
+  const primary = context.createOscillator();
+  primary.type = "triangle";
+  primary.frequency.setValueAtTime(base, start);
+  primary.frequency.exponentialRampToValueAtTime(base * 1.18, start + duration * 0.28);
+  primary.frequency.exponentialRampToValueAtTime(base * 0.82, start + duration);
+
+  const secondary = context.createOscillator();
+  secondary.type = "sine";
+  secondary.frequency.setValueAtTime(overtone, start);
+  secondary.frequency.exponentialRampToValueAtTime(overtone * 0.74, start + duration);
+
+  const gain = context.createGain();
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(0.02, start + attack);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+  primary.connect(gain);
+  secondary.connect(gain);
+  gain.connect(output);
+
+  primary.start(start);
+  secondary.start(start);
+  primary.stop(start + duration + 0.02);
+  secondary.stop(start + duration + 0.02);
+}
+
+function playFrogCall(context, output) {
+  const start = context.currentTime;
+  const duration = 0.22 + Math.random() * 0.16;
+
+  const oscillator = context.createOscillator();
+  oscillator.type = "sawtooth";
+  oscillator.frequency.setValueAtTime(randomInRange(160, 220), start);
+  oscillator.frequency.exponentialRampToValueAtTime(randomInRange(90, 120), start + duration);
+
+  const filter = context.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 520;
+
+  const gain = context.createGain();
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(0.018, start + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+  oscillator.connect(filter);
+  filter.connect(gain);
+  gain.connect(output);
+
+  oscillator.start(start);
+  oscillator.stop(start + duration + 0.02);
+}
+
+function playRustle(context, noiseBuffer, output) {
+  const source = context.createBufferSource();
+  source.buffer = noiseBuffer;
+
+  const filter = context.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.frequency.value = randomInRange(1200, 2400);
+  filter.Q.value = 0.7;
+
+  const gain = context.createGain();
+  const start = context.currentTime;
+  const duration = 0.22 + Math.random() * 0.12;
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(0.01, start + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(output);
+  source.start(start, Math.random() * 0.5, duration);
+  source.stop(start + duration + 0.02);
+}
+
+function randomInRange(min, max) {
+  return min + Math.random() * (max - min);
+}
+
 function loadSavedProgress() {
   let raw = null;
 
@@ -1026,11 +1667,17 @@ function createRetroRenderer() {
     }
 
     const tick = (time) => {
-      drawSceneFrame(sceneContext, time);
-      blitBuffer(sceneOutputContext, sceneBuffer, elements.sceneCanvas);
+      updateAuthoredSceneAnimation(time);
 
-      drawContactFrame(contactContext, time);
-      blitBuffer(contactOutputContext, contactBuffer, elements.contactCanvas);
+      if (!currentAuthoredScene()) {
+        drawSceneFrame(sceneContext, time);
+        blitBuffer(sceneOutputContext, sceneBuffer, elements.sceneCanvas);
+      }
+
+      if (!elements.silhouetteCard.classList.contains("is-authored")) {
+        drawContactFrame(contactContext, time);
+        blitBuffer(contactOutputContext, contactBuffer, elements.contactCanvas);
+      }
 
       animationFrameId = window.requestAnimationFrame(tick);
     };
@@ -1057,6 +1704,22 @@ function blitBuffer(outputContext, buffer, canvas) {
   outputContext.imageSmoothingEnabled = false;
   outputContext.clearRect(0, 0, canvas.width, canvas.height);
   outputContext.drawImage(buffer, 0, 0, canvas.width, canvas.height);
+}
+
+function updateAuthoredSceneAnimation(time) {
+  const scene = currentAuthoredScene();
+  if (!scene || !state.visibleDinoId) {
+    return;
+  }
+
+  const spriteAsset = scene.dinosaurs[state.visibleDinoId];
+  if (!spriteAsset || !elements.sceneSprite.classList.contains("is-visible")) {
+    return;
+  }
+
+  const frame = Math.floor((time / 1000) * spriteAsset.fps) % spriteAsset.frames;
+  const offsetPercent = (frame * 100) / spriteAsset.frames;
+  elements.sceneSpriteStrip.style.transform = `translateX(-${offsetPercent}%)`;
 }
 
 function drawSceneFrame(context, time) {
