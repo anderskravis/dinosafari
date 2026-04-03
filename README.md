@@ -6,7 +6,7 @@ A small browser prototype inspired by the 1996 `Dinosaur Safari` loop: move thro
 
 - `index.html`: the single-page shell and UI
 - `styles.css`: retro control panel styling and responsive layout
-- `app.js`: map data, encounter logic, scanner, photo capture, and generated SVG dinosaur art
+- `app.js`: map data, encounter logic, scanner, photo capture, and a low-res canvas renderer for faux prerendered scenes
 
 ## Running it
 
@@ -32,6 +32,7 @@ Then open `http://localhost:8000`.
 ## Good next steps
 
 - Replace generated SVG dinosaurs with sprite sheets or prerendered scenes
+- Push the current procedural renderer further with location-specific matte backgrounds
 - Add point-and-click hotspot movement instead of direct grid controls
 - Add voiced facts, ambient loops, and better encounter timing
 - Capture scene thumbnails instead of only unlocking species entries

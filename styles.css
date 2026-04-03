@@ -174,129 +174,71 @@ h2 {
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border: 3px solid var(--viewport-border);
-  background: linear-gradient(180deg, var(--sky-a), var(--sky-b));
+  background: linear-gradient(180deg, #cad3df 0%, #aab6cb 100%);
 }
 
-.sky-layer,
-.far-layer,
-.mid-layer,
-.ground-layer,
-.dino-stage,
+.viewport::before,
+.viewport::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.viewport::before {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.05) 0,
+      rgba(255, 255, 255, 0.05) 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 24%);
+  mix-blend-mode: soft-light;
+  opacity: 0.75;
+}
+
+.viewport::after {
+  background:
+    radial-gradient(circle at center, transparent 50%, rgba(21, 16, 12, 0.26) 100%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 30%);
+}
+
+.scene-canvas,
 .flash-overlay {
   position: absolute;
   inset: 0;
 }
 
-.sky-layer {
-  background:
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.65), transparent 12%),
-    radial-gradient(circle at 70% 20%, rgba(255, 255, 255, 0.7), transparent 10%),
-    linear-gradient(180deg, var(--sky-a) 0%, var(--sky-b) 65%, rgba(255, 255, 255, 0.5) 100%);
-}
-
-.far-layer {
-  top: 20%;
-  bottom: 38%;
-  background-repeat: repeat-x;
-  background-position: center bottom;
-  opacity: 0.94;
-}
-
-.mid-layer {
-  top: 34%;
-  bottom: 18%;
-  background-repeat: repeat-x;
-  background-position: center bottom;
-  opacity: 0.95;
-}
-
-.ground-layer {
-  top: 64%;
-  background:
-    linear-gradient(180deg, rgba(89, 73, 30, 0.2) 0%, rgba(0, 0, 0, 0) 20%),
-    linear-gradient(180deg, #a18c38 0%, #7d6b2d 42%, #5d4a20 100%);
-}
-
-.ground-layer::before {
-  content: "";
-  position: absolute;
-  inset: 14% 0 0;
-  background:
-    radial-gradient(circle at 10% 70%, rgba(62, 93, 33, 0.66), transparent 11%),
-    radial-gradient(circle at 24% 34%, rgba(92, 126, 52, 0.6), transparent 9%),
-    radial-gradient(circle at 55% 55%, rgba(58, 91, 41, 0.52), transparent 12%),
-    radial-gradient(circle at 82% 44%, rgba(80, 124, 61, 0.56), transparent 10%);
-}
-
-.viewport[data-biome="coast"] .ground-layer {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 20%),
-    linear-gradient(180deg, #d4bf77 0%, #8e7a43 45%, #5f4e2e 100%);
-}
-
-.viewport[data-biome="volcanic"] .sky-layer {
-  background:
-    radial-gradient(circle at 15% 18%, rgba(246, 190, 101, 0.38), transparent 10%),
-    radial-gradient(circle at 70% 12%, rgba(255, 215, 166, 0.2), transparent 16%),
-    linear-gradient(180deg, #d69b64 0%, #b85c30 55%, #784e42 100%);
-}
-
-.viewport[data-biome="woodland"] .ground-layer {
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(14, 36, 16, 0.12) 20%),
-    linear-gradient(180deg, #94a54d 0%, #68732d 42%, #463b19 100%);
-}
-
-.viewport[data-biome="marsh"] .ground-layer {
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0) 20%),
-    linear-gradient(180deg, #7e8a56 0%, #54613b 42%, #373a25 100%);
-}
-
-.dino-stage {
-  pointer-events: none;
-}
-
-.dino {
-  position: absolute;
-  bottom: 14%;
-  left: 50%;
-  width: clamp(180px, 35%, 280px);
-  transform: translateX(-50%) scale(0.88);
-  opacity: 0;
-  transition:
-    opacity 240ms ease,
-    transform 240ms ease;
-  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.45));
-}
-
-.dino.is-visible {
-  opacity: 1;
-  transform: translateX(-50%) scale(1);
-}
-
-.dino svg {
+.scene-canvas {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  z-index: 0;
 }
 
-.dino-label {
+.scene-nameplate {
   position: absolute;
-  bottom: 7%;
   left: 50%;
+  bottom: 62px;
   transform: translateX(-50%);
-  padding: 4px 8px;
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
+  min-width: 180px;
+  padding: 4px 10px;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  background: rgba(240, 236, 225, 0.85);
-  border: 2px solid rgba(36, 29, 25, 0.72);
+  background: rgba(236, 231, 221, 0.86);
   opacity: 0;
-  transition: opacity 200ms ease;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.dino.is-visible + .dino-label {
+.scene-nameplate.is-visible {
   opacity: 1;
 }
 
@@ -304,6 +246,7 @@ h2 {
   background: white;
   opacity: 0;
   pointer-events: none;
+  z-index: 3;
 }
 
 .flash-overlay.is-active {
@@ -328,8 +271,9 @@ h2 {
   right: 14px;
   bottom: 14px;
   padding: 10px 12px;
-  background: rgba(239, 234, 226, 0.92);
+  background: rgba(239, 234, 226, 0.94);
   min-height: 46px;
+  z-index: 4;
 }
 
 .controls-panel {
@@ -460,11 +404,15 @@ h2 {
     #f4f0e8;
   display: grid;
   place-items: center;
+  overflow: hidden;
 }
 
-.silhouette-card svg {
-  width: 84%;
+.contact-canvas {
+  width: 100%;
   height: auto;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .meter-header {
@@ -606,10 +554,16 @@ h2 {
   place-items: center;
   border: 2px solid rgba(27, 20, 17, 0.34);
   background: rgba(255, 255, 255, 0.3);
+  overflow: hidden;
 }
 
-.guide-entry svg {
-  width: 72%;
+.guide-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .guide-entry.is-missing .guide-art {

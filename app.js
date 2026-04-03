@@ -75,11 +75,12 @@ const DINOSAURS = [
       [2, 1],
     ],
     palette: {
-      body: "#6350a4",
-      accent: "#48307e",
-      crest: "#2e1b59",
+      body: "#6b56af",
+      accent: "#4b327d",
+      crest: "#2f1b57",
     },
     shape: "runner",
+    renderScale: 0.7,
   },
   {
     id: "plateosaurus",
@@ -94,11 +95,12 @@ const DINOSAURS = [
       [4, 2],
     ],
     palette: {
-      body: "#7a5c3d",
-      accent: "#573b25",
-      crest: "#9d7b54",
+      body: "#7f6242",
+      accent: "#583c27",
+      crest: "#b08b61",
     },
     shape: "sauropod",
+    renderScale: 0.86,
   },
   {
     id: "postosuchus",
@@ -113,11 +115,12 @@ const DINOSAURS = [
       [3, 4],
     ],
     palette: {
-      body: "#86513c",
-      accent: "#613524",
-      crest: "#a47252",
+      body: "#87523c",
+      accent: "#643726",
+      crest: "#ac7657",
     },
     shape: "croc-runner",
+    renderScale: 0.88,
   },
   {
     id: "stegosaurus",
@@ -132,11 +135,12 @@ const DINOSAURS = [
       [2, 2],
     ],
     palette: {
-      body: "#a56939",
-      accent: "#7d471f",
-      crest: "#cf8b52",
+      body: "#b06d3f",
+      accent: "#7b4620",
+      crest: "#da9158",
     },
     shape: "stego",
+    renderScale: 0.96,
   },
   {
     id: "brachiosaurus",
@@ -151,11 +155,12 @@ const DINOSAURS = [
       [4, 4],
     ],
     palette: {
-      body: "#7d6f4f",
-      accent: "#594d35",
-      crest: "#b49f72",
+      body: "#8a7b58",
+      accent: "#5c5038",
+      crest: "#b9a376",
     },
     shape: "sauropod",
+    renderScale: 1.08,
   },
   {
     id: "allosaurus",
@@ -170,11 +175,12 @@ const DINOSAURS = [
       [2, 4],
     ],
     palette: {
-      body: "#8a3f2d",
-      accent: "#63291c",
-      crest: "#d45a31",
+      body: "#944632",
+      accent: "#662a1d",
+      crest: "#d85c35",
     },
     shape: "tyrant",
+    renderScale: 1.0,
   },
   {
     id: "parasaurolophus",
@@ -189,11 +195,12 @@ const DINOSAURS = [
       [2, 2],
     ],
     palette: {
-      body: "#5f8c6d",
-      accent: "#3a5f49",
-      crest: "#d5b35b",
+      body: "#618f70",
+      accent: "#3d644d",
+      crest: "#dfbb60",
     },
     shape: "hadrosaur",
+    renderScale: 0.9,
   },
   {
     id: "triceratops",
@@ -208,11 +215,12 @@ const DINOSAURS = [
       [4, 1],
     ],
     palette: {
-      body: "#7f6947",
-      accent: "#4d3a24",
-      crest: "#b59058",
+      body: "#866f4b",
+      accent: "#523d25",
+      crest: "#bb945a",
     },
     shape: "ceratopsian",
+    renderScale: 0.98,
   },
   {
     id: "tyrannosaurus",
@@ -227,21 +235,137 @@ const DINOSAURS = [
       [4, 0],
     ],
     palette: {
-      body: "#7a3328",
-      accent: "#4b1b15",
-      crest: "#c45d3f",
+      body: "#7c3529",
+      accent: "#4d1c16",
+      crest: "#c86041",
     },
     shape: "tyrant",
+    renderScale: 1.08,
   },
 ];
 
 const STORAGE_KEY = "dino-safari-tribute-state-v1";
+const SCENE_BUFFER_WIDTH = 480;
+const SCENE_BUFFER_HEIGHT = 300;
+
+const BIOME_PALETTES = {
+  fern: {
+    skyTop: "#8fb3e6",
+    skyBottom: "#dee6f8",
+    haze: "#f6fbff",
+    glow: "#fff6d6",
+    ridge: "#6c8694",
+    ridgeShadow: "#4e6570",
+    midDark: "#39542f",
+    midLight: "#708767",
+    groundTop: "#95ab49",
+    groundBottom: "#4f6121",
+    grass: "#8cab44",
+    grassDark: "#475b1f",
+    water: "#85a7b3",
+    rock: "#72674d",
+    bark: "#6d5e46",
+  },
+  woodland: {
+    skyTop: "#7ea0d4",
+    skyBottom: "#d3e0f0",
+    haze: "#edf7ff",
+    glow: "#fff1c8",
+    ridge: "#61778c",
+    ridgeShadow: "#465b6b",
+    midDark: "#314925",
+    midLight: "#5f7957",
+    groundTop: "#8ca546",
+    groundBottom: "#45531b",
+    grass: "#84a13f",
+    grassDark: "#3b4d18",
+    water: "#7ba1ad",
+    rock: "#6b614f",
+    bark: "#5e5037",
+  },
+  coast: {
+    skyTop: "#88addf",
+    skyBottom: "#e3ecfa",
+    haze: "#f7fbff",
+    glow: "#fff4d5",
+    ridge: "#89a6bf",
+    ridgeShadow: "#617b94",
+    midDark: "#3c5c4b",
+    midLight: "#7fa396",
+    groundTop: "#c5b56f",
+    groundBottom: "#62552f",
+    grass: "#b79d4f",
+    grassDark: "#675727",
+    water: "#6a99c6",
+    rock: "#8f8a73",
+    bark: "#67583e",
+  },
+  marsh: {
+    skyTop: "#93a8d0",
+    skyBottom: "#dfe7f2",
+    haze: "#f4fbf5",
+    glow: "#fff8d7",
+    ridge: "#667d74",
+    ridgeShadow: "#4d6059",
+    midDark: "#415132",
+    midLight: "#738a60",
+    groundTop: "#7f8d56",
+    groundBottom: "#3a3d25",
+    grass: "#7b8c50",
+    grassDark: "#3c4625",
+    water: "#6f94a0",
+    rock: "#625b48",
+    bark: "#584b35",
+  },
+  badlands: {
+    skyTop: "#97a8c9",
+    skyBottom: "#e4d7c1",
+    haze: "#fff5ea",
+    glow: "#ffe6c0",
+    ridge: "#9e7254",
+    ridgeShadow: "#6f4c36",
+    midDark: "#755032",
+    midLight: "#bb895f",
+    groundTop: "#ad8b4c",
+    groundBottom: "#5d4528",
+    grass: "#987540",
+    grassDark: "#5a4124",
+    water: "#84a3ae",
+    rock: "#8f6646",
+    bark: "#6d5037",
+  },
+  volcanic: {
+    skyTop: "#a56f4c",
+    skyBottom: "#d5b58a",
+    haze: "#f8e0c5",
+    glow: "#ffddae",
+    ridge: "#6d514c",
+    ridgeShadow: "#453432",
+    midDark: "#3e2e2c",
+    midLight: "#8b6658",
+    groundTop: "#7f5b32",
+    groundBottom: "#30211e",
+    grass: "#6f5a31",
+    grassDark: "#2d221c",
+    water: "#737f87",
+    rock: "#734e42",
+    bark: "#4f3b36",
+  },
+};
+
+const PERIOD_TINTS = {
+  triassic: "#d6aa72",
+  jurassic: "#7ca4d5",
+  cretaceous: "#e0bc72",
+};
 
 const state = {
   periodId: "jurassic",
   x: 0,
   y: 0,
   visibleDinoId: null,
+  contactDinoId: null,
+  contactVisible: false,
   captured: new Set(),
   log: [],
   encounterToken: 0,
@@ -254,15 +378,14 @@ const elements = {
   targetDino: document.getElementById("target-dino"),
   targetHint: document.getElementById("target-hint"),
   viewport: document.getElementById("viewport"),
-  farLayer: document.getElementById("far-layer"),
-  midLayer: document.getElementById("mid-layer"),
-  groundLayer: document.getElementById("ground-layer"),
-  dinoStage: document.getElementById("dino-stage"),
+  sceneCanvas: document.getElementById("scene-canvas"),
+  sceneNameplate: document.getElementById("scene-nameplate"),
   flashOverlay: document.getElementById("flash-overlay"),
   messageBanner: document.getElementById("message-banner"),
   contactName: document.getElementById("contact-name"),
   contactStatus: document.getElementById("contact-status"),
   silhouetteCard: document.getElementById("silhouette-card"),
+  contactCanvas: document.getElementById("contact-canvas"),
   signalValue: document.getElementById("signal-value"),
   signalFill: document.getElementById("signal-fill"),
   coordinates: document.getElementById("coordinates"),
@@ -299,14 +422,18 @@ const dinoById = DINOSAURS.reduce((accumulator, dino) => {
   return accumulator;
 }, {});
 
+const guidePreviewCache = new Map();
+const renderer = createRetroRenderer();
+
 init();
 
 function init() {
   loadSavedProgress();
   renderPeriodButtons();
   bindEvents();
+  renderer.start();
   setPeriod(state.periodId, true, true);
-  addLog("Field rig online. Gate calibration complete.");
+  addLog("Field rig online. Render grid calibrated.");
 }
 
 function renderPeriodButtons() {
@@ -343,7 +470,9 @@ function bindEvents() {
   buttons.photo.addEventListener("click", takePhoto);
   buttons.guide.addEventListener("click", () => {
     renderGuide();
-    elements.guideDialog.showModal();
+    if (!elements.guideDialog.open) {
+      elements.guideDialog.showModal();
+    }
   });
   buttons.closeGuide.addEventListener("click", () => elements.guideDialog.close());
   buttons.journal.addEventListener("click", () => {
@@ -394,13 +523,14 @@ function setPeriod(periodId, force = false, preservePosition = false) {
     state.y = 0;
   }
   state.visibleDinoId = null;
+  state.contactDinoId = null;
+  state.contactVisible = false;
 
   Array.from(elements.periodSwitcher.children).forEach((button) => {
     button.classList.toggle("is-active", button.dataset.period === periodId);
   });
 
-  const period = currentPeriod();
-  addLog(`Temporal gate shifted to the ${period.name}.`);
+  addLog(`Temporal gate shifted to the ${currentPeriod().name}.`);
   persistState();
   renderScene();
   queueEncounter(true);
@@ -452,11 +582,11 @@ function queueEncounter(isPeriodChange) {
 
     state.visibleDinoId = matchingDino.id;
     renderStatus(matchingDino);
-    renderDino();
+    renderScene();
     updateMessage(`${matchingDino.name} entered the clearing. Take the shot now.`);
     addLog(`${matchingDino.name} sighted at ${locationName()}.`);
     playTone("encounter");
-  }, isPeriodChange ? 500 : 650);
+  }, isPeriodChange ? 420 : 620);
 }
 
 function scanArea() {
@@ -505,8 +635,8 @@ function takePhoto() {
   state.captured.add(dino.id);
 
   triggerFlash();
-  renderGuide();
   renderCaptureStrip();
+  renderGuide();
   renderStatus(dino);
 
   updateMessage(
@@ -522,62 +652,48 @@ function takePhoto() {
 function renderScene() {
   const period = currentPeriod();
   const biome = currentBiome();
-  const nearest = nearestDinoForPeriod();
+  const target = nextTargetForPeriod();
 
   elements.scenePeriod.textContent = period.label;
   elements.sceneLocation.textContent = locationName();
   elements.viewport.dataset.biome = biome;
   elements.coordinates.textContent = `X ${state.x + 1} / Y ${state.y + 1}`;
-
-  const target = nextTargetForPeriod();
   elements.targetDino.textContent = target ? target.name : "Era complete";
   elements.targetHint.textContent = target ? target.hint : "Every animal in this age has been photographed.";
 
-  paintSceneLayers(period.id, biome);
-  renderDino();
-  renderRadar(nearest);
+  renderRadar();
   renderCaptureStrip();
-  renderGuide();
-}
-
-function renderDino() {
-  elements.dinoStage.innerHTML = "";
-
-  if (!state.visibleDinoId) {
-    return;
+  if (elements.guideDialog.open) {
+    renderGuide();
   }
-
-  const dino = dinoById[state.visibleDinoId];
-  const art = createDinoMarkup(dino, false);
-  elements.dinoStage.innerHTML = `
-    <div class="dino is-visible">${art}</div>
-    <div class="dino-label">${dino.name}</div>
-  `;
+  updateSceneNameplate();
 }
 
 function renderStatus(referenceDino) {
   const visible = state.visibleDinoId ? dinoById[state.visibleDinoId] : null;
-  const dino = visible || referenceDino;
+  const dino = visible || referenceDino || null;
   const signal = dino ? signalPercent(dino) : 12;
+
+  state.contactDinoId = dino ? dino.id : null;
+  state.contactVisible = Boolean(visible);
 
   if (!dino) {
     elements.contactName.textContent = "No dinosaur visible";
     elements.contactStatus.textContent = "Searching";
-    elements.silhouetteCard.innerHTML = `<p>Keep moving. The next clearing could hold a surprise.</p>`;
   } else {
     elements.contactName.textContent = visible ? dino.name : `Possible ${dino.name}`;
     elements.contactStatus.textContent = visible ? "Visible" : "Tracking";
-    elements.silhouetteCard.innerHTML = createDinoMarkup(dino, true);
   }
 
   elements.signalFill.style.width = `${signal}%`;
   elements.signalValue.textContent = `${signal}%`;
   elements.captureCount.textContent = `${state.captured.size} / ${DINOSAURS.length} captured`;
-  elements.radarHint.textContent = radarHint(referenceDino || visible);
+  elements.radarHint.textContent = radarHint(visible || referenceDino);
+  updateSceneNameplate();
 }
 
-function renderRadar(referenceDino) {
-  const nearest = referenceDino || nearestDinoForPeriod();
+function renderRadar() {
+  const nearest = nearestDinoForPeriod();
   elements.radarGrid.innerHTML = "";
 
   for (let y = 0; y < 5; y += 1) {
@@ -627,7 +743,9 @@ function renderGuide() {
     entry.className = "guide-entry bevel-inset";
     entry.classList.toggle("is-missing", !captured);
     entry.innerHTML = `
-      <div class="guide-art">${createDinoMarkup(dino, !captured)}</div>
+      <div class="guide-art">
+        <img src="${guidePreviewSource(dino, captured)}" alt="${captured ? dino.name : "Unknown species"} preview" />
+      </div>
       <div>
         <p class="period-badge">${labelForPeriod(dino.period)}</p>
         <h3>${captured ? dino.name : "Unknown Species"}</h3>
@@ -640,6 +758,14 @@ function renderGuide() {
   });
 }
 
+function guidePreviewSource(dino, captured) {
+  const key = `${dino.id}:${captured ? "full" : "locked"}`;
+  if (!guidePreviewCache.has(key)) {
+    guidePreviewCache.set(key, renderer.renderGuidePreview(dino, captured));
+  }
+  return guidePreviewCache.get(key);
+}
+
 function renderLog() {
   elements.logList.innerHTML = "";
 
@@ -648,6 +774,17 @@ function renderLog() {
     li.textContent = item;
     elements.logList.append(li);
   });
+}
+
+function updateSceneNameplate() {
+  if (!state.visibleDinoId) {
+    elements.sceneNameplate.textContent = "";
+    elements.sceneNameplate.classList.remove("is-visible");
+    return;
+  }
+
+  elements.sceneNameplate.textContent = dinoById[state.visibleDinoId].name;
+  elements.sceneNameplate.classList.add("is-visible");
 }
 
 function currentPeriod() {
@@ -715,16 +852,13 @@ function nextTargetForPeriod() {
 
 function signalPercent(dino) {
   const distance = nearestEncounterDistance(dino);
-  const percent = 100 - distance * 22;
-  return clamp(percent, 12, 100);
+  return clamp(100 - distance * 22, 12, 100);
 }
 
 function directionHint(dino) {
   const [coordX, coordY] = nearestCoordinate(dino);
-
   const vertical = coordY < state.y ? "north" : coordY > state.y ? "south" : "";
   const horizontal = coordX < state.x ? "west" : coordX > state.x ? "east" : "";
-
   return [vertical, horizontal].filter(Boolean).join("-") || "right here";
 }
 
@@ -768,161 +902,6 @@ function triggerFlash() {
   elements.flashOverlay.classList.add("is-active");
 }
 
-function createDinoMarkup(dino, silhouetteOnly) {
-  const fill = silhouetteOnly ? "#12100f" : dino.palette.body;
-  const accent = silhouetteOnly ? "#12100f" : dino.palette.accent;
-  const crest = silhouetteOnly ? "#12100f" : dino.palette.crest;
-  const shapeFns = {
-    tyrant: tyrantSvg,
-    stego: stegoSvg,
-    sauropod: sauropodSvg,
-    hadrosaur: hadrosaurSvg,
-    ceratopsian: ceratopsianSvg,
-    runner: runnerSvg,
-    "croc-runner": crocRunnerSvg,
-  };
-
-  return shapeFns[dino.shape]({ fill, accent, crest });
-}
-
-function tyrantSvg({ fill, accent, crest }) {
-  return `
-    <svg viewBox="0 0 280 180" role="img" aria-label="Theropod">
-      <path fill="${fill}" d="M48 132c18-25 39-43 66-52l39-10 24-24 41 4 24 17-6 16-19 2-8-7-16 5-15 17-28 15-26 8-2 43h-17l-2-35-16 4-7 31H85l5-31-23 5-18 14H26l22-22z"/>
-      <path fill="${accent}" d="M176 73l33-2-14 11-18 4z"/>
-      <circle cx="214" cy="65" r="3" fill="${crest}" />
-      <path fill="${crest}" d="M92 88l23 9-22 10z"/>
-    </svg>
-  `;
-}
-
-function stegoSvg({ fill, accent, crest }) {
-  return `
-    <svg viewBox="0 0 280 180" role="img" aria-label="Stegosaur">
-      <path fill="${fill}" d="M42 116c16-17 43-29 84-29h36l22 9 27 17-4 14h-21l-11-7-12 41h-14l3-37h-31l-10 37H98l8-39-21-1-8 40H64l1-34-20 1-16 15H14l19-24z"/>
-      <path fill="${crest}" d="M90 88l10-28 14 28zm26-4l11-30 16 31zm32 0l9-26 13 28zm27 4l7-22 12 24z"/>
-      <path fill="${accent}" d="M210 112l34 14-13 9-28-10z"/>
-    </svg>
-  `;
-}
-
-function sauropodSvg({ fill, accent, crest }) {
-  return `
-    <svg viewBox="0 0 280 180" role="img" aria-label="Sauropod">
-      <path fill="${fill}" d="M39 118c18-21 36-32 65-36l53-1 12-34 15-24 16 1-4 21-12 16-4 34 12 17 3 36h-15l-8-33-52-5-2 40h-14l-5-39-32 4-5 35H60l1-34-20 0-16 13H12l27-26z"/>
-      <path fill="${accent}" d="M172 48l15 0-2 18-17 14 2-20z"/>
-      <circle cx="193" cy="25" r="3" fill="${crest}" />
-    </svg>
-  `;
-}
-
-function hadrosaurSvg({ fill, accent, crest }) {
-  return `
-    <svg viewBox="0 0 280 180" role="img" aria-label="Hadrosaur">
-      <path fill="${fill}" d="M45 121c16-20 37-34 73-41l45-5 17-23 28 1 16 14-4 15-20 4-8-5-8 4-12 12 11 25 1 38h-15l-7-34-41-2-3 36h-14l-4-36-28 4-6 32H69l2-31-22 2-16 13H19l26-23z"/>
-      <path fill="${crest}" d="M194 49c6-16 12-20 18-20 8 0 15 7 15 16 0 9-8 12-17 12h-18z"/>
-      <path fill="${accent}" d="M121 86l42-5-32 24z"/>
-    </svg>
-  `;
-}
-
-function ceratopsianSvg({ fill, accent, crest }) {
-  return `
-    <svg viewBox="0 0 280 180" role="img" aria-label="Ceratopsian">
-      <path fill="${fill}" d="M37 121c13-20 39-35 73-35h47l25-17 27 8 13 19-3 12-16 3-9-8-17 0-13 17-15 7 1 34h-15l-4-31-34-1-8 32h-15l2-32-25 0-8 32H58l0-30-18 0-14 12H14l23-22z"/>
-      <path fill="${crest}" d="M175 73l24-21 21 4 13 18-12 7-17-3z"/>
-      <path fill="${accent}" d="M201 82l13 16-7 8-16-18zm-18-5l-9 25-6-24z"/>
-      <circle cx="210" cy="74" r="3" fill="${fill}" />
-    </svg>
-  `;
-}
-
-function runnerSvg({ fill, accent, crest }) {
-  return `
-    <svg viewBox="0 0 280 180" role="img" aria-label="Runner">
-      <path fill="${fill}" d="M58 131c13-22 27-38 48-50l29-9 18-20 29 2 17 12-3 11-15 3-6-4-8 3-10 12-21 15-12 20 0 35h-11l-6-27-11 4-7 24H98l5-28-12 8-17 20H58l12-28-17 17H39l19-20z"/>
-      <path fill="${accent}" d="M149 79l26 0-11 8-16 5z"/>
-      <circle cx="182" cy="62" r="2.5" fill="${crest}" />
-    </svg>
-  `;
-}
-
-function crocRunnerSvg({ fill, accent, crest }) {
-  return `
-    <svg viewBox="0 0 280 180" role="img" aria-label="Pseudosuchian">
-      <path fill="${fill}" d="M36 128c17-15 39-28 73-34l56-4 25-15 37 3 13 13-5 10-18 2-8-4-16 4-17 13-33 12-5 33h-13l-2-31-32-2-5 33H79l2-32-23 3-10 26H35l8-24-22 17H11l25-23z"/>
-      <path fill="${accent}" d="M192 86l28 1-15 9-18 2z"/>
-      <path fill="${crest}" d="M92 98l18-14 20 8-13 11z"/>
-      <circle cx="218" cy="85" r="2.5" fill="${fill}" />
-    </svg>
-  `;
-}
-
-function paintSceneLayers(periodId, biome) {
-  const farPatterns = {
-    fern: `
-      radial-gradient(circle at 12% 100%, rgba(44, 79, 48, 0.95), transparent 20%),
-      radial-gradient(circle at 38% 100%, rgba(56, 90, 48, 0.92), transparent 22%),
-      radial-gradient(circle at 76% 100%, rgba(49, 82, 43, 0.9), transparent 18%)
-    `,
-    woodland: `
-      linear-gradient(90deg, rgba(43, 69, 39, 0.88) 0 7%, transparent 7% 11%, rgba(53, 79, 43, 0.82) 11% 16%, transparent 16% 20%, rgba(40, 63, 35, 0.88) 20% 27%, transparent 27% 35%, rgba(48, 76, 42, 0.88) 35% 42%, transparent 42% 48%, rgba(39, 66, 36, 0.9) 48% 56%, transparent 56% 62%, rgba(45, 70, 38, 0.88) 62% 69%, transparent 69% 76%, rgba(44, 69, 41, 0.88) 76% 83%, transparent 83% 100%)
-    `,
-    coast: `
-      linear-gradient(180deg, rgba(123, 151, 188, 0.7) 0%, rgba(189, 212, 228, 0.9) 78%, rgba(212, 225, 235, 0.6) 100%),
-      linear-gradient(90deg, rgba(91, 122, 146, 0.58) 0 18%, transparent 18% 28%, rgba(91, 122, 146, 0.55) 28% 48%, transparent 48% 58%, rgba(91, 122, 146, 0.56) 58% 72%, transparent 72% 100%)
-    `,
-    marsh: `
-      radial-gradient(circle at 20% 100%, rgba(75, 88, 52, 0.95), transparent 22%),
-      radial-gradient(circle at 52% 100%, rgba(64, 82, 52, 0.9), transparent 22%),
-      radial-gradient(circle at 82% 100%, rgba(85, 101, 63, 0.9), transparent 18%)
-    `,
-    badlands: `
-      linear-gradient(180deg, rgba(141, 99, 70, 0.72) 0%, rgba(173, 125, 79, 0.92) 78%, rgba(103, 76, 49, 0.84) 100%),
-      linear-gradient(90deg, rgba(112, 75, 44, 0.66) 0 20%, transparent 20% 36%, rgba(130, 92, 56, 0.62) 36% 56%, transparent 56% 70%, rgba(120, 81, 50, 0.62) 70% 90%, transparent 90% 100%)
-    `,
-    volcanic: `
-      radial-gradient(circle at 18% 100%, rgba(67, 55, 52, 1), transparent 18%),
-      radial-gradient(circle at 44% 100%, rgba(84, 64, 57, 0.95), transparent 23%),
-      radial-gradient(circle at 80% 100%, rgba(61, 47, 45, 0.94), transparent 18%)
-    `,
-  };
-
-  const midPatterns = {
-    fern: `
-      linear-gradient(90deg, rgba(51, 104, 53, 0.94) 0 5%, transparent 5% 9%, rgba(67, 123, 68, 0.94) 9% 16%, transparent 16% 24%, rgba(58, 118, 61, 0.94) 24% 30%, transparent 30% 38%, rgba(61, 110, 54, 0.94) 38% 45%, transparent 45% 52%, rgba(62, 117, 59, 0.94) 52% 58%, transparent 58% 64%, rgba(49, 103, 51, 0.95) 64% 72%, transparent 72% 80%, rgba(70, 119, 58, 0.95) 80% 89%, transparent 89% 100%)
-    `,
-    woodland: `
-      linear-gradient(90deg, rgba(46, 66, 35, 0.94) 0 4%, transparent 4% 14%, rgba(41, 59, 31, 0.94) 14% 18%, transparent 18% 30%, rgba(47, 66, 35, 0.96) 30% 34%, transparent 34% 45%, rgba(41, 59, 31, 0.94) 45% 50%, transparent 50% 62%, rgba(44, 62, 32, 0.96) 62% 66%, transparent 66% 78%, rgba(47, 66, 35, 0.94) 78% 82%, transparent 82% 94%, rgba(39, 55, 30, 0.94) 94% 100%),
-      radial-gradient(circle at 22% 10%, rgba(67, 111, 59, 0.9), transparent 12%),
-      radial-gradient(circle at 58% 18%, rgba(67, 111, 59, 0.82), transparent 16%),
-      radial-gradient(circle at 82% 12%, rgba(73, 117, 64, 0.82), transparent 14%)
-    `,
-    coast: `
-      linear-gradient(180deg, rgba(153, 191, 212, 0.92) 0%, rgba(116, 154, 179, 0.84) 60%, rgba(110, 138, 152, 0.66) 100%),
-      linear-gradient(90deg, rgba(98, 134, 155, 0.52) 0 12%, transparent 12% 24%, rgba(98, 134, 155, 0.5) 24% 38%, transparent 38% 48%, rgba(98, 134, 155, 0.52) 48% 61%, transparent 61% 72%, rgba(98, 134, 155, 0.5) 72% 86%, transparent 86% 100%)
-    `,
-    marsh: `
-      linear-gradient(90deg, rgba(70, 98, 54, 0.94) 0 8%, transparent 8% 15%, rgba(90, 117, 62, 0.94) 15% 19%, transparent 19% 28%, rgba(77, 106, 57, 0.94) 28% 34%, transparent 34% 44%, rgba(70, 98, 54, 0.94) 44% 50%, transparent 50% 62%, rgba(90, 117, 62, 0.94) 62% 67%, transparent 67% 78%, rgba(77, 106, 57, 0.94) 78% 84%, transparent 84% 100%)
-    `,
-    badlands: `
-      linear-gradient(90deg, rgba(143, 98, 56, 0.94) 0 8%, transparent 8% 18%, rgba(173, 123, 74, 0.94) 18% 29%, transparent 29% 40%, rgba(136, 93, 54, 0.94) 40% 52%, transparent 52% 62%, rgba(160, 111, 67, 0.94) 62% 74%, transparent 74% 86%, rgba(133, 94, 56, 0.94) 86% 100%)
-    `,
-    volcanic: `
-      linear-gradient(90deg, rgba(77, 55, 52, 0.94) 0 15%, transparent 15% 28%, rgba(99, 71, 61, 0.94) 28% 46%, transparent 46% 58%, rgba(84, 60, 55, 0.94) 58% 74%, transparent 74% 86%, rgba(67, 48, 47, 0.94) 86% 100%)
-    `,
-  };
-
-  const horizonByPeriod = {
-    triassic: "linear-gradient(180deg, rgba(206, 167, 116, 0.22) 0%, rgba(126, 86, 50, 0.52) 100%)",
-    jurassic: "linear-gradient(180deg, rgba(173, 199, 227, 0.2) 0%, rgba(99, 129, 151, 0.35) 100%)",
-    cretaceous: "linear-gradient(180deg, rgba(226, 200, 136, 0.24) 0%, rgba(124, 110, 78, 0.36) 100%)",
-  };
-
-  elements.farLayer.style.background = `${horizonByPeriod[periodId]}, ${farPatterns[biome] || farPatterns.fern}`;
-  elements.midLayer.style.background = midPatterns[biome] || midPatterns.fern;
-}
-
 function playTone(type) {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) {
@@ -936,9 +915,9 @@ function playTone(type) {
   gain.connect(audioContext.destination);
 
   const profiles = {
-    scan: { frequency: 480, endFrequency: 660, duration: 0.16, wave: "triangle" },
-    photo: { frequency: 820, endFrequency: 220, duration: 0.22, wave: "square" },
-    encounter: { frequency: 120, endFrequency: 80, duration: 0.55, wave: "sawtooth" },
+    scan: { frequency: 460, endFrequency: 640, duration: 0.16, wave: "triangle" },
+    photo: { frequency: 880, endFrequency: 260, duration: 0.22, wave: "square" },
+    encounter: { frequency: 140, endFrequency: 92, duration: 0.55, wave: "sawtooth" },
     blocked: { frequency: 220, endFrequency: 170, duration: 0.12, wave: "square" },
   };
 
@@ -957,18 +936,6 @@ function playTone(type) {
   oscillator.start();
   oscillator.stop(audioContext.currentTime + profile.duration);
   oscillator.addEventListener("ended", () => audioContext.close());
-}
-
-function labelForPeriod(periodId) {
-  return byPeriod[periodId].name;
-}
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function manhattanDistance(x1, y1, x2, y2) {
-  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 }
 
 function loadSavedProgress() {
@@ -1024,4 +991,1028 @@ function persistState() {
   } catch (error) {
     return;
   }
+}
+
+function labelForPeriod(periodId) {
+  return byPeriod[periodId].name;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function manhattanDistance(x1, y1, x2, y2) {
+  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+}
+
+function createRetroRenderer() {
+  const sceneOutputContext = elements.sceneCanvas.getContext("2d");
+  const sceneBuffer = document.createElement("canvas");
+  sceneBuffer.width = SCENE_BUFFER_WIDTH;
+  sceneBuffer.height = SCENE_BUFFER_HEIGHT;
+  const sceneContext = sceneBuffer.getContext("2d");
+
+  const contactOutputContext = elements.contactCanvas.getContext("2d");
+  const contactBuffer = document.createElement("canvas");
+  contactBuffer.width = 210;
+  contactBuffer.height = 120;
+  const contactContext = contactBuffer.getContext("2d");
+
+  let animationFrameId = 0;
+
+  function start() {
+    if (animationFrameId) {
+      return;
+    }
+
+    const tick = (time) => {
+      drawSceneFrame(sceneContext, time);
+      blitBuffer(sceneOutputContext, sceneBuffer, elements.sceneCanvas);
+
+      drawContactFrame(contactContext, time);
+      blitBuffer(contactOutputContext, contactBuffer, elements.contactCanvas);
+
+      animationFrameId = window.requestAnimationFrame(tick);
+    };
+
+    animationFrameId = window.requestAnimationFrame(tick);
+  }
+
+  function renderGuidePreview(dino, captured) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 220;
+    canvas.height = 132;
+    const context = canvas.getContext("2d");
+    drawGuidePreviewFrame(context, dino, captured);
+    return canvas.toDataURL();
+  }
+
+  return {
+    renderGuidePreview,
+    start,
+  };
+}
+
+function blitBuffer(outputContext, buffer, canvas) {
+  outputContext.imageSmoothingEnabled = false;
+  outputContext.clearRect(0, 0, canvas.width, canvas.height);
+  outputContext.drawImage(buffer, 0, 0, canvas.width, canvas.height);
+}
+
+function drawSceneFrame(context, time) {
+  const biome = currentBiome();
+  const palette = scenePalette(state.periodId, biome);
+  const seed = hashString(`${state.periodId}:${state.x}:${state.y}`);
+  const rng = mulberry32(seed);
+  const horizonY = biome === "coast" ? 150 : biome === "marsh" ? 158 : 166;
+
+  context.clearRect(0, 0, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
+
+  drawSky(context, palette, rng, horizonY, time, biome);
+  drawFarTerrain(context, palette, rng, horizonY, biome, time);
+  drawMidground(context, palette, rng, horizonY, biome, time);
+  drawGround(context, palette, rng, horizonY, biome, time);
+
+  if (state.visibleDinoId) {
+    const dino = dinoById[state.visibleDinoId];
+    const placement = scenePlacement(dino, biome, seed);
+    drawDinosaur(context, dino, placement, {
+      lighting: palette,
+      monochrome: false,
+      phase: time * 0.0024 + seed * 0.001,
+    });
+  }
+
+  drawForeground(context, palette, rng, horizonY, biome, time);
+  drawNoise(context, seed, time);
+}
+
+function drawContactFrame(context, time) {
+  context.clearRect(0, 0, 210, 120);
+
+  const background = context.createLinearGradient(0, 0, 0, 120);
+  background.addColorStop(0, "#f5f0e7");
+  background.addColorStop(1, "#e5ddd0");
+  context.fillStyle = background;
+  context.fillRect(0, 0, 210, 120);
+
+  context.fillStyle = "rgba(0, 0, 0, 0.06)";
+  context.fillRect(0, 88, 210, 32);
+
+  if (!state.contactDinoId) {
+    context.fillStyle = "rgba(32, 24, 18, 0.3)";
+    context.font = '11px "Geneva", "Verdana", sans-serif';
+    context.fillText("No specimen locked", 16, 68);
+    return;
+  }
+
+  const dino = dinoById[state.contactDinoId];
+  const palette = {
+    body: state.contactVisible ? "#181412" : "#4e463f",
+    accent: state.contactVisible ? "#181412" : "#4e463f",
+    crest: state.contactVisible ? "#181412" : "#4e463f",
+    shadow: "#000000",
+  };
+
+  drawDinosaur(context, { ...dino, palette }, {
+    x: 104,
+    y: 84,
+    scale: previewScaleForShape(dino.shape) * 0.82,
+  }, {
+    lighting: null,
+    monochrome: true,
+    phase: time * 0.0018,
+    shadowOpacity: 0.08,
+    preview: true,
+  });
+}
+
+function drawGuidePreviewFrame(context, dino, captured) {
+  const palette = scenePalette(dino.period, dino.period === "triassic" ? "badlands" : dino.period === "jurassic" ? "fern" : "woodland");
+  const gradient = context.createLinearGradient(0, 0, 0, 132);
+  gradient.addColorStop(0, mixColor(palette.skyTop, "#ffffff", 0.14));
+  gradient.addColorStop(1, mixColor(palette.groundBottom, "#27211a", 0.15));
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 220, 132);
+
+  context.fillStyle = "rgba(255, 255, 255, 0.18)";
+  context.fillRect(0, 0, 220, 64);
+
+  const previewPalette = captured
+    ? dino.palette
+    : {
+        body: "#181412",
+        accent: "#181412",
+        crest: "#181412",
+      };
+
+  drawDinosaur(context, { ...dino, palette: previewPalette }, {
+    x: 110,
+    y: 100,
+    scale: previewScaleForShape(dino.shape),
+  }, {
+    lighting: palette,
+    monochrome: !captured,
+    phase: 0.4,
+    shadowOpacity: 0.1,
+    preview: true,
+  });
+
+  context.fillStyle = "rgba(20, 15, 11, 0.16)";
+  context.fillRect(0, 108, 220, 24);
+}
+
+function scenePalette(periodId, biome) {
+  const base = BIOME_PALETTES[biome] || BIOME_PALETTES.fern;
+  const tint = PERIOD_TINTS[periodId] || PERIOD_TINTS.jurassic;
+
+  return {
+    skyTop: mixColor(base.skyTop, tint, 0.12),
+    skyBottom: mixColor(base.skyBottom, tint, 0.06),
+    haze: mixColor(base.haze, "#ffffff", 0.25),
+    glow: mixColor(base.glow, tint, 0.1),
+    ridge: mixColor(base.ridge, tint, 0.08),
+    ridgeShadow: mixColor(base.ridgeShadow, tint, 0.06),
+    midDark: mixColor(base.midDark, tint, 0.05),
+    midLight: mixColor(base.midLight, tint, 0.08),
+    groundTop: mixColor(base.groundTop, tint, 0.08),
+    groundBottom: mixColor(base.groundBottom, tint, 0.04),
+    grass: base.grass,
+    grassDark: base.grassDark,
+    water: base.water,
+    rock: base.rock,
+    bark: base.bark,
+  };
+}
+
+function drawSky(context, palette, rng, horizonY, time, biome) {
+  const skyGradient = context.createLinearGradient(0, 0, 0, horizonY + 26);
+  skyGradient.addColorStop(0, palette.skyTop);
+  skyGradient.addColorStop(0.55, mixColor(palette.skyBottom, "#ffffff", 0.12));
+  skyGradient.addColorStop(1, palette.skyBottom);
+  context.fillStyle = skyGradient;
+  context.fillRect(0, 0, SCENE_BUFFER_WIDTH, horizonY + 30);
+
+  const glowX = 80 + rng() * 260;
+  const glowY = 42 + rng() * 24;
+  drawSoftCircle(context, glowX, glowY, 52, withAlpha(palette.glow, biome === "volcanic" ? 0.2 : 0.3));
+
+  if (biome === "volcanic") {
+    for (let index = 0; index < 4; index += 1) {
+      const smokeX = 80 + index * 100 + Math.sin(time * 0.00022 + index) * 6;
+      const smokeY = 40 + index * 6;
+      drawSoftCloud(context, smokeX, smokeY, 70, 28, "rgba(110, 84, 72, 0.22)", 5);
+    }
+    return;
+  }
+
+  for (let index = 0; index < 6; index += 1) {
+    const cloudX = -40 + index * 96 + Math.sin(time * 0.00018 + index * 0.8) * 12;
+    const cloudY = 26 + (index % 3) * 16 + rng() * 12;
+    drawSoftCloud(context, cloudX, cloudY, 96 + rng() * 26, 26 + rng() * 14, "rgba(255, 255, 255, 0.52)", 6);
+  }
+}
+
+function drawFarTerrain(context, palette, rng, horizonY, biome, time) {
+  if (biome === "coast") {
+    const waterGradient = context.createLinearGradient(0, horizonY - 2, 0, horizonY + 34);
+    waterGradient.addColorStop(0, mixColor(palette.water, "#ffffff", 0.26));
+    waterGradient.addColorStop(1, mixColor(palette.water, "#243546", 0.16));
+    context.fillStyle = waterGradient;
+    context.fillRect(0, horizonY - 2, SCENE_BUFFER_WIDTH, 34);
+  }
+
+  drawRidgeLayer(context, horizonY - 8, 42, mixColor(palette.ridge, "#ffffff", 0.08), rng, 0.8, time * 0.00006);
+  drawRidgeLayer(context, horizonY + 8, 24, palette.ridgeShadow, rng, 1.2, time * 0.00009);
+
+  context.fillStyle = withAlpha(palette.haze, 0.6);
+  context.fillRect(0, horizonY - 2, SCENE_BUFFER_WIDTH, 34);
+}
+
+function drawMidground(context, palette, rng, horizonY, biome, time) {
+  if (biome === "woodland" || biome === "fern") {
+    drawForestBand(context, palette, horizonY + 6, rng, biome === "woodland" ? 15 : 11, time);
+    return;
+  }
+
+  if (biome === "marsh") {
+    drawReedBand(context, palette, horizonY + 12, rng, time);
+    drawPools(context, palette, horizonY + 16, rng);
+    return;
+  }
+
+  if (biome === "badlands" || biome === "volcanic") {
+    drawMesaBand(context, palette, horizonY + 8, rng, biome === "volcanic");
+    return;
+  }
+
+  if (biome === "coast") {
+    drawCoastalBand(context, palette, horizonY + 10, rng, time);
+  }
+}
+
+function drawGround(context, palette, rng, horizonY, biome, time) {
+  const groundGradient = context.createLinearGradient(0, horizonY, 0, SCENE_BUFFER_HEIGHT);
+  groundGradient.addColorStop(0, mixColor(palette.groundTop, "#d4d08e", 0.18));
+  groundGradient.addColorStop(0.35, palette.groundTop);
+  groundGradient.addColorStop(1, palette.groundBottom);
+  context.fillStyle = groundGradient;
+  context.fillRect(0, horizonY, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT - horizonY);
+
+  if (biome !== "badlands" && biome !== "volcanic") {
+    for (let x = 0; x < SCENE_BUFFER_WIDTH; x += 3) {
+      const bladeHeight = 6 + ((x * 13) % 9);
+      context.strokeStyle = x % 2 === 0 ? withAlpha(palette.grass, 0.56) : withAlpha(palette.grassDark, 0.5);
+      context.beginPath();
+      context.moveTo(x, horizonY + 6);
+      context.lineTo(x + ((x % 5) - 2), horizonY + 6 - bladeHeight);
+      context.stroke();
+    }
+  }
+
+  if (biome === "marsh" || biome === "coast") {
+    for (let index = 0; index < 4; index += 1) {
+      const poolX = 20 + rng() * 420;
+      const poolY = horizonY + 34 + rng() * 48;
+      drawSoftEllipse(context, poolX, poolY, 36 + rng() * 18, 8 + rng() * 4, withAlpha(palette.water, 0.18));
+    }
+  }
+
+  for (let index = 0; index < 20; index += 1) {
+    const tuftX = rng() * SCENE_BUFFER_WIDTH;
+    const tuftY = horizonY + 8 + rng() * 86;
+    const radius = 10 + rng() * 18;
+    drawSoftEllipse(context, tuftX, tuftY, radius, radius * 0.45, withAlpha(palette.grassDark, 0.08));
+  }
+
+  context.fillStyle = "rgba(10, 8, 6, 0.06)";
+  context.fillRect(0, horizonY + 72 + Math.sin(time * 0.0003) * 2, SCENE_BUFFER_WIDTH, 1);
+}
+
+function drawForeground(context, palette, rng, horizonY, biome, time) {
+  if (biome === "woodland" || biome === "fern") {
+    drawForegroundTree(context, palette, 16, horizonY + 62, 0.88);
+  }
+
+  if (biome === "coast") {
+    drawForegroundRock(context, palette, 28, horizonY + 66, 1.2);
+  }
+
+  if (biome === "badlands" || biome === "volcanic") {
+    drawForegroundRock(context, palette, 34, horizonY + 58, 1.45);
+  }
+
+  for (let index = 0; index < 6; index += 1) {
+    const x = 18 + index * 76 + Math.sin(time * 0.00024 + index) * 2;
+    const y = SCENE_BUFFER_HEIGHT - 8 - (index % 2) * 3;
+    drawForegroundFronds(context, palette, x, y, 1 + (index % 3) * 0.18);
+  }
+}
+
+function drawRidgeLayer(context, baseline, amplitude, color, rng, roughness, offset) {
+  context.beginPath();
+  context.moveTo(0, baseline);
+
+  for (let x = 0; x <= SCENE_BUFFER_WIDTH; x += 18) {
+    const waveA = Math.sin((x + offset * 80) * 0.024 * roughness + rng() * 2);
+    const waveB = Math.sin((x + offset * 130) * 0.011 * roughness + rng() * 3);
+    const y = baseline - amplitude * (0.5 + waveA * 0.28 + waveB * 0.22);
+    context.lineTo(x, y);
+  }
+
+  context.lineTo(SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
+  context.lineTo(0, SCENE_BUFFER_HEIGHT);
+  context.closePath();
+  context.fillStyle = color;
+  context.fill();
+}
+
+function drawForestBand(context, palette, baseY, rng, treeCount, time) {
+  for (let index = 0; index < treeCount; index += 1) {
+    const x = 10 + index * (SCENE_BUFFER_WIDTH / treeCount) + rng() * 14;
+    const trunkWidth = 10 + rng() * 10;
+    const trunkHeight = 74 + rng() * 68;
+    const crownWidth = 44 + rng() * 24;
+    const crownHeight = 96 + rng() * 52;
+
+    context.fillStyle = withAlpha(palette.bark, 0.8);
+    context.fillRect(x, baseY - trunkHeight, trunkWidth, trunkHeight + 6);
+
+    drawSoftEllipse(
+      context,
+      x + trunkWidth / 2 + Math.sin(time * 0.00016 + index) * 2,
+      baseY - trunkHeight + 12,
+      crownWidth,
+      crownHeight,
+      withAlpha(palette.midLight, 0.16)
+    );
+    drawSoftEllipse(
+      context,
+      x + trunkWidth / 2,
+      baseY - trunkHeight / 2,
+      crownWidth * 0.72,
+      crownHeight * 0.9,
+      withAlpha(palette.midDark, 0.42)
+    );
+  }
+}
+
+function drawReedBand(context, palette, baseY, rng, time) {
+  context.fillStyle = withAlpha(palette.water, 0.34);
+  context.fillRect(0, baseY + 8, SCENE_BUFFER_WIDTH, 18);
+
+  for (let x = 0; x < SCENE_BUFFER_WIDTH; x += 4) {
+    const reedHeight = 24 + ((x * 11) % 20);
+    context.strokeStyle = x % 3 === 0 ? withAlpha(palette.midDark, 0.75) : withAlpha(palette.midLight, 0.68);
+    context.beginPath();
+    context.moveTo(x, baseY + 14);
+    context.lineTo(x + Math.sin(time * 0.0002 + x * 0.03) * 2, baseY + 14 - reedHeight);
+    context.stroke();
+  }
+}
+
+function drawPools(context, palette, baseY, rng) {
+  for (let index = 0; index < 3; index += 1) {
+    const x = 30 + index * 150 + rng() * 16;
+    const width = 68 + rng() * 30;
+    drawSoftEllipse(context, x, baseY + 12, width, 10 + rng() * 4, withAlpha(palette.water, 0.26));
+  }
+}
+
+function drawMesaBand(context, palette, baseY, rng, isVolcanic) {
+  for (let index = 0; index < 6; index += 1) {
+    const x = 12 + index * 74 + rng() * 12;
+    const width = 24 + rng() * 24;
+    const height = 44 + rng() * 52;
+    const color = isVolcanic ? mixColor(palette.rock, "#241b19", 0.22) : palette.rock;
+    context.fillStyle = withAlpha(color, 0.72);
+    context.fillRect(x, baseY - height, width, height + 12);
+    context.fillStyle = withAlpha(mixColor(color, "#f0c38b", 0.2), 0.3);
+    context.fillRect(x + width * 0.62, baseY - height, width * 0.2, height + 12);
+  }
+}
+
+function drawCoastalBand(context, palette, baseY, rng, time) {
+  context.fillStyle = withAlpha(palette.water, 0.42);
+  context.fillRect(0, baseY + 6, SCENE_BUFFER_WIDTH, 24);
+
+  for (let index = 0; index < 5; index += 1) {
+    const x = 40 + index * 88 + rng() * 20;
+    const y = baseY + 14 + Math.sin(time * 0.0004 + index) * 3;
+    drawSoftEllipse(context, x, y, 22 + rng() * 12, 5 + rng() * 2, "rgba(255, 255, 255, 0.18)");
+  }
+}
+
+function drawForegroundTree(context, palette, x, y, scale) {
+  context.fillStyle = mixColor(palette.bark, "#000000", 0.25);
+  context.fillRect(x, y - 46 * scale, 10 * scale, 54 * scale);
+  drawSoftEllipse(context, x + 8 * scale, y - 56 * scale, 30 * scale, 42 * scale, withAlpha(palette.midLight, 0.4));
+  drawSoftEllipse(context, x + 8 * scale, y - 52 * scale, 22 * scale, 30 * scale, withAlpha(palette.midDark, 0.72));
+}
+
+function drawForegroundRock(context, palette, x, y, scale) {
+  context.beginPath();
+  context.moveTo(x, y);
+  context.lineTo(x + 12 * scale, y - 18 * scale);
+  context.lineTo(x + 32 * scale, y - 16 * scale);
+  context.lineTo(x + 42 * scale, y);
+  context.closePath();
+  const gradient = context.createLinearGradient(x, y - 20 * scale, x, y);
+  gradient.addColorStop(0, mixColor(palette.rock, "#ffffff", 0.1));
+  gradient.addColorStop(1, mixColor(palette.rock, "#1d140f", 0.24));
+  context.fillStyle = gradient;
+  context.fill();
+}
+
+function drawForegroundFronds(context, palette, x, y, scale) {
+  context.strokeStyle = withAlpha(palette.grassDark, 0.7);
+  context.lineWidth = 2;
+
+  for (let index = 0; index < 5; index += 1) {
+    const bend = -10 + index * 5;
+    context.beginPath();
+    context.moveTo(x, y);
+    context.quadraticCurveTo(x + bend * scale, y - 14 * scale, x + bend * scale * 1.5, y - 28 * scale);
+    context.stroke();
+  }
+}
+
+function drawNoise(context, seed, time) {
+  const rng = mulberry32(seed + Math.floor(time / 100));
+  for (let index = 0; index < 240; index += 1) {
+    const x = Math.floor(rng() * SCENE_BUFFER_WIDTH);
+    const y = Math.floor(rng() * SCENE_BUFFER_HEIGHT);
+    const alpha = 0.02 + rng() * 0.045;
+    context.fillStyle = rng() > 0.5 ? `rgba(255, 255, 255, ${alpha})` : `rgba(0, 0, 0, ${alpha})`;
+    context.fillRect(x, y, 1, 1);
+  }
+}
+
+function scenePlacement(dino, biome, seed) {
+  const shapePlacement = {
+    tyrant: { x: 258, y: 224, scale: 1 },
+    sauropod: { x: 260, y: 230, scale: 1.02 },
+    stego: { x: 244, y: 228, scale: 0.96 },
+    hadrosaur: { x: 250, y: 228, scale: 0.92 },
+    ceratopsian: { x: 248, y: 232, scale: 0.96 },
+    runner: { x: 240, y: 226, scale: 0.8 },
+    "croc-runner": { x: 246, y: 232, scale: 0.88 },
+  };
+
+  const base = shapePlacement[dino.shape] || shapePlacement.tyrant;
+  const offsetX = -14 + ((seed % 23) - 11);
+  const offsetY = biome === "marsh" ? 4 : biome === "coast" ? 2 : 0;
+
+  return {
+    x: base.x + offsetX,
+    y: base.y + offsetY,
+    scale: base.scale * dino.renderScale,
+  };
+}
+
+function previewScaleForShape(shape) {
+  const scales = {
+    tyrant: 0.76,
+    sauropod: 0.7,
+    stego: 0.72,
+    hadrosaur: 0.74,
+    ceratopsian: 0.76,
+    runner: 0.68,
+    "croc-runner": 0.7,
+  };
+
+  return scales[shape] || 0.74;
+}
+
+function drawDinosaur(context, dino, placement, options) {
+  const bodyColor = dino.palette.body;
+  const accentColor = dino.palette.accent;
+  const crestColor = dino.palette.crest;
+  const phase = options.phase || 0;
+  const bob = Math.sin(phase) * 2.6;
+  const scale = placement.scale;
+  const shadowOpacity = options.shadowOpacity ?? 0.16;
+
+  context.save();
+  context.translate(placement.x, placement.y + bob);
+  context.scale(scale, scale);
+
+  drawShadow(context, 0, 0, shapeShadowWidth(dino.shape), 14, shadowOpacity);
+
+  const palette = {
+    body: bodyColor,
+    accent: accentColor,
+    crest: crestColor,
+    shadow: mixColor(bodyColor, "#000000", 0.4),
+    light: mixColor(bodyColor, "#ffd9ad", 0.18),
+  };
+
+  const drawByShape = {
+    tyrant: drawTheropod,
+    sauropod: drawSauropod,
+    stego: drawStegosaur,
+    hadrosaur: drawHadrosaur,
+    ceratopsian: drawCeratopsian,
+    runner: drawRunner,
+    "croc-runner": drawCrocRunner,
+  };
+
+  drawByShape[dino.shape](context, palette, phase, options.monochrome);
+  context.restore();
+}
+
+function shapeShadowWidth(shape) {
+  const widths = {
+    tyrant: 82,
+    sauropod: 94,
+    stego: 90,
+    hadrosaur: 88,
+    ceratopsian: 92,
+    runner: 62,
+    "croc-runner": 78,
+  };
+  return widths[shape] || 82;
+}
+
+function drawTheropod(context, palette, phase, monochrome) {
+  const lean = Math.sin(phase) * 2;
+  drawTail(context, [
+    [-16, -34],
+    [-86, -54 + lean],
+    [-134, -42],
+  ], 18, 5, palette.body, monochrome);
+
+  drawEllipseBody(context, -20, -38, 54, 28, palette.body, palette.shadow, 0.05, monochrome);
+  drawEllipseBody(context, 18, -42, 34, 22, mixColor(palette.body, palette.accent, 0.22), palette.shadow, -0.12, monochrome);
+
+  drawLimb(context, [[-12, -18], [-10, 28], [-18, 82]], 18, palette.accent, monochrome);
+  drawLimb(context, [[12, -14], [20, 30], [16, 84]], 16, palette.body, monochrome);
+  drawLimb(context, [[18, -56], [44, -88], [70, -112 + lean]], 18, palette.body, monochrome);
+
+  drawTheropodHead(context, 90, -118 + lean, palette, monochrome, 1);
+  drawLimb(context, [[18, -42], [38, -36]], 6, palette.accent, monochrome);
+  drawLimb(context, [[16, -34], [34, -24]], 5, palette.accent, monochrome);
+  sprinkleTexture(context, -18, -38, 40, 22, palette.accent, monochrome, 20);
+}
+
+function drawSauropod(context, palette, phase, monochrome) {
+  const neckLift = Math.sin(phase * 0.7) * 4;
+  drawTail(context, [
+    [-44, -34],
+    [-112, -48],
+    [-160, -34],
+  ], 16, 4, palette.accent, monochrome);
+
+  drawEllipseBody(context, -8, -40, 70, 28, palette.body, palette.shadow, 0.02, monochrome);
+  drawEllipseBody(context, 42, -40, 28, 20, palette.body, palette.shadow, 0.06, monochrome);
+
+  drawLimb(context, [[-42, -12], [-42, 76]], 16, palette.accent, monochrome);
+  drawLimb(context, [[-10, -12], [-8, 80]], 18, palette.body, monochrome);
+  drawLimb(context, [[24, -18], [28, 78]], 16, palette.body, monochrome);
+  drawLimb(context, [[54, -18], [58, 76]], 14, palette.accent, monochrome);
+
+  drawNeck(context, [[54, -58], [76, -112 - neckLift], [104, -156 - neckLift]], 20, 10, palette.body, monochrome);
+  drawSauropodHead(context, 116, -166 - neckLift, palette, monochrome);
+  sprinkleTexture(context, -6, -42, 48, 18, palette.accent, monochrome, 16);
+}
+
+function drawStegosaur(context, palette, phase, monochrome) {
+  const tailSwing = Math.sin(phase * 1.1) * 8;
+  drawEllipseBody(context, -8, -34, 74, 26, palette.body, palette.shadow, -0.04, monochrome);
+  drawStegoHead(context, -94, -30, palette, monochrome);
+  drawTail(context, [
+    [56, -26],
+    [122, -34 + tailSwing * 0.2],
+    [164, -22 + tailSwing * 0.3],
+  ], 16, 4, palette.accent, monochrome);
+
+  drawLimb(context, [[-42, -8], [-44, 78]], 14, palette.accent, monochrome);
+  drawLimb(context, [[-6, -8], [-10, 84]], 14, palette.body, monochrome);
+  drawLimb(context, [[28, -8], [30, 80]], 14, palette.body, monochrome);
+  drawLimb(context, [[58, -8], [60, 78]], 12, palette.accent, monochrome);
+
+  const plateXs = [-52, -26, -4, 22, 44];
+  plateXs.forEach((plateX, index) => {
+    const height = 22 + index * 2;
+    drawPlate(context, plateX, -64 - index * 2, 16, height, palette.crest, monochrome);
+  });
+
+  drawSpike(context, 156, -18, 18, palette.crest, monochrome);
+  drawSpike(context, 148, -8, 16, palette.crest, monochrome);
+}
+
+function drawHadrosaur(context, palette, phase, monochrome) {
+  const crestLift = Math.sin(phase * 0.9) * 2;
+  drawTail(context, [
+    [-52, -34],
+    [-122, -44],
+    [-170, -28],
+  ], 16, 4, palette.accent, monochrome);
+
+  drawEllipseBody(context, -10, -36, 68, 28, palette.body, palette.shadow, 0, monochrome);
+  drawLimb(context, [[-28, -12], [-22, 34], [-26, 82]], 16, palette.accent, monochrome);
+  drawLimb(context, [[6, -12], [12, 34], [12, 84]], 16, palette.body, monochrome);
+  drawLimb(context, [[42, -18], [68, -64], [86, -88 + crestLift]], 18, palette.body, monochrome);
+  drawHadrosaurHead(context, 106, -92 + crestLift, palette, monochrome);
+  drawLimb(context, [[24, -34], [42, -26]], 6, palette.accent, monochrome);
+  sprinkleTexture(context, -6, -34, 46, 18, palette.accent, monochrome, 18);
+}
+
+function drawCeratopsian(context, palette, phase, monochrome) {
+  const nod = Math.sin(phase * 0.8) * 3;
+  drawTail(context, [
+    [-66, -26],
+    [-108, -20],
+    [-142, -12],
+  ], 12, 3, palette.accent, monochrome);
+
+  drawEllipseBody(context, -8, -34, 74, 30, palette.body, palette.shadow, 0.02, monochrome);
+  drawFrillHead(context, 86, -46 + nod, palette, monochrome);
+  drawLimb(context, [[-36, -8], [-32, 80]], 18, palette.accent, monochrome);
+  drawLimb(context, [[-2, -8], [0, 84]], 18, palette.body, monochrome);
+  drawLimb(context, [[40, -6], [42, 80]], 16, palette.body, monochrome);
+  drawLimb(context, [[66, -4], [68, 74]], 14, palette.accent, monochrome);
+  sprinkleTexture(context, -6, -34, 52, 18, palette.accent, monochrome, 16);
+}
+
+function drawRunner(context, palette, phase, monochrome) {
+  const hop = Math.sin(phase * 1.8) * 3;
+  drawTail(context, [
+    [-12, -28],
+    [-72, -42 + hop],
+    [-114, -30],
+  ], 10, 3, palette.accent, monochrome);
+
+  drawEllipseBody(context, 6, -32, 38, 18, palette.body, palette.shadow, 0, monochrome);
+  drawLimb(context, [[-4, -14], [-8, 22], [-18, 78]], 12, palette.accent, monochrome);
+  drawLimb(context, [[18, -14], [28, 30], [24, 80]], 10, palette.body, monochrome);
+  drawLimb(context, [[20, -46], [40, -78], [54, -96]], 10, palette.body, monochrome);
+  drawTheropodHead(context, 66, -102, palette, monochrome, 0.7);
+}
+
+function drawCrocRunner(context, palette, phase, monochrome) {
+  const sway = Math.sin(phase * 0.8) * 2;
+  drawTail(context, [
+    [-56, -24],
+    [-128, -28 + sway],
+    [-176, -18],
+  ], 12, 4, palette.accent, monochrome);
+
+  drawEllipseBody(context, -10, -28, 74, 22, palette.body, palette.shadow, 0, monochrome);
+  drawLimb(context, [[-42, -6], [-46, 58]], 12, palette.accent, monochrome);
+  drawLimb(context, [[-6, -6], [-4, 60]], 12, palette.body, monochrome);
+  drawLimb(context, [[32, -6], [34, 58]], 12, palette.body, monochrome);
+  drawLimb(context, [[64, -6], [66, 54]], 10, palette.accent, monochrome);
+  drawCrocHead(context, 96, -34 + sway, palette, monochrome);
+  sprinkleTexture(context, -4, -28, 54, 12, palette.accent, monochrome, 18);
+}
+
+function drawShadow(context, x, y, radiusX, radiusY, opacity) {
+  drawSoftEllipse(context, x, y + 2, radiusX, radiusY, `rgba(0, 0, 0, ${opacity})`);
+}
+
+function drawEllipseBody(context, x, y, radiusX, radiusY, topColor, bottomColor, rotation, monochrome) {
+  context.save();
+  context.translate(x, y);
+  context.rotate(rotation);
+
+  const gradient = context.createLinearGradient(0, -radiusY, 0, radiusY);
+  gradient.addColorStop(0, monochrome ? topColor : mixColor(topColor, "#ffe5bc", 0.16));
+  gradient.addColorStop(0.55, topColor);
+  gradient.addColorStop(1, mixColor(bottomColor, "#000000", 0.08));
+
+  context.beginPath();
+  context.ellipse(0, 0, radiusX, radiusY, 0, 0, Math.PI * 2);
+  context.fillStyle = gradient;
+  context.fill();
+
+  context.strokeStyle = withAlpha(mixColor(bottomColor, "#000000", 0.2), 0.4);
+  context.lineWidth = 1.2;
+  context.stroke();
+
+  context.beginPath();
+  context.ellipse(-radiusX * 0.16, -radiusY * 0.28, radiusX * 0.55, radiusY * 0.28, 0, 0, Math.PI * 2);
+  context.fillStyle = withAlpha("#ffffff", monochrome ? 0.08 : 0.12);
+  context.fill();
+  context.restore();
+}
+
+function drawLimb(context, points, width, baseColor, monochrome) {
+  const gradient = context.createLinearGradient(points[0][0], points[0][1] - width, points[points.length - 1][0], points[points.length - 1][1] + width);
+  gradient.addColorStop(0, monochrome ? baseColor : mixColor(baseColor, "#ffe2b0", 0.14));
+  gradient.addColorStop(1, mixColor(baseColor, "#000000", 0.22));
+
+  context.beginPath();
+  context.moveTo(points[0][0], points[0][1]);
+  for (let index = 1; index < points.length; index += 1) {
+    context.lineTo(points[index][0], points[index][1]);
+  }
+
+  context.lineWidth = width;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.strokeStyle = gradient;
+  context.stroke();
+
+  context.lineWidth = Math.max(1.4, width * 0.26);
+  context.strokeStyle = withAlpha("#ffffff", monochrome ? 0.08 : 0.16);
+  context.stroke();
+}
+
+function drawNeck(context, points, startWidth, endWidth, baseColor, monochrome) {
+  drawTail(context, points, startWidth, endWidth, baseColor, monochrome);
+}
+
+function drawTail(context, points, startWidth, endWidth, baseColor, monochrome) {
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const from = points[index];
+    const to = points[index + 1];
+    const width = lerp(startWidth, endWidth, index / Math.max(points.length - 2, 1));
+    const segmentColor = index === 0 ? baseColor : mixColor(baseColor, "#000000", 0.12 * index);
+    drawLimb(context, [from, to], width, segmentColor, monochrome);
+  }
+}
+
+function drawTheropodHead(context, x, y, palette, monochrome, scale) {
+  context.save();
+  context.translate(x, y);
+  context.scale(scale, scale);
+
+  context.beginPath();
+  context.moveTo(-4, -10);
+  context.lineTo(24, -14);
+  context.lineTo(42, -2);
+  context.lineTo(34, 10);
+  context.lineTo(0, 12);
+  context.closePath();
+  context.fillStyle = createPartGradient(context, -4, -14, 42, 12, palette.body, palette.accent, monochrome);
+  context.fill();
+
+  context.beginPath();
+  context.moveTo(8, 2);
+  context.lineTo(40, 0);
+  context.lineTo(34, 10);
+  context.closePath();
+  context.fillStyle = monochrome ? palette.accent : mixColor(palette.accent, "#7d1204", 0.18);
+  context.fill();
+
+  if (!monochrome) {
+    context.fillStyle = "#6d1a11";
+    context.beginPath();
+    context.moveTo(8, 2);
+    context.lineTo(36, 2);
+    context.lineTo(26, 8);
+    context.closePath();
+    context.fill();
+
+    context.fillStyle = "#f4e8d5";
+    for (let tooth = 0; tooth < 5; tooth += 1) {
+      context.fillRect(12 + tooth * 5, 2, 1, 4);
+    }
+  }
+
+  context.fillStyle = monochrome ? "#efe9de" : "#100e0c";
+  context.fillRect(20, -8, 2, 2);
+  context.restore();
+}
+
+function drawSauropodHead(context, x, y, palette, monochrome) {
+  context.save();
+  context.translate(x, y);
+  drawEllipseBody(context, 0, 0, 12, 8, palette.body, palette.accent, 0, monochrome);
+  context.fillStyle = monochrome ? "#efe9de" : "#1a120d";
+  context.fillRect(4, -2, 2, 2);
+  context.restore();
+}
+
+function drawHadrosaurHead(context, x, y, palette, monochrome) {
+  context.save();
+  context.translate(x, y);
+  drawEllipseBody(context, 0, 0, 18, 10, palette.body, palette.accent, 0, monochrome);
+
+  context.beginPath();
+  context.moveTo(8, -16);
+  context.lineTo(24, -28);
+  context.lineTo(30, -10);
+  context.lineTo(12, -6);
+  context.closePath();
+  context.fillStyle = createPartGradient(context, 8, -28, 30, -6, palette.crest, palette.accent, monochrome);
+  context.fill();
+
+  context.fillStyle = monochrome ? "#efe9de" : "#19130e";
+  context.fillRect(4, -2, 2, 2);
+  context.restore();
+}
+
+function drawStegoHead(context, x, y, palette, monochrome) {
+  context.save();
+  context.translate(x, y);
+  drawEllipseBody(context, 0, 0, 12, 8, palette.accent, palette.accent, 0, monochrome);
+
+  context.beginPath();
+  context.moveTo(10, -2);
+  context.lineTo(26, 0);
+  context.lineTo(8, 6);
+  context.closePath();
+  context.fillStyle = monochrome ? palette.accent : createPartGradient(context, 8, -2, 26, 6, palette.crest, palette.accent, false);
+  context.fill();
+
+  context.fillStyle = monochrome ? "#efe9de" : "#1a120d";
+  context.fillRect(2, -3, 2, 2);
+  context.restore();
+}
+
+function drawFrillHead(context, x, y, palette, monochrome) {
+  context.save();
+  context.translate(x, y);
+
+  context.beginPath();
+  context.moveTo(-12, -18);
+  context.lineTo(24, -28);
+  context.lineTo(42, -8);
+  context.lineTo(22, 18);
+  context.lineTo(-8, 10);
+  context.closePath();
+  context.fillStyle = createPartGradient(context, -12, -28, 42, 18, palette.crest, palette.accent, monochrome);
+  context.fill();
+
+  drawEllipseBody(context, -4, 0, 20, 14, palette.body, palette.accent, 0, monochrome);
+
+  context.strokeStyle = monochrome ? palette.accent : mixColor(palette.crest, "#ffffff", 0.08);
+  context.lineWidth = 4;
+  context.beginPath();
+  context.moveTo(10, -6);
+  context.lineTo(28, -18);
+  context.moveTo(4, -2);
+  context.lineTo(20, -10);
+  context.stroke();
+
+  context.fillStyle = monochrome ? "#efe9de" : "#1a120d";
+  context.fillRect(2, -4, 2, 2);
+  context.restore();
+}
+
+function drawCrocHead(context, x, y, palette, monochrome) {
+  context.save();
+  context.translate(x, y);
+
+  context.beginPath();
+  context.moveTo(-8, -12);
+  context.lineTo(30, -10);
+  context.lineTo(48, -4);
+  context.lineTo(30, 6);
+  context.lineTo(-4, 8);
+  context.closePath();
+  context.fillStyle = createPartGradient(context, -8, -12, 48, 8, palette.body, palette.accent, monochrome);
+  context.fill();
+
+  context.beginPath();
+  context.moveTo(8, 2);
+  context.lineTo(44, 0);
+  context.lineTo(28, 6);
+  context.closePath();
+  context.fillStyle = monochrome ? palette.accent : mixColor(palette.accent, "#000000", 0.14);
+  context.fill();
+
+  context.fillStyle = monochrome ? "#efe9de" : "#140f0b";
+  context.fillRect(16, -6, 2, 2);
+  context.restore();
+}
+
+function drawPlate(context, x, y, width, height, color, monochrome) {
+  context.beginPath();
+  context.moveTo(x - width / 2, y + height);
+  context.lineTo(x, y);
+  context.lineTo(x + width / 2, y + height);
+  context.closePath();
+  context.fillStyle = monochrome ? color : createPartGradient(context, x - width / 2, y, x + width / 2, y + height, mixColor(color, "#ffe0ab", 0.18), mixColor(color, "#4b2519", 0.18), false);
+  context.fill();
+}
+
+function drawSpike(context, x, y, length, color, monochrome) {
+  context.save();
+  context.translate(x, y);
+  context.rotate(-0.4);
+  context.beginPath();
+  context.moveTo(0, 0);
+  context.lineTo(length, -3);
+  context.lineTo(length - 4, 4);
+  context.closePath();
+  context.fillStyle = monochrome ? color : createPartGradient(context, 0, -3, length, 4, mixColor(color, "#fff0c8", 0.2), mixColor(color, "#411f18", 0.2), false);
+  context.fill();
+  context.restore();
+}
+
+function sprinkleTexture(context, x, y, radiusX, radiusY, color, monochrome, count) {
+  if (monochrome) {
+    return;
+  }
+
+  const rng = mulberry32(hashString(`${x}:${y}:${radiusX}:${radiusY}:${count}`));
+  context.fillStyle = withAlpha(color, 0.18);
+  for (let index = 0; index < count; index += 1) {
+    const dotX = x - radiusX / 2 + rng() * radiusX;
+    const dotY = y - radiusY / 2 + rng() * radiusY;
+    context.fillRect(dotX, dotY, 2, 2);
+  }
+}
+
+function drawSoftCloud(context, x, y, width, height, color, blobCount) {
+  for (let index = 0; index < blobCount; index += 1) {
+    const offsetX = (index / Math.max(blobCount - 1, 1)) * width - width / 2;
+    const offsetY = Math.sin(index * 1.4) * 4;
+    drawSoftEllipse(context, x + offsetX, y + offsetY, width * 0.32, height * 0.6, color);
+  }
+}
+
+function drawSoftCircle(context, x, y, radius, color) {
+  drawSoftEllipse(context, x, y, radius, radius, color);
+}
+
+function drawSoftEllipse(context, x, y, radiusX, radiusY, color) {
+  const gradient = context.createRadialGradient(x, y, 0, x, y, Math.max(radiusX, radiusY));
+  gradient.addColorStop(0, color);
+  gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+  context.fillStyle = gradient;
+  context.beginPath();
+  context.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2);
+  context.fill();
+}
+
+function createPartGradient(context, x1, y1, x2, y2, topColor, bottomColor, monochrome) {
+  const gradient = context.createLinearGradient(x1, y1, x2, y2);
+  gradient.addColorStop(0, monochrome ? topColor : mixColor(topColor, "#ffe3c0", 0.12));
+  gradient.addColorStop(1, mixColor(bottomColor, "#000000", 0.16));
+  return gradient;
+}
+
+function mixColor(colorA, colorB, amount) {
+  const a = hexToRgb(colorA);
+  const b = hexToRgb(colorB);
+  const mixed = {
+    r: Math.round(a.r + (b.r - a.r) * amount),
+    g: Math.round(a.g + (b.g - a.g) * amount),
+    b: Math.round(a.b + (b.b - a.b) * amount),
+  };
+
+  return `rgb(${mixed.r}, ${mixed.g}, ${mixed.b})`;
+}
+
+function withAlpha(color, alpha) {
+  if (color.startsWith("rgba")) {
+    return color;
+  }
+
+  const { r, g, b } = hexToRgb(color);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function hexToRgb(color) {
+  if (color.startsWith("rgb")) {
+    const values = color.match(/\d+/g).map(Number);
+    return {
+      r: values[0],
+      g: values[1],
+      b: values[2],
+    };
+  }
+
+  const normalized = color.replace("#", "");
+  const value = normalized.length === 3
+    ? normalized
+        .split("")
+        .map((segment) => segment + segment)
+        .join("")
+    : normalized;
+
+  const intValue = Number.parseInt(value, 16);
+  return {
+    r: (intValue >> 16) & 255,
+    g: (intValue >> 8) & 255,
+    b: intValue & 255,
+  };
+}
+
+function lerp(start, end, amount) {
+  return start + (end - start) * amount;
+}
+
+function hashString(input) {
+  let hash = 0;
+  for (let index = 0; index < input.length; index += 1) {
+    hash = (hash << 5) - hash + input.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function mulberry32(seed) {
+  let value = seed || 1;
+  return () => {
+    value |= 0;
+    value = (value + 0x6d2b79f5) | 0;
+    let result = Math.imul(value ^ (value >>> 15), 1 | value);
+    result = (result + Math.imul(result ^ (result >>> 7), 61 | result)) ^ result;
+    return ((result ^ (result >>> 14)) >>> 0) / 4294967296;
+  };
 }
