@@ -278,6 +278,7 @@ const AUTHORED_SCENES = {
 };
 
 const STORAGE_KEY = "dino-safari-tribute-state-v1";
+const ATTACK_ROAR_SRC = "./sounds/trexroar.mp3";
 const SCENE_BUFFER_WIDTH = 480;
 const SCENE_BUFFER_HEIGHT = 300;
 
@@ -402,6 +403,13 @@ const state = {
   captured: new Set(),
   log: [],
   encounterToken: 0,
+  searchProgress: {},
+  encounterCooldowns: {},
+  visibleTimeoutId: 0,
+  attackEffectTimeoutId: 0,
+  attackLock: false,
+  sessionStarted: false,
+  hasRestorableProgress: false,
 };
 
 const VIEWPORT_FIT = {
@@ -410,6 +418,7 @@ const VIEWPORT_FIT = {
 };
 
 const elements = {
+  gameStage: document.getElementById("game-stage"),
   periodSwitcher: document.getElementById("period-switcher"),
   scenePeriod: document.getElementById("scene-period"),
   sceneLocation: document.getElementById("scene-location"),
@@ -441,6 +450,8 @@ const elements = {
   journalDialog: document.getElementById("journal-dialog"),
   guideGrid: document.getElementById("guide-grid"),
   logList: document.getElementById("log-list"),
+  startOverlay: document.getElementById("start-overlay"),
+  startCopy: document.getElementById("start-copy"),
 };
 
 const buttons = {
@@ -455,6 +466,8 @@ const buttons = {
   journal: document.getElementById("journal-btn"),
   closeJournal: document.getElementById("close-journal-btn"),
   clearLog: document.getElementById("clear-log-btn"),
+  resetGame: document.getElementById("reset-game-btn"),
+  start: document.getElementById("start-btn"),
 };
 
 const byPeriod = PERIODS.reduce((accumulator, period) => {
@@ -470,6 +483,7 @@ const dinoById = DINOSAURS.reduce((accumulator, dino) => {
 const guidePreviewCache = new Map();
 const renderer = createRetroRenderer();
 const ambientAudio = createAmbientAudio();
+const attackRoar = createAttackRoarPlayer(ATTACK_ROAR_SRC);
 
 init();
 
@@ -478,6 +492,7 @@ function init() {
   renderPeriodButtons();
   bindEvents();
   syncViewportFit();
+  syncStartOverlay();
   renderer.start();
   setPeriod(state.periodId, true, true);
   addLog("Field rig online. Render grid calibrated.");
@@ -501,6 +516,9 @@ function renderPeriodButtons() {
 
 function bindEvents() {
   window.addEventListener("pointerdown", () => {
+    if (!state.sessionStarted) {
+      return;
+    }
     ambientAudio.userGesture();
   }, { passive: true });
   window.addEventListener("resize", syncViewportFit);
@@ -540,6 +558,7 @@ function bindEvents() {
       elements.guideDialog.showModal();
     }
   });
+  buttons.start.addEventListener("click", startGameSession);
   buttons.closeGuide.addEventListener("click", () => elements.guideDialog.close());
   buttons.journal.addEventListener("click", () => {
     if (!elements.journalDialog.open) {
@@ -547,6 +566,7 @@ function bindEvents() {
     }
   });
   buttons.closeJournal.addEventListener("click", () => elements.journalDialog.close());
+  buttons.resetGame.addEventListener("click", resetGameProgress);
   buttons.clearLog.addEventListener("click", () => {
     state.log = [];
     renderLog();
@@ -554,6 +574,10 @@ function bindEvents() {
   });
 
   window.addEventListener("keydown", (event) => {
+    if (!state.sessionStarted) {
+      return;
+    }
+
     if ((elements.guideDialog.open || elements.journalDialog.open) && event.key === "Escape") {
       return;
     }
@@ -596,11 +620,75 @@ function syncViewportFit() {
   document.documentElement.style.setProperty("--game-scale", safeScale.toFixed(4));
 }
 
+function syncStartOverlay() {
+  elements.startOverlay.classList.toggle("is-hidden", state.sessionStarted);
+  elements.startOverlay.setAttribute("aria-hidden", state.sessionStarted ? "true" : "false");
+  elements.gameStage.classList.toggle("is-booting", !state.sessionStarted);
+  buttons.start.textContent = state.hasRestorableProgress ? "Resume Expedition" : "Start Expedition";
+  elements.startCopy.textContent = state.hasRestorableProgress
+    ? "Continue your saved survey and wake the jungle ambience."
+    : "Begin the survey and wake the jungle ambience.";
+}
+
+function startGameSession() {
+  if (state.sessionStarted) {
+    return;
+  }
+
+  state.sessionStarted = true;
+  syncStartOverlay();
+  ambientAudio.userGesture();
+  renderScene();
+  queueEncounter(true);
+}
+
+function syncPeriodButtons() {
+  Array.from(elements.periodSwitcher.children).forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.period === state.periodId);
+  });
+}
+
+function resetGameProgress() {
+  const shouldReset = window.confirm("Reset the expedition and clear all photos, guide entries, and notes?");
+  if (!shouldReset) {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    // Ignore storage errors and still reset the in-memory expedition.
+  }
+
+  state.periodId = "jurassic";
+  state.x = 0;
+  state.y = 0;
+  state.visibleDinoId = null;
+  state.contactDinoId = null;
+  state.contactVisible = false;
+  state.captured = new Set();
+  state.log = [];
+  state.encounterToken = 0;
+  state.searchProgress = {};
+  state.encounterCooldowns = {};
+  state.hasRestorableProgress = false;
+  clearVisibleEncounterTimer();
+  clearAttackEffect();
+
+  syncPeriodButtons();
+  renderLog();
+  renderScene();
+  queueEncounter(true);
+  addLog("Expedition reset. Fresh survey loaded.");
+}
+
 function setPeriod(periodId, force = false, preservePosition = false) {
   if (!force && periodId === state.periodId) {
     return;
   }
 
+  clearVisibleEncounterTimer();
+  clearAttackEffect();
   state.periodId = periodId;
   if (!preservePosition) {
     state.x = 0;
@@ -610,9 +698,7 @@ function setPeriod(periodId, force = false, preservePosition = false) {
   state.contactDinoId = null;
   state.contactVisible = false;
 
-  Array.from(elements.periodSwitcher.children).forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.period === periodId);
-  });
+  syncPeriodButtons();
 
   addLog(`Temporal gate shifted to the ${currentPeriod().name}.`);
   persistState();
@@ -646,6 +732,8 @@ function moveToSector(targetX, targetY) {
 }
 
 function updatePosition(nextX, nextY, logMessage) {
+  clearVisibleEncounterTimer();
+  clearAttackEffect();
   state.x = nextX;
   state.y = nextY;
   state.visibleDinoId = null;
@@ -657,12 +745,21 @@ function updatePosition(nextX, nextY, logMessage) {
 }
 
 function queueEncounter(isPeriodChange) {
+  clearVisibleEncounterTimer();
+  clearAttackEffect();
   state.encounterToken += 1;
   const encounterToken = state.encounterToken;
   const matchingDino = findDinoAt(state.periodId, state.x, state.y);
   const nearDino = nearestDinoForPeriod();
 
   renderStatus(nearDino);
+
+  if (!state.sessionStarted) {
+    updateMessage(state.hasRestorableProgress
+      ? "Press Resume Expedition to continue the survey."
+      : "Press Start Expedition to begin the survey.");
+    return;
+  }
 
   if (!matchingDino) {
     updateMessage(
@@ -680,12 +777,14 @@ function queueEncounter(isPeriodChange) {
       return;
     }
 
-    state.visibleDinoId = matchingDino.id;
+    if (attemptEncounter(matchingDino, isPeriodChange ? "arrival" : "movement", encounterToken)) {
+      return;
+    }
+
     renderStatus(matchingDino);
-    renderScene();
-    updateMessage(`${matchingDino.name} entered the clearing. Take the shot now.`);
-    addLog(`${matchingDino.name} sighted at ${locationName()}.`);
-    playTone("encounter");
+    updateMessage(
+      `${matchingDino.name} is using cover in this sector. Scan carefully or keep stalking it.`
+    );
   }, isPeriodChange ? 420 : 620);
 }
 
@@ -707,6 +806,24 @@ function scanArea() {
     return;
   }
 
+  const concealed = findDinoAt(state.periodId, state.x, state.y);
+  if (concealed) {
+    if (attemptEncounter(concealed, "scan", state.encounterToken)) {
+      return;
+    }
+
+    const effort = searchEffortFor(concealed);
+    const signal = signalPercent(concealed);
+    updateMessage(
+      effort >= 3
+        ? `${signal}% signal. ${concealed.name} is extremely close but still staying hidden. Scan again and hold your ground.`
+        : `${signal}% signal. Brush snapped nearby, but ${concealed.name} stayed hidden in cover.`
+    );
+    addLog(`Scanner stirred ${concealed.name}, but it stayed hidden at ${locationName()}.`);
+    playTone("scan");
+    return;
+  }
+
   const [nearestX, nearestY] = nearestCoordinate(nearest);
   const steps = manhattanDistance(state.x, state.y, nearestX, nearestY);
   const direction = directionHint(nearest);
@@ -722,6 +839,12 @@ function scanArea() {
 }
 
 function takePhoto() {
+  if (state.attackLock) {
+    updateMessage("Too late. The predator is already charging.");
+    playTone("blocked");
+    return;
+  }
+
   if (!state.visibleDinoId) {
     updateMessage("You snapped empty scenery. Wait for a full sighting first.");
     addLog(`Empty photo taken at ${locationName()}.`);
@@ -732,11 +855,17 @@ function takePhoto() {
 
   const dino = dinoById[state.visibleDinoId];
   const isNewCapture = !state.captured.has(dino.id);
+  clearVisibleEncounterTimer();
   state.captured.add(dino.id);
+  state.searchProgress[searchKeyFor(dino)] = 0;
+  state.encounterCooldowns[dino.id] = Date.now() + 2800;
+  state.visibleDinoId = null;
+  state.contactVisible = false;
 
   triggerFlash();
   renderCaptureStrip();
   renderGuide();
+  renderScene();
   renderStatus(dino);
 
   updateMessage(
@@ -784,7 +913,7 @@ function renderStatus(referenceDino) {
     elements.contactStatus.textContent = "Searching";
   } else {
     elements.contactName.textContent = visible ? dino.name : `Possible ${dino.name}`;
-    elements.contactStatus.textContent = visible ? "Visible" : "Tracking";
+    elements.contactStatus.textContent = state.attackLock && visible ? "Attack" : visible ? "Visible" : "Tracking";
   }
 
   elements.signalFill.style.width = `${signal}%`;
@@ -1092,10 +1221,161 @@ function addLog(message) {
   renderLog();
 }
 
+function clearVisibleEncounterTimer() {
+  if (!state.visibleTimeoutId) {
+    return;
+  }
+
+  window.clearTimeout(state.visibleTimeoutId);
+  state.visibleTimeoutId = 0;
+}
+
+function clearAttackEffect() {
+  if (state.attackEffectTimeoutId) {
+    window.clearTimeout(state.attackEffectTimeoutId);
+    state.attackEffectTimeoutId = 0;
+  }
+
+  state.attackLock = false;
+  elements.viewport.classList.remove("is-under-attack");
+}
+
+function searchKeyFor(dino, x = state.x, y = state.y) {
+  return `${dino.id}:${state.periodId}:${x}:${y}`;
+}
+
+function searchEffortFor(dino) {
+  return state.searchProgress[searchKeyFor(dino)] || 0;
+}
+
+function encounterChanceFor(dino, source) {
+  const effort = searchEffortFor(dino);
+  const predator = isPredator(dino);
+  const baseChance = source === "scan"
+    ? predator ? 0.28 : 0.42
+    : predator ? 0.14 : 0.24;
+  const capturedPenalty = state.captured.has(dino.id) ? 0.05 : 0;
+
+  return clamp(baseChance + effort * 0.16 - capturedPenalty, 0.08, 0.9);
+}
+
+function attemptEncounter(dino, source, encounterToken) {
+  const cooldownUntil = state.encounterCooldowns[dino.id] || 0;
+  if (Date.now() < cooldownUntil) {
+    return false;
+  }
+
+  const key = searchKeyFor(dino);
+  const success = Math.random() < encounterChanceFor(dino, source);
+  if (!success) {
+    state.searchProgress[key] = Math.min((state.searchProgress[key] || 0) + 1, 4);
+    state.encounterCooldowns[dino.id] = Date.now() + (source === "scan" ? 900 : 1400);
+    return false;
+  }
+
+  state.searchProgress[key] = 0;
+  showEncounter(dino, encounterToken);
+  return true;
+}
+
+function showEncounter(dino, encounterToken) {
+  state.visibleDinoId = dino.id;
+  renderStatus(dino);
+  renderScene();
+  updateMessage(`${dino.name} entered the clearing. Take the shot now.`);
+  addLog(`${dino.name} sighted at ${locationName()}.`);
+  playTone("encounter");
+  scheduleVisibleEncounterResolution(dino, encounterToken);
+}
+
+function scheduleVisibleEncounterResolution(dino, encounterToken) {
+  clearVisibleEncounterTimer();
+  const lingerMs = isPredator(dino) ? 3600 : 5200;
+
+  state.visibleTimeoutId = window.setTimeout(() => {
+    if (encounterToken !== state.encounterToken || state.visibleDinoId !== dino.id) {
+      return;
+    }
+
+    state.visibleTimeoutId = 0;
+    state.encounterCooldowns[dino.id] = Date.now() + (isPredator(dino) ? 9000 : 6000);
+    state.searchProgress[searchKeyFor(dino)] = Math.min(searchEffortFor(dino) + 1, 4);
+
+    if (isPredator(dino)) {
+      state.attackLock = true;
+      renderStatus(dino);
+      triggerAttackEffect();
+      playAttackRoar();
+      playTone("attack");
+      updateMessage(`${dino.name} charged the rover and vanished before you got the shot.`);
+      addLog(`${dino.name} attacked and fled from ${locationName()}.`);
+      state.attackEffectTimeoutId = window.setTimeout(() => {
+        if (encounterToken !== state.encounterToken) {
+          clearAttackEffect();
+          return;
+        }
+
+        state.visibleDinoId = null;
+        state.contactVisible = false;
+        clearAttackEffect();
+        renderScene();
+        renderStatus(dino);
+      }, 640);
+      return;
+    }
+
+    state.visibleDinoId = null;
+    state.contactVisible = false;
+    renderScene();
+    renderStatus(dino);
+    updateMessage(`${dino.name} slipped back into cover before you got the shot.`);
+    addLog(`${dino.name} vanished into cover at ${locationName()}.`);
+    playTone("blocked");
+  }, lingerMs);
+}
+
+function isPredator(dino) {
+  return dino.diet === "Carnivore";
+}
+
 function triggerFlash() {
   elements.flashOverlay.classList.remove("is-active");
   void elements.flashOverlay.offsetWidth;
   elements.flashOverlay.classList.add("is-active");
+}
+
+function triggerAttackEffect() {
+  elements.viewport.classList.remove("is-under-attack");
+  void elements.viewport.offsetWidth;
+  elements.viewport.classList.add("is-under-attack");
+}
+
+function createAttackRoarPlayer(source) {
+  if (typeof Audio === "undefined") {
+    return null;
+  }
+
+  const audio = new Audio(source);
+  audio.preload = "auto";
+  audio.volume = 0.9;
+  return audio;
+}
+
+function playAttackRoar() {
+  if (!attackRoar) {
+    return;
+  }
+
+  try {
+    attackRoar.pause();
+    attackRoar.currentTime = 0;
+    const playback = attackRoar.play();
+    if (playback && typeof playback.catch === "function") {
+      playback.catch(() => {});
+    }
+  } catch (error) {
+    return;
+  }
 }
 
 function playTone(type) {
@@ -1115,6 +1395,7 @@ function playTone(type) {
     photo: { frequency: 880, endFrequency: 260, duration: 0.22, wave: "square" },
     encounter: { frequency: 140, endFrequency: 92, duration: 0.55, wave: "sawtooth" },
     blocked: { frequency: 220, endFrequency: 170, duration: 0.12, wave: "square" },
+    attack: { frequency: 120, endFrequency: 62, duration: 0.42, wave: "sawtooth" },
   };
 
   const profile = profiles[type];
@@ -1609,6 +1890,12 @@ function loadSavedProgress() {
     if (Array.isArray(saved.log)) {
       state.log = saved.log.slice(0, 8);
     }
+    state.hasRestorableProgress = (
+      state.periodId !== "jurassic"
+      || state.x !== 0
+      || state.y !== 0
+      || state.captured.size > 0
+    );
   } catch (error) {
     try {
       window.localStorage.removeItem(STORAGE_KEY);

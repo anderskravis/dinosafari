@@ -28,9 +28,9 @@ Then open `http://localhost:8000`.
 - Move around each 5x5 survey map with the arrow controls or by clicking sectors on the survey map
 - Use `Scan` for hints about nearby dinosaurs
 - Use `Photo` when a dinosaur enters the scene
-- Open the `Field Guide` to see captured species fill in from locked silhouettes to colored entries
+- Open the `Field Guide` to see captured species fill in from locked silhouettes to colored entries, or reset the expedition from the guide header
 - Use arrow keys to move, `S` to scan, and `P` to take a photo
-- Procedural jungle/river ambience starts automatically after your first interaction with the page
+- Start from the launch overlay to begin the survey and unlock procedural jungle/river ambience
 - `Jurassic / Shadow Grove` now uses fixed-camera raster plates and a sprite strip for Brachiosaurus instead of the procedural scene renderer
 
 ## Asset Workflow

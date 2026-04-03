@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="game-stage">
+    <div class="game-stage is-booting" id="game-stage">
       <div class="game-scale-wrap">
         <main class="game-shell" id="game-shell">
           <section class="game-layout">
@@ -69,7 +69,7 @@
 
                 <div class="action-strip">
                   <button class="action-btn" id="scan-btn">Scan</button>
-                  <button class="action-btn action-btn-primary" id="photo-btn">Photo</button>
+                  <button class="action-btn action-btn-primary action-btn-photo" id="photo-btn">Photo</button>
                   <button class="action-btn" id="guide-btn">Field Guide</button>
                   <button class="action-btn" id="journal-btn">Journal</button>
                 </div>
@@ -152,11 +152,25 @@
               <p class="eyebrow">Collector's Album</p>
               <h2>Field Guide</h2>
             </div>
-            <button class="mini-btn" id="close-guide-btn">Close</button>
+            <div class="dialog-actions">
+              <button class="mini-btn" id="reset-game-btn">Reset Game</button>
+              <button class="mini-btn" id="close-guide-btn">Close</button>
+            </div>
           </div>
           <div class="guide-grid" id="guide-grid"></div>
         </div>
       </dialog>
+
+      <div class="start-overlay" id="start-overlay" role="dialog" aria-modal="true" aria-labelledby="start-title">
+        <div class="start-card bevel">
+          <p class="eyebrow">Field Station</p>
+          <h2 id="start-title">Start Expedition</h2>
+          <p class="start-copy" id="start-copy">
+            Begin the survey and wake the jungle ambience.
+          </p>
+          <button class="action-btn action-btn-primary start-btn" id="start-btn" type="button">Start Expedition</button>
+        </div>
+      </div>
     </div>
 
     <script src="./app.js"></script>
