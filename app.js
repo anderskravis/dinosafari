@@ -1004,6 +1004,9 @@ function takePhoto() {
   state.encounterCooldowns[dino.id] = Date.now() + 2800;
   state.photoCelebrationActive = true;
 
+  // Capture a snapshot of the full scene BEFORE the dino leaves
+  const photoSnapshot = captureSceneSnapshot();
+
   triggerFlash();
   renderCaptureStrip();
   renderGuide();
@@ -1019,18 +1022,71 @@ function takePhoto() {
   playTone("photo");
 
   window.setTimeout(() => {
-    showPhotoCelebration(dino, isNewCapture);
+    showPhotoCelebration(dino, isNewCapture, photoSnapshot);
   }, 400);
 }
 
-function showPhotoCelebration(dino, isNewCapture) {
-  // Capture a snapshot of the scene canvas
+function captureSceneSnapshot() {
+  const viewport = elements.viewport;
+  const vw = viewport.offsetWidth;
+  const vh = viewport.offsetHeight;
+
   const snapshotCanvas = document.createElement("canvas");
-  snapshotCanvas.width = elements.sceneCanvas.width;
-  snapshotCanvas.height = elements.sceneCanvas.height;
-  snapshotCanvas.getContext("2d").drawImage(elements.sceneCanvas, 0, 0);
+  snapshotCanvas.width = vw;
+  snapshotCanvas.height = vh;
+  const ctx = snapshotCanvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+
+  // Layer 1: the procedural scene canvas (or authored background)
+  ctx.drawImage(elements.sceneCanvas, 0, 0, vw, vh);
+
+  // Layer 2: if there's a hybrid/authored sprite visible, composite it on top
+  const spriteEl = elements.sceneSprite;
+  const stripImg = elements.sceneSpriteStrip;
+  if (spriteEl.classList.contains("is-visible") && stripImg.naturalWidth > 0) {
+    const spriteRect = spriteEl.getBoundingClientRect();
+    const viewportRect = viewport.getBoundingClientRect();
+
+    // Sprite position relative to viewport
+    const sx = spriteRect.left - viewportRect.left;
+    const sy = spriteRect.top - viewportRect.top;
+    const sw = spriteRect.width;
+    const sh = spriteRect.height;
+
+    // Which frame is currently displayed
+    const frames = parseInt(spriteEl.dataset.frames) || 8;
+    const frameWidth = stripImg.naturalWidth / frames;
+    const frameHeight = stripImg.naturalHeight;
+    const currentTransform = stripImg.style.transform || "";
+    const translateMatch = currentTransform.match(/translateX\(-?([\d.]+)%\)/);
+    const translatePercent = translateMatch ? parseFloat(translateMatch[1]) : 0;
+    const sourceX = (translatePercent / 100) * stripImg.naturalWidth;
+
+    // Check if sprite is flipped (facing left)
+    const isFlipped = spriteEl.style.transform && spriteEl.style.transform.includes("scaleX(-1)");
+
+    ctx.save();
+    if (isFlipped) {
+      ctx.translate(sx + sw, sy);
+      ctx.scale(-1, 1);
+      ctx.drawImage(stripImg, sourceX, 0, frameWidth, frameHeight, 0, 0, sw, sh);
+    } else {
+      ctx.drawImage(stripImg, sourceX, 0, frameWidth, frameHeight, sx, sy, sw, sh);
+    }
+    ctx.restore();
+  }
+
+  return snapshotCanvas;
+}
+
+function showPhotoCelebration(dino, isNewCapture, photoSnapshot) {
   elements.photoCelebrationSnapshot.innerHTML = "";
-  elements.photoCelebrationSnapshot.appendChild(snapshotCanvas);
+  if (photoSnapshot) {
+    photoSnapshot.style.width = "100%";
+    photoSnapshot.style.height = "100%";
+    photoSnapshot.style.imageRendering = "pixelated";
+    elements.photoCelebrationSnapshot.appendChild(photoSnapshot);
+  }
 
   elements.photoCelebrationLabel.textContent = isNewCapture
     ? "New Species Discovered!"
