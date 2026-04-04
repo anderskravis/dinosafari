@@ -68,8 +68,17 @@ const DINOSAURS = [
     period: "triassic",
     diet: "Carnivore",
     size: "Small pack hunter",
+    length: "3 meters (10 feet)",
+    weight: "20 kg (44 lbs)",
+    era: "Late Triassic, 228–201 million years ago",
     hint: "Tracks show up near open badlands and volcanic shelves.",
     notes: "A quick runner that darts through dry ground in groups.",
+    facts: [
+      "One of the earliest known dinosaurs, Coelophysis lived before most other dinosaurs evolved.",
+      "Hundreds of Coelophysis skeletons were found together at Ghost Ranch, New Mexico — one of the biggest dinosaur bone beds ever discovered.",
+      "Its name means 'hollow form' because its bones were hollow and lightweight, making it a fast runner.",
+      "Coelophysis was about as tall as a large dog but much longer, with a very long tail for balance.",
+    ],
     coords: [
       [1, 1],
     ],
@@ -87,8 +96,17 @@ const DINOSAURS = [
     period: "triassic",
     diet: "Herbivore",
     size: "Long-neck browser",
+    length: "7 meters (23 feet)",
+    weight: "600 kg (1,300 lbs)",
+    era: "Late Triassic, 214–204 million years ago",
     hint: "Search fern terraces where the ground softens after rain.",
     notes: "A calm grazer that pulls at cycads and young conifers.",
+    facts: [
+      "Plateosaurus was one of the first big plant-eating dinosaurs and could stand on its back legs to reach tall plants.",
+      "It was discovered in 1837 — one of the first dinosaurs ever named by scientists.",
+      "Dozens of Plateosaurus have been found stuck in ancient mud pits, suggesting they got trapped like animals in quicksand.",
+      "Even though it was an early dinosaur, Plateosaurus was already the size of a large horse.",
+    ],
     coords: [
       [3, 3],
     ],
@@ -106,8 +124,17 @@ const DINOSAURS = [
     period: "triassic",
     diet: "Carnivore",
     size: "Top predator",
+    length: "4 meters (13 feet)",
+    weight: "250 kg (550 lbs)",
+    era: "Late Triassic, 228–202 million years ago",
     hint: "If the scanner spikes near shore or marsh, stand still and wait.",
     notes: "Not a dinosaur, but a famous Triassic hunter that belongs in the hunt.",
+    facts: [
+      "Postosuchus was not a dinosaur! It was a close relative of modern crocodiles, but walked upright on land.",
+      "It was the top predator of its time — the T. Rex of the Triassic period.",
+      "Its name means 'Post crocodile' because it was found near Post, Texas.",
+      "Postosuchus had armor plates along its back for protection, even though it was already the scariest animal around.",
+    ],
     coords: [
       [4, 1],
     ],
@@ -125,8 +152,17 @@ const DINOSAURS = [
     period: "jurassic",
     diet: "Herbivore",
     size: "Plate-backed browser",
+    length: "9 meters (30 feet)",
+    weight: "3,500 kg (7,700 lbs)",
+    era: "Late Jurassic, 155–150 million years ago",
     hint: "Low fern country and open plains are promising.",
     notes: "Its tail spikes are no joke, even if it looks slow from a distance.",
+    facts: [
+      "Stegosaurus had a brain the size of a walnut — one of the smallest brains compared to body size of any dinosaur.",
+      "The plates on its back were probably used to show off to other Stegosaurus and may have flushed with color like a blush.",
+      "The four tail spikes are called a 'thagomizer.' A scientist named them after a Far Side cartoon!",
+      "Even though Stegosaurus was as long as a bus, its head was tiny — about the size of a horse's head.",
+    ],
     coords: [
       [0, 1],
     ],
@@ -144,8 +180,17 @@ const DINOSAURS = [
     period: "jurassic",
     diet: "Herbivore",
     size: "Towering giant",
+    length: "22 meters (72 feet)",
+    weight: "56,000 kg (62 tons)",
+    era: "Late Jurassic, 154–150 million years ago",
     hint: "Tall woodland and quiet marsh edges suit giant browsers.",
     notes: "The skyline changes when one of these moves through the trees.",
+    facts: [
+      "Brachiosaurus was tall enough to look into a fourth-floor window. Its head could reach 13 meters (43 feet) high!",
+      "Unlike most dinosaurs, its front legs were longer than its back legs — that's what gives it the sloped look, like a giraffe.",
+      "It ate about 400 kg (880 lbs) of plants every single day. That's like eating a bathtub full of salad!",
+      "Brachiosaurus probably didn't chew its food at all — it just swallowed leaves whole and let its stomach do the work.",
+    ],
     coords: [
       [3, 1],
     ],
@@ -163,8 +208,17 @@ const DINOSAURS = [
     period: "jurassic",
     diet: "Carnivore",
     size: "Large predator",
+    length: "9.5 meters (31 feet)",
+    weight: "2,300 kg (5,000 lbs)",
+    era: "Late Jurassic, 155–145 million years ago",
     hint: "Watch wide plains where the ferns thin out and the air feels still.",
     notes: "A dramatic sighting. Keep the camera ready when the signal turns strong.",
+    facts: [
+      "Allosaurus was the most common large predator of the Jurassic — like the lion of the dinosaur world.",
+      "It may have hunted in groups to take down giant sauropods many times its own size.",
+      "Scientists found an Allosaurus skull with over 40 healed injuries. These dinosaurs lived rough lives!",
+      "Its jaws could open incredibly wide, like a snake's, to take bigger bites than you'd expect from its skull.",
+    ],
     coords: [
       [1, 3],
     ],
@@ -182,8 +236,17 @@ const DINOSAURS = [
     period: "cretaceous",
     diet: "Herbivore",
     size: "Crested herd animal",
+    length: "10 meters (33 feet)",
+    weight: "2,500 kg (5,500 lbs)",
+    era: "Late Cretaceous, 76–73 million years ago",
     hint: "Look around wet meadows and noisy shoreline grass.",
     notes: "Its head crest likely carried sound over long distances.",
+    facts: [
+      "The long tube on its head wasn't just for show — it worked like a trombone, letting it blast a deep booming call across the forest!",
+      "Scientists have modeled the sound it made. You can actually listen to recordings of what it might have sounded like.",
+      "Parasaurolophus could walk on two legs or four, switching depending on whether it was running or grazing.",
+      "Its name means 'near crested lizard.' The crest could be nearly 1 meter (3 feet) long!",
+    ],
     coords: [
       [2, 2],
     ],
@@ -201,8 +264,17 @@ const DINOSAURS = [
     period: "cretaceous",
     diet: "Herbivore",
     size: "Horned giant",
+    length: "9 meters (30 feet)",
+    weight: "6,000 kg (13,000 lbs)",
+    era: "Late Cretaceous, 68–66 million years ago",
     hint: "Dry flats beside fern corridors are good places to wait.",
     notes: "Heavy, stubborn, and impossible to miss once it enters a clearing.",
+    facts: [
+      "Triceratops lived right up until the asteroid that wiped out the dinosaurs — it was one of the very last dinosaurs ever.",
+      "Its frill wasn't just armor — it was full of blood vessels and may have flushed bright colors to impress mates or scare enemies.",
+      "A Triceratops skull could be over 2 meters (7 feet) long. That's probably bigger than you!",
+      "Triceratops means 'three-horned face.' The two long brow horns could be over 1 meter (3 feet) each.",
+    ],
     coords: [
       [4, 0],
     ],
@@ -220,8 +292,17 @@ const DINOSAURS = [
     period: "cretaceous",
     diet: "Carnivore",
     size: "Apex predator",
+    length: "12 meters (40 feet)",
+    weight: "8,000 kg (17,600 lbs)",
+    era: "Late Cretaceous, 68–66 million years ago",
     hint: "Badlands and coastal approaches both attract giant carnivores.",
     notes: "A classic. When the signal peaks, do not waste the shot.",
+    facts: [
+      "T. Rex had the strongest bite of any land animal ever — strong enough to crush bone like a cracker.",
+      "Despite its tiny arms, each arm was still stronger than a human weightlifter. They just look small next to that enormous body!",
+      "T. Rex could eat 230 kg (500 lbs) of meat in a single bite. That's like swallowing a whole pig at once.",
+      "Scientists think T. Rex may have had feathers when it was young, like a giant fluffy chick.",
+    ],
     coords: [
       [0, 1],
     ],
@@ -600,6 +681,18 @@ const elements = {
   victoryGrid: document.getElementById("victory-grid"),
   gameoverOverlay: document.getElementById("gameover-overlay"),
   gameoverProgress: document.getElementById("gameover-progress"),
+  dinoDetailOverlay: document.getElementById("dino-detail-overlay"),
+  dinoDetailArt: document.getElementById("dino-detail-art"),
+  dinoDetailPeriod: document.getElementById("dino-detail-period"),
+  dinoDetailName: document.getElementById("dino-detail-name"),
+  dinoDetailDiet: document.getElementById("dino-detail-diet"),
+  dinoDetailSize: document.getElementById("dino-detail-size"),
+  dinoDetailLength: document.getElementById("dino-detail-length"),
+  dinoDetailWeight: document.getElementById("dino-detail-weight"),
+  dinoDetailEra: document.getElementById("dino-detail-era"),
+  dinoDetailDescription: document.getElementById("dino-detail-description"),
+  dinoDetailFactsList: document.getElementById("dino-detail-facts-list"),
+  dinoDetailClose: document.getElementById("dino-detail-close"),
 };
 
 const buttons = {
@@ -712,6 +805,10 @@ function bindEvents() {
   });
   buttons.start.addEventListener("click", startGameSession);
   buttons.closeGuide.addEventListener("click", () => elements.guideDialog.close());
+  elements.dinoDetailClose.addEventListener("click", closeDinoDetail);
+  elements.dinoDetailOverlay.addEventListener("click", (e) => {
+    if (e.target === elements.dinoDetailOverlay) closeDinoDetail();
+  });
   buttons.journal.addEventListener("click", () => {
     if (!elements.journalDialog.open) {
       elements.journalDialog.showModal();
@@ -1386,9 +1483,47 @@ function renderGuide() {
       <p class="guide-stat"><strong>Diet:</strong> ${captured ? dino.diet : "Classified"}</p>
       <p class="guide-stat"><strong>Size:</strong> ${captured ? dino.size : "Classified"}</p>
       <p class="guide-note">${captured ? dino.notes : "Photograph this animal to unlock its entry."}</p>
+      ${captured ? '<p class="guide-tap-hint">Tap for more info</p>' : ""}
     `;
+    if (captured) {
+      entry.style.cursor = "pointer";
+      entry.addEventListener("click", () => showDinoDetail(dino));
+    }
     elements.guideGrid.append(entry);
   });
+}
+
+function showDinoDetail(dino) {
+  const authored = AUTHORED_DINOSAURS[dino.id];
+  elements.dinoDetailArt.innerHTML = "";
+  if (authored?.guide) {
+    const img = document.createElement("img");
+    img.src = authored.guide;
+    img.alt = dino.name;
+    elements.dinoDetailArt.appendChild(img);
+  }
+
+  elements.dinoDetailPeriod.textContent = labelForPeriod(dino.period);
+  elements.dinoDetailName.textContent = dino.name;
+  elements.dinoDetailDiet.textContent = dino.diet;
+  elements.dinoDetailSize.textContent = dino.size;
+  elements.dinoDetailLength.textContent = dino.length || "Unknown";
+  elements.dinoDetailWeight.textContent = dino.weight || "Unknown";
+  elements.dinoDetailEra.textContent = dino.era || "Unknown";
+  elements.dinoDetailDescription.textContent = dino.notes;
+
+  elements.dinoDetailFactsList.innerHTML = "";
+  (dino.facts || []).forEach((fact) => {
+    const li = document.createElement("li");
+    li.textContent = fact;
+    elements.dinoDetailFactsList.appendChild(li);
+  });
+
+  elements.dinoDetailOverlay.classList.add("is-active");
+}
+
+function closeDinoDetail() {
+  elements.dinoDetailOverlay.classList.remove("is-active");
 }
 
 function guidePreviewSource(dino, captured) {
