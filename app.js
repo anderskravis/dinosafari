@@ -1644,6 +1644,7 @@ function attemptEncounter(dino, source, encounterToken) {
 
 function showEncounter(dino, encounterToken) {
   state.visibleDinoId = dino.id;
+  state.encounterSeed = Date.now();
   renderStatus(dino);
   renderScene();
   updateMessage(`${dino.name} entered the clearing. Take the shot now.`);
@@ -2439,9 +2440,31 @@ function updateAuthoredSceneAnimation(time) {
     return;
   }
 
+  // Frame animation (walk cycle)
   const frame = Math.floor((time / 1000) * spriteAsset.fps) % spriteAsset.frames;
   const offsetPercent = (frame * 100) / spriteAsset.frames;
   elements.sceneSpriteStrip.style.transform = `translateX(-${offsetPercent}%)`;
+
+  // Slow wandering drift — dino ambles gently across the scene
+  const refWidth = scene ? scene.resolution.width : SCENE_LOGICAL_WIDTH;
+  const refHeight = scene ? scene.resolution.height : SCENE_LOGICAL_HEIGHT;
+  const wanderRange = refWidth * 0.18; // drift ±18% of scene width
+  const wanderSpeed = 0.00007; // very slow — full cycle ~90 seconds
+  const phaseOffset = ((state.encounterSeed || 0) % 1000) / 1000 * Math.PI * 2;
+  const wanderX = Math.sin(time * wanderSpeed + phaseOffset) * wanderRange;
+  const wanderY = Math.sin(time * wanderSpeed * 0.6 + phaseOffset + 1.2) * refHeight * 0.015;
+
+  const baseLeft = spriteAsset.left + wanderX;
+  const baseTop = spriteAsset.top + wanderY;
+  const clampedLeft = Math.max(0, Math.min(baseLeft, refWidth - spriteAsset.width));
+  const clampedTop = Math.max(0, Math.min(baseTop, refHeight - spriteAsset.height));
+
+  elements.sceneSprite.style.left = `${(clampedLeft / refWidth) * 100}%`;
+  elements.sceneSprite.style.top = `${(clampedTop / refHeight) * 100}%`;
+
+  // Flip sprite to face direction of travel (sprites face right by default)
+  const velocity = Math.cos(time * wanderSpeed + phaseOffset);
+  elements.sceneSprite.style.transform = velocity < 0 ? "scaleX(-1)" : "scaleX(1)";
 }
 
 // --- Biome helper drawing functions ---
