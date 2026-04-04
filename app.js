@@ -1815,21 +1815,21 @@ function createAmbientAudio() {
 
   let context = null;
   let enabled = true;
-  // Map new biome names to closest audio profile
+  // Map new biome names to closest audio profile + per-biome tweaks
   const audioProfileMap = {
-    // Triassic
+    // Triassic — sparse, quiet, dry
     "desert-scrub": "badlands",
     "volcanic": "volcanic",
     "conifer-oasis": "fern",
     "river-delta": "marsh",
     "salt-flat": "badlands",
-    // Jurassic
+    // Jurassic — lush, alive
     "fern-prairie": "fern",
     "conifer-forest": "woodland",
     "cycad-grove": "fern",
     "lagoon": "coast",
     "swamp": "marsh",
-    // Cretaceous
+    // Cretaceous — more modern soundscape
     "flowering-meadow": "fern",
     "redwood-forest": "woodland",
     "coastal-plain": "coast",
@@ -1837,6 +1837,28 @@ function createAmbientAudio() {
     "river-valley": "marsh",
     // Legacy
     "shadow-grove": "shadow-grove",
+  };
+
+  // Per-biome parameter overrides layered on top of base profile
+  const biomeAudioTweaks = {
+    // Triassic — less life, more wind
+    "desert-scrub": { bird: 0.1, frog: 0, insect: 0.002, air: 0.025, airMod: 0.008 },
+    "volcanic": { bird: 0, frog: 0, insect: 0, air: 0.03, airMod: 0.01, water: 0.008, riverCutoff: 400 },
+    "conifer-oasis": { water: 0.012, bird: 0.5, frog: 0.06, insect: 0.004 },
+    "river-delta": { water: 0.025, frog: 0.5, bird: 0.3, insect: 0.006 },
+    "salt-flat": { bird: 0.05, frog: 0, insect: 0, air: 0.03, water: 0.001 },
+    // Jurassic — peak life
+    "fern-prairie": { bird: 0.9, insect: 0.008, rustle: 0.35 },
+    "conifer-forest": { bird: 0.7, rustle: 0.55, air: 0.008, insect: 0.006 },
+    "cycad-grove": { bird: 0.85, insect: 0.01, insectCenter: 5200, frog: 0.15 },
+    "lagoon": { water: 0.03, bird: 0.4, frog: 0.08, insect: 0.003, riverCutoff: 700 },
+    "swamp": { water: 0.022, frog: 0.8, insect: 0.012, bird: 0.3, rustle: 0.2 },
+    // Cretaceous — most diverse
+    "flowering-meadow": { bird: 0.95, insect: 0.01, insectCenter: 5500, birdMinFreq: 1000, birdMaxFreq: 1600 },
+    "redwood-forest": { bird: 0.6, rustle: 0.6, air: 0.01, birdMinFreq: 700, birdMaxFreq: 1100 },
+    "coastal-plain": { water: 0.025, bird: 0.45, air: 0.018, riverCutoff: 800 },
+    "chalk-cliff": { water: 0.02, air: 0.022, bird: 0.25, insect: 0.001, riverCutoff: 650 },
+    "river-valley": { water: 0.024, bird: 0.7, frog: 0.6, insect: 0.008 },
   };
 
   let profileName = "fern";
@@ -1868,7 +1890,10 @@ function createAmbientAudio() {
   function setProfile(nextProfile) {
     const mapped = audioProfileMap[nextProfile] || nextProfile;
     profileName = profileSettings[mapped] ? mapped : "fern";
-    currentSettings = profileSettings[profileName];
+    // Start from base profile, then layer biome-specific tweaks
+    const base = profileSettings[profileName];
+    const tweaks = biomeAudioTweaks[nextProfile];
+    currentSettings = tweaks ? Object.assign({}, base, tweaks) : base;
     if (context) {
       applyProfile();
     }
@@ -2696,22 +2721,47 @@ function drawSky(context, palette, rng, horizonY, time, biome) {
 }
 
 function drawFarTerrain(context, palette, rng, horizonY, biome, time) {
-  const waterBiomes = ["lagoon", "coastal-plain", "chalk-cliff"];
+  const oceanBiomes = ["lagoon", "coastal-plain", "chalk-cliff"];
+  const riverBiomes = ["river-delta", "river-valley"];
 
-  if (waterBiomes.includes(biome)) {
-    const waterGradient = context.createLinearGradient(0, horizonY - 2, 0, horizonY + 34);
-    waterGradient.addColorStop(0, mixColor(palette.water, "#ffffff", 0.26));
-    waterGradient.addColorStop(1, mixColor(palette.water, "#243546", 0.16));
+  if (oceanBiomes.includes(biome)) {
+    // Prominent ocean band — sits ABOVE the horizon so ground doesn't cover it
+    const oceanH = 46;
+    const oceanTop = horizonY - oceanH;
+    const waterGradient = context.createLinearGradient(0, oceanTop, 0, horizonY);
+    waterGradient.addColorStop(0, mixColor(palette.water, "#9ac8e0", 0.3));
+    waterGradient.addColorStop(0.5, palette.water);
+    waterGradient.addColorStop(1, mixColor(palette.water, "#3a6878", 0.25));
     context.fillStyle = waterGradient;
-    context.fillRect(0, horizonY - 2, SCENE_LOGICAL_WIDTH, 34);
+    context.fillRect(0, oceanTop, SCENE_LOGICAL_WIDTH, oceanH);
+    // White surf/foam line at shore edge
+    context.fillStyle = withAlpha("#ffffff", 0.3);
+    context.fillRect(0, horizonY - 3 + Math.sin(time * 0.0006) * 1, SCENE_LOGICAL_WIDTH, 3);
+    context.fillStyle = withAlpha("#ffffff", 0.15);
+    context.fillRect(0, horizonY - 7 + Math.sin(time * 0.0004 + 1) * 1.5, SCENE_LOGICAL_WIDTH, 2);
+  }
+
+  if (riverBiomes.includes(biome)) {
+    // Visible river band at the horizon line
+    const riverH = 18;
+    const riverY = horizonY - riverH + 2;
+    const riverGrad = context.createLinearGradient(0, riverY, 0, riverY + riverH);
+    riverGrad.addColorStop(0, mixColor(palette.water, "#90b8c8", 0.3));
+    riverGrad.addColorStop(1, palette.water);
+    context.fillStyle = riverGrad;
+    context.fillRect(0, riverY, SCENE_LOGICAL_WIDTH, riverH);
+    // Muddy shore edges
+    context.fillStyle = withAlpha(mixColor(palette.groundTop, "#a09060", 0.4), 0.5);
+    context.fillRect(0, riverY - 2, SCENE_LOGICAL_WIDTH, 3);
+    context.fillRect(0, riverY + riverH - 1, SCENE_LOGICAL_WIDTH, 3);
   }
 
   if (biome === "chalk-cliff") {
-    // White/cream cliff face below the water band
+    // White/cream cliff face below the ocean
     context.fillStyle = mixColor("#f0ece0", palette.ridge, 0.1);
-    context.fillRect(0, horizonY + 18, SCENE_LOGICAL_WIDTH, 28);
+    context.fillRect(0, horizonY + 28, SCENE_LOGICAL_WIDTH, 28);
     context.fillStyle = mixColor("#e8e2d2", palette.ridgeShadow, 0.08);
-    context.fillRect(0, horizonY + 30, SCENE_LOGICAL_WIDTH, 16);
+    context.fillRect(0, horizonY + 42, SCENE_LOGICAL_WIDTH, 16);
   }
 
   if (biome === "salt-flat") {
@@ -2721,8 +2771,14 @@ function drawFarTerrain(context, palette, rng, horizonY, biome, time) {
     // Jagged, angular ridge silhouettes
     drawRidgeLayer(context, horizonY - 8, 52, mixColor(palette.ridge, "#1a1210", 0.14), rng, 2.4, time * 0.00004);
     drawRidgeLayer(context, horizonY + 4, 30, palette.ridgeShadow, rng, 2.8, time * 0.00006);
+  } else if (oceanBiomes.includes(biome)) {
+    // Ocean biomes: distant land mass peeking above ocean on the far horizon
+    drawRidgeLayer(context, horizonY - 50, 14, withAlpha(palette.ridge, 0.25), rng, 0.5, time * 0.00004);
+  } else if (riverBiomes.includes(biome)) {
+    // River biomes: gentle hills behind the river
+    drawRidgeLayer(context, horizonY - 6, 28, mixColor(palette.ridge, "#ffffff", 0.08), rng, 0.7, time * 0.00005);
   } else {
-    // Standard ridge layers
+    // Standard ridge layers for land biomes
     drawRidgeLayer(context, horizonY - 8, 42, mixColor(palette.ridge, "#ffffff", 0.08), rng, 0.8, time * 0.00006);
     drawRidgeLayer(context, horizonY + 8, 24, palette.ridgeShadow, rng, 1.2, time * 0.00009);
   }
@@ -2922,32 +2978,38 @@ function drawMidground(context, palette, rng, horizonY, biome, time) {
   }
 
   if (biome === "redwood-forest") {
-    // 3-4 MASSIVE trunks, dense canopy overhead, fern understory
-    const trunkCount = 3 + Math.floor(rng() * 2);
+    // 3-5 MASSIVE redwood trees — each trunk has its own large canopy mass
+    const trunkCount = 3 + Math.floor(rng() * 3);
     for (let i = 0; i < trunkCount; i++) {
-      const tx = 30 + i * 120 + rng() * 30;
-      const tw = 8 + rng() * 4;
-      const th = 80 + rng() * 30;
+      const tx = 20 + i * 100 + rng() * 30;
+      const tw = 18 + rng() * 8;
+      const th = 90 + rng() * 30;
+      const canopyR = 30 + rng() * 16;
+      const canopyY = baseY - th + 10;
+      // Large dark canopy blob at top of each trunk
+      context.fillStyle = palette.midDark;
+      context.beginPath();
+      context.arc(tx, canopyY, canopyR, 0, Math.PI * 2);
+      context.fill();
+      // Lighter highlight on canopy
+      context.fillStyle = palette.midLight;
+      context.beginPath();
+      context.arc(tx + canopyR * 0.2, canopyY - canopyR * 0.2, canopyR * 0.55, 0, Math.PI * 2);
+      context.fill();
       // Massive reddish-brown trunk
       context.fillStyle = mixColor(palette.bark, "#5c2a1a", 0.3);
-      context.fillRect(tx - tw / 2, baseY - th, tw, th + 10);
-      // Highlight
-      context.fillStyle = withAlpha(mixColor(palette.bark, "#8a5030", 0.3), 0.4);
-      context.fillRect(tx, baseY - th, tw / 3, th + 10);
+      context.fillRect(tx - tw / 2, canopyY + canopyR * 0.3, tw, th - 10 + canopyR * 0.7);
+      // Highlight stripe on trunk
+      context.fillStyle = withAlpha(mixColor(palette.bark, "#a06838", 0.3), 0.45);
+      context.fillRect(tx + 1, canopyY + canopyR * 0.3, tw / 3, th - 10 + canopyR * 0.7);
     }
-    // Dense canopy band at top
-    context.fillStyle = withAlpha(palette.midDark, 0.5);
-    context.fillRect(0, baseY - 90, SCENE_LOGICAL_WIDTH, 40);
-    context.fillStyle = withAlpha(palette.midLight, 0.2);
-    context.fillRect(0, baseY - 80, SCENE_LOGICAL_WIDTH, 20);
-    // Fern understory
-    for (let i = 0; i < 8; i++) {
-      const fx = 20 + i * 58 + rng() * 20;
-      context.strokeStyle = withAlpha(palette.grass, 0.4);
-      context.lineWidth = 1;
+    // Chunky fern understory — filled arcs
+    for (let i = 0; i < 6; i++) {
+      const fx = 10 + i * 78 + rng() * 20;
+      context.fillStyle = withAlpha(palette.grass, 0.4);
       context.beginPath();
-      context.arc(fx, baseY + 6, 6 + rng() * 4, Math.PI, 0);
-      context.stroke();
+      context.arc(fx, baseY + 8, 12 + rng() * 6, Math.PI, 0);
+      context.fill();
     }
     return;
   }
