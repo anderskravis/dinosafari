@@ -701,92 +701,108 @@ function drawStegosaurus(image, frameIndex, frameCount, overridePalette = null) 
     eye: PALETTE.eye,
   };
 
+  // Stegosaurus faces RIGHT: small head low-right, arched back peaking at hips,
+  // thick tail extending LEFT with thagomizer spikes.
+  // Hip is highest point (~y=48), head lowest (~y=72). Back arches dramatically.
+
   const phase = (frameIndex / frameCount) * Math.PI * 2;
-  const bob = Math.sin(phase) * 1.0;
-  const headBob = Math.cos(phase) * 1.2;
-  const tailSway = Math.sin(phase) * 3;
-  const legShift = Math.sin(phase) * 1.4;
+  const bob = Math.sin(phase) * 0.8;
+  const headBob = Math.cos(phase) * 1.0;
+  const tailSway = Math.sin(phase) * 2.5;
+  const legShift = Math.sin(phase) * 1.2;
 
-  drawGroundShadow(image, 34, 88 + bob, 28, 7, overridePalette ? 0.12 : 0.22);
+  drawGroundShadow(image, 36, 88 + bob, 30, 7, overridePalette ? 0.12 : 0.2);
 
-  // Tail with thagomizer spikes
+  // --- TAIL: extends LEFT from hip, held roughly horizontal, thick ---
   drawTube(image, [
-    [2 + tailSway * 0.5, 56 + bob],
-    [8 + tailSway * 0.3, 56 + bob],
-    [16, 56 + bob],
-    [22, 58 + bob],
-  ], 2.0, 5.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+    [3 + tailSway * 0.5, 54 + bob],
+    [8 + tailSway * 0.3, 54 + bob],
+    [14 + tailSway * 0.1, 52 + bob],
+    [20, 52 + bob],
+  ], 2.0, 5.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
 
-  // Thagomizer – 4 spikes at tail tip
+  // Thagomizer — 4 spikes at tail tip, 2 pointing up, 2 pointing down
   const plateColor = palette.plate || palette.highlight;
-  const tx = 2 + tailSway * 0.5, ty = 56 + bob;
-  fillPolygon(image, [[tx, ty - 2], [tx - 4, ty - 8], [tx - 2, ty - 2]], plateColor);
-  fillPolygon(image, [[tx + 2, ty - 2], [tx - 1, ty - 10], [tx + 4, ty - 2]], plateColor);
-  fillPolygon(image, [[tx, ty + 2], [tx - 4, ty + 8], [tx - 2, ty + 2]], plateColor);
-  fillPolygon(image, [[tx + 2, ty + 2], [tx - 1, ty + 9], [tx + 4, ty + 2]], plateColor);
+  const ttx = 3 + tailSway * 0.5, tty = 54 + bob;
+  // Upper spikes
+  fillPolygon(image, [[ttx + 2, tty - 1], [ttx - 5, tty - 10], [ttx - 1, tty - 1]], plateColor);
+  fillPolygon(image, [[ttx + 4, tty - 1], [ttx, tty - 12], [ttx + 6, tty - 2]], plateColor);
+  // Lower spikes
+  fillPolygon(image, [[ttx + 2, tty + 1], [ttx - 4, tty + 9], [ttx - 1, tty + 1]], plateColor);
+  fillPolygon(image, [[ttx + 4, tty + 1], [ttx + 1, tty + 10], [ttx + 6, tty + 2]], plateColor);
 
-  // Legs – short front, taller hind
-  const kneeA = Math.sin(phase) * 1.2;
-  const kneeB = Math.sin(phase + Math.PI) * 1.2;
-  // Hind legs (taller)
+  // --- HIND LEGS (under hip, ~x=24-32, taller) ---
+  const kneeA = Math.sin(phase) * 1.0;
+  const kneeB = Math.sin(phase + Math.PI) * 1.0;
   drawTube(image, [
-    [24, 62 + bob], [22 + kneeA, 72 + bob], [24, 80 + bob], [25, 88 + bob + legShift],
-  ], 5.0, 3.0, palette.shadow, palette.shadow, palette.highlight);
+    [24, 58 + bob], [22 + kneeA, 68 + bob], [24, 78 + bob], [25, 88 + bob + legShift],
+  ], 5.5, 3.0, palette.shadow, palette.shadow, palette.highlight);
   drawTube(image, [
-    [30, 62 + bob], [32 + kneeB, 72 + bob], [30, 80 + bob], [29, 88 + bob - legShift],
-  ], 5.5, 3.2, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
-  // Front legs (shorter)
+    [32, 58 + bob], [34 + kneeB, 68 + bob], [32, 78 + bob], [31, 88 + bob - legShift],
+  ], 6.0, 3.2, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // --- FRONT LEGS (under shoulders, ~x=44-48, shorter — creates the arch) ---
   drawTube(image, [
-    [48, 64 + bob], [46, 74 + bob], [48, 82 + bob], [49, 88 + bob + legShift * 0.5],
-  ], 3.8, 2.2, palette.shadow, palette.shadow, palette.highlight);
+    [44, 64 + bob], [43, 72 + bob], [44, 80 + bob], [45, 88 + bob + legShift * 0.6],
+  ], 4.0, 2.5, palette.shadow, palette.shadow, palette.highlight);
   drawTube(image, [
-    [54, 64 + bob], [56, 74 + bob], [54, 82 + bob], [53, 88 + bob - legShift * 0.5],
-  ], 4.0, 2.4, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+    [48, 64 + bob], [49, 72 + bob], [48, 80 + bob], [47, 88 + bob - legShift * 0.6],
+  ], 4.2, 2.6, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
   // Feet
   fillEllipse(image, 25, 89 + bob + legShift, 4, 2, palette.shadow);
-  fillEllipse(image, 29, 89 + bob - legShift, 4, 2, palette.shadow);
-  fillEllipse(image, 49, 89 + bob + legShift * 0.5, 3, 1.5, palette.shadow);
-  fillEllipse(image, 53, 89 + bob - legShift * 0.5, 3, 1.5, palette.shadow);
+  fillEllipse(image, 31, 89 + bob - legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 45, 89 + bob + legShift * 0.6, 3, 1.5, palette.shadow);
+  fillEllipse(image, 47, 89 + bob - legShift * 0.6, 3, 1.5, palette.shadow);
 
-  // Body – barrel shaped, arched back
-  drawEllipsoid(image, 36, 60 + bob, 18, 10, palette.body, palette.shadow, palette.highlight);
-  fillEllipse(image, 36, 65 + bob, 14, 5, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 55]);
+  // --- BODY: barrel shape, higher at hips (left), sloping down to shoulders (right) ---
+  // Main torso — tilted: hip end higher, shoulder end lower
+  drawEllipsoid(image, 36, 56 + bob, 20, 11, palette.body, palette.shadow, palette.highlight);
+  // Shoulder mass — slightly lower
+  drawEllipsoid(image, 50, 60 + bob, 10, 8, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Belly highlight
+  fillEllipse(image, 38, 62 + bob, 14, 4, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 50]);
 
-  // PLATES – 5 diamond/kite shapes along arched spine (the iconic feature!)
-  const plateSizes = [5, 7, 9, 7, 5];
-  const plateXs = [24, 30, 36, 42, 48];
+  // --- PLATES: 5 big diamond/kite shapes along arched spine (THE iconic feature) ---
+  // Spine arches from hip (high, left) down to shoulder (lower, right)
+  const plateSizes = [6, 9, 11, 9, 6];
+  const plateXPositions = [22, 29, 36, 43, 50];
   for (let i = 0; i < 5; i++) {
-    const px = plateXs[i];
-    const archY = 52 + bob - Math.sin((i / 4) * Math.PI) * 4; // arched spine
+    const px = plateXPositions[i];
+    // Spine arch: highest in middle, with overall slope from hip to shoulder
+    const spineY = 48 + bob - Math.sin((i / 4) * Math.PI) * 3 + i * 1.5;
     const sz = plateSizes[i];
-    // Diamond shape pointing up
+    // Big diamond pointing UP
     fillPolygon(image, [
-      [px, archY - sz],       // top
-      [px + sz * 0.45, archY], // right
-      [px, archY + 2],        // bottom
-      [px - sz * 0.45, archY], // left
+      [px, spineY - sz],           // tip (top)
+      [px + sz * 0.5, spineY],     // right
+      [px, spineY + 2],            // bottom
+      [px - sz * 0.5, spineY],     // left
     ], plateColor);
-    // Plate outline/shadow
-    drawLine(image, px, archY - sz, px + Math.floor(sz * 0.45), archY, palette.shadow);
-    drawLine(image, px, archY - sz, px - Math.floor(sz * 0.45), archY, palette.highlight);
+    // Light edge (left)
+    drawLine(image, px, spineY - sz, px - Math.floor(sz * 0.5), spineY, palette.highlight);
+    // Shadow edge (right)
+    drawLine(image, px, spineY - sz, px + Math.floor(sz * 0.5), spineY, palette.shadow);
   }
 
-  // Neck – short, sloping down
+  // --- NECK: short, angling DOWN-RIGHT from shoulder ---
   drawTube(image, [
-    [50, 60 + bob],
-    [56, 62 + bob + headBob * 0.3],
-    [60, 64 + bob + headBob * 0.6],
-  ], 4.5, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+    [56, 62 + bob],
+    [60, 66 + bob + headBob * 0.3],
+    [63, 70 + bob + headBob * 0.5],
+  ], 4.0, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
 
-  // Head – small, held low
-  const hx = 63, hy = 66 + bob + headBob;
+  // --- HEAD: small, held low (stego's brain was famously tiny) ---
+  const hx = 65, hy = 72 + bob + headBob;
   drawEllipsoid(image, hx, hy, 5, 3.5, palette.body, palette.shadow, palette.highlight);
-  drawEllipsoid(image, hx + 3, hy, 3, 2.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
-  drawLine(image, hx, hy + 2, hx + 5, hy + 2, palette.shadow);
-  setPixel(image, hx - 1, hy - 1, palette.eye);
+  // Snout
+  drawEllipsoid(image, hx + 4, hy + 1, 3, 2, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Beak/mouth line
+  drawLine(image, hx + 2, hy + 2, hx + 6, hy + 2, palette.shadow);
+  // Eye
   setPixel(image, hx, hy - 1, palette.eye);
 
-  stippleEllipse(image, 36, 60 + bob, 14, 7, palette.shadow, 0.1, 8500 + frameIndex);
+  stippleEllipse(image, 36, 56 + bob, 16, 8, palette.shadow, 0.1, 8500 + frameIndex);
 }
 
 // ─── Allosaurus ────────────────────────────────────────────────────────
