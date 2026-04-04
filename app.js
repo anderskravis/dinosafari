@@ -5,18 +5,18 @@ const PERIODS = [
     era: "252-201 MYA",
     label: "Early Triassic",
     biomes: [
-      ["volcanic", "volcanic", "badlands", "woodland", "woodland"],
-      ["volcanic", "badlands", "badlands", "woodland", "coast"],
-      ["badlands", "badlands", "fern", "fern", "coast"],
-      ["badlands", "fern", "fern", "marsh", "coast"],
-      ["woodland", "woodland", "fern", "marsh", "marsh"],
+      ["volcanic", "volcanic", "desert-scrub", "desert-scrub", "salt-flat"],
+      ["volcanic", "desert-scrub", "desert-scrub", "conifer-oasis", "river-delta"],
+      ["desert-scrub", "desert-scrub", "conifer-oasis", "conifer-oasis", "river-delta"],
+      ["salt-flat", "desert-scrub", "conifer-oasis", "river-delta", "river-delta"],
+      ["salt-flat", "salt-flat", "desert-scrub", "river-delta", "conifer-oasis"],
     ],
     locations: [
-      ["Basalt Rise", "Ash Ridge", "Red Stone Flats", "Conifer Verge", "Shellwater Edge"],
-      ["Smoke Hollow", "Dust Shelf", "Cinder Wash", "Ginkgo Run", "Breaker Beach"],
-      ["Sun Crack Basin", "Bone Dry Delta", "Fern Fan", "Cycad Pocket", "Saltwind Cove"],
-      ["Amber Trail", "Needle Plains", "Horsetail Grove", "Mire Channel", "Tide Mound"],
-      ["Night Pine Yard", "Stonewood Cut", "Frond Terrace", "Mudglass Pool", "Reed Sink"],
+      ["Basalt Rise", "Ash Vent Ridge", "Sun Crack Flats", "Dry Stone Shelf", "Bleached Pan"],
+      ["Smoke Hollow", "Dust Shelf", "Cinder Wash", "Green Spring Haven", "Mudflow Mouth"],
+      ["Red Rock Bench", "Bone Dry Delta", "Fern Spring Pool", "Shaded Brook Camp", "Silt Tongue"],
+      ["Salt Crust Rim", "Amber Trail", "Needle Shade Grove", "Mire Channel", "Reed Drift Fork"],
+      ["White Crack Basin", "Glaze Flat", "Scorched Stone Pass", "Slow Water Bend", "Quiet Canopy"],
     ],
   },
   {
@@ -25,18 +25,18 @@ const PERIODS = [
     era: "201-145 MYA",
     label: "Late Jurassic",
     biomes: [
-      ["fern", "fern", "woodland", "coast", "coast"],
-      ["fern", "fern", "woodland", "woodland", "coast"],
-      ["marsh", "fern", "fern", "woodland", "fern"],
-      ["marsh", "marsh", "fern", "woodland", "fern"],
-      ["coast", "marsh", "fern", "fern", "woodland"],
+      ["fern-prairie", "fern-prairie", "conifer-forest", "lagoon", "lagoon"],
+      ["fern-prairie", "fern-prairie", "conifer-forest", "conifer-forest", "lagoon"],
+      ["swamp", "fern-prairie", "fern-prairie", "conifer-forest", "cycad-grove"],
+      ["swamp", "swamp", "fern-prairie", "cycad-grove", "cycad-grove"],
+      ["lagoon", "swamp", "fern-prairie", "cycad-grove", "conifer-forest"],
     ],
     locations: [
-      ["Fern Basin", "Cycad Meadow", "Tall Cedar Run", "Blue Inlet", "Shingle Shore"],
+      ["Golden Fern Basin", "Cycad Meadow", "Tall Cedar Run", "Blue Inlet", "Shingle Shore"],
       ["Horsetail Garden", "Needle Hollow", "Pine Bench", "Shadow Grove", "Mist Lagoon"],
-      ["Silt Marsh", "Ginkgo Trail", "Thunder Plain", "Amber Woods", "Stone Fern Pass"],
-      ["Wet Reed Cut", "Quiet Bog", "Frond Terrace", "Split Cedar Vale", "Rook Ridge"],
-      ["Shell Bay", "Mudglass Fen", "Warm Plain", "Dust Fern Pocket", "Juniper Rise"],
+      ["Silt Bog", "Ginkgo Trail", "Thunder Plain", "Amber Woods", "Frond Canopy Walk"],
+      ["Wet Reed Cut", "Quiet Bog", "Open Fern Terrace", "Warm Cycad Bend", "Palm Shade Ring"],
+      ["Shell Bay", "Mudglass Fen", "Sunlit Plain", "Broad Frond Hollow", "Juniper Rise"],
     ],
   },
   {
@@ -45,18 +45,18 @@ const PERIODS = [
     era: "145-66 MYA",
     label: "Late Cretaceous",
     biomes: [
-      ["woodland", "woodland", "fern", "coast", "coast"],
-      ["woodland", "fern", "fern", "fern", "coast"],
-      ["badlands", "fern", "marsh", "fern", "woodland"],
-      ["badlands", "badlands", "marsh", "woodland", "woodland"],
-      ["volcanic", "badlands", "fern", "woodland", "coast"],
+      ["redwood-forest", "redwood-forest", "flowering-meadow", "coastal-plain", "coastal-plain"],
+      ["redwood-forest", "flowering-meadow", "flowering-meadow", "flowering-meadow", "coastal-plain"],
+      ["chalk-cliff", "flowering-meadow", "river-valley", "flowering-meadow", "redwood-forest"],
+      ["chalk-cliff", "chalk-cliff", "river-valley", "redwood-forest", "redwood-forest"],
+      ["coastal-plain", "chalk-cliff", "flowering-meadow", "redwood-forest", "coastal-plain"],
     ],
     locations: [
-      ["Cedar Rise", "Flowering Glen", "Palm Sweep", "Chalkwater Bay", "Breaker Reach"],
-      ["Redwood Gate", "Bloom Trail", "Golden Fern Run", "Dragonfly Meadow", "Pearl Cove"],
-      ["Dustwall Bench", "Willow Fronds", "Crooked Marsh", "Amber Field", "Shade Timber"],
-      ["Iron Flats", "Sunburn Wash", "Reed Delta", "North Cedar Cut", "Branch Lake"],
-      ["Glass Fire Rim", "Hornstone Yard", "Petal Prairie", "Tall Timber Bend", "Moon Bay"],
+      ["Cedar Rise", "Ancient Column Grove", "Bloom Trail", "Breaker Reach", "Pearl Cove"],
+      ["Redwood Gate", "Petal Drift Meadow", "Golden Fern Run", "Dragonfly Meadow", "Saltwind Shore"],
+      ["White Ledge Bench", "Willow Fronds", "Crooked River Bend", "Amber Field", "Shade Timber"],
+      ["Chalk Notch", "Pale Bluff", "Reed Delta", "North Cedar Cut", "Branch Lake"],
+      ["Horizon Flat", "Hornstone Yard", "Petal Prairie", "Tall Timber Bend", "Moon Bay"],
     ],
   },
 ];
@@ -71,8 +71,7 @@ const DINOSAURS = [
     hint: "Tracks show up near open badlands and volcanic shelves.",
     notes: "A quick runner that darts through dry ground in groups.",
     coords: [
-      [1, 2],
-      [2, 1],
+      [1, 1],
     ],
     palette: {
       body: "#6b56af",
@@ -91,8 +90,7 @@ const DINOSAURS = [
     hint: "Search fern terraces where the ground softens after rain.",
     notes: "A calm grazer that pulls at cycads and young conifers.",
     coords: [
-      [2, 3],
-      [4, 2],
+      [3, 3],
     ],
     palette: {
       body: "#7f6242",
@@ -111,8 +109,7 @@ const DINOSAURS = [
     hint: "If the scanner spikes near shore or marsh, stand still and wait.",
     notes: "Not a dinosaur, but a famous Triassic hunter that belongs in the hunt.",
     coords: [
-      [4, 3],
-      [3, 4],
+      [4, 1],
     ],
     palette: {
       body: "#87523c",
@@ -132,7 +129,6 @@ const DINOSAURS = [
     notes: "Its tail spikes are no joke, even if it looks slow from a distance.",
     coords: [
       [0, 1],
-      [2, 2],
     ],
     palette: {
       body: "#b06d3f",
@@ -152,7 +148,6 @@ const DINOSAURS = [
     notes: "The skyline changes when one of these moves through the trees.",
     coords: [
       [3, 1],
-      [4, 4],
     ],
     palette: {
       body: "#8a7b58",
@@ -171,8 +166,7 @@ const DINOSAURS = [
     hint: "Watch wide plains where the ferns thin out and the air feels still.",
     notes: "A dramatic sighting. Keep the camera ready when the signal turns strong.",
     coords: [
-      [4, 2],
-      [2, 4],
+      [1, 3],
     ],
     palette: {
       body: "#944632",
@@ -191,7 +185,6 @@ const DINOSAURS = [
     hint: "Look around wet meadows and noisy shoreline grass.",
     notes: "Its head crest likely carried sound over long distances.",
     coords: [
-      [1, 3],
       [2, 2],
     ],
     palette: {
@@ -211,8 +204,7 @@ const DINOSAURS = [
     hint: "Dry flats beside fern corridors are good places to wait.",
     notes: "Heavy, stubborn, and impossible to miss once it enters a clearing.",
     coords: [
-      [3, 0],
-      [4, 1],
+      [4, 0],
     ],
     palette: {
       body: "#866f4b",
@@ -231,8 +223,7 @@ const DINOSAURS = [
     hint: "Badlands and coastal approaches both attract giant carnivores.",
     notes: "A classic. When the signal peaks, do not waste the shot.",
     coords: [
-      [0, 4],
-      [4, 0],
+      [0, 1],
     ],
     palette: {
       body: "#7c3529",
@@ -302,107 +293,113 @@ const SCENE_PIXEL_WIDTH = 160;
 const SCENE_PIXEL_HEIGHT = 100;
 
 const BIOME_PALETTES = {
-  fern: {
-    skyTop: "#8fb3e6",
-    skyBottom: "#dee6f8",
-    haze: "#f6fbff",
-    glow: "#fff6d6",
-    ridge: "#6c8694",
-    ridgeShadow: "#4e6570",
-    midDark: "#39542f",
-    midLight: "#708767",
-    groundTop: "#95ab49",
-    groundBottom: "#4f6121",
-    grass: "#8cab44",
-    grassDark: "#475b1f",
-    water: "#85a7b3",
-    rock: "#72674d",
-    bark: "#6d5e46",
+  // --- Triassic biomes (hot, arid) ---
+  "desert-scrub": {
+    skyTop: "#c4956a", skyBottom: "#e8c49a", haze: "#f0dcc0", glow: "#ffe8b0",
+    ridge: "#8b6b4a", ridgeShadow: "#6b4e35",
+    midDark: "#7a5c3a", midLight: "#a08060",
+    groundTop: "#c49a6a", groundBottom: "#8b6840",
+    grass: "#8a7a4a", grassDark: "#6b5c35", water: "#7a9ab0", rock: "#8b7560", bark: "#6b5040",
   },
-  woodland: {
-    skyTop: "#7ea0d4",
-    skyBottom: "#d3e0f0",
-    haze: "#edf7ff",
-    glow: "#fff1c8",
-    ridge: "#61778c",
-    ridgeShadow: "#465b6b",
-    midDark: "#314925",
-    midLight: "#5f7957",
-    groundTop: "#8ca546",
-    groundBottom: "#45531b",
-    grass: "#84a13f",
-    grassDark: "#3b4d18",
-    water: "#7ba1ad",
-    rock: "#6b614f",
-    bark: "#5e5037",
+  "volcanic": {
+    skyTop: "#4a3028", skyBottom: "#6b4838", haze: "#5a4030", glow: "#e87030",
+    ridge: "#3a2820", ridgeShadow: "#2a1a14",
+    midDark: "#2a2018", midLight: "#4a3828",
+    groundTop: "#3a3028", groundBottom: "#1a1410",
+    grass: "#4a4030", grassDark: "#2a2418", water: "#4a3020", rock: "#5a4a3a", bark: "#3a2a1a",
   },
-  coast: {
-    skyTop: "#88addf",
-    skyBottom: "#e3ecfa",
-    haze: "#f7fbff",
-    glow: "#fff4d5",
-    ridge: "#89a6bf",
-    ridgeShadow: "#617b94",
-    midDark: "#3c5c4b",
-    midLight: "#7fa396",
-    groundTop: "#c5b56f",
-    groundBottom: "#62552f",
-    grass: "#b79d4f",
-    grassDark: "#675727",
-    water: "#6a99c6",
-    rock: "#8f8a73",
-    bark: "#67583e",
+  "conifer-oasis": {
+    skyTop: "#8aabcc", skyBottom: "#c8d8e4", haze: "#e0e8e0", glow: "#fff8d0",
+    ridge: "#7a8a6a", ridgeShadow: "#5a6a4a",
+    midDark: "#4a7a3a", midLight: "#6a9a5a",
+    groundTop: "#7aaa4a", groundBottom: "#5a8a3a",
+    grass: "#6a9a44", grassDark: "#4a7a2a", water: "#6aaac0", rock: "#8a8060", bark: "#7a5a3a",
   },
-  marsh: {
-    skyTop: "#93a8d0",
-    skyBottom: "#dfe7f2",
-    haze: "#f4fbf5",
-    glow: "#fff8d7",
-    ridge: "#667d74",
-    ridgeShadow: "#4d6059",
-    midDark: "#415132",
-    midLight: "#738a60",
-    groundTop: "#7f8d56",
-    groundBottom: "#3a3d25",
-    grass: "#7b8c50",
-    grassDark: "#3c4625",
-    water: "#6f94a0",
-    rock: "#625b48",
-    bark: "#584b35",
+  "river-delta": {
+    skyTop: "#90a8c4", skyBottom: "#c4d4e0", haze: "#e0e4d8", glow: "#ffecc0",
+    ridge: "#6a7a5a", ridgeShadow: "#4a5a3a",
+    midDark: "#4a6a3a", midLight: "#6a8a5a",
+    groundTop: "#9a8a60", groundBottom: "#7a6a44",
+    grass: "#6a8a3a", grassDark: "#4a6a2a", water: "#7a9a80", rock: "#7a7050", bark: "#6a5038",
   },
-  badlands: {
-    skyTop: "#97a8c9",
-    skyBottom: "#e4d7c1",
-    haze: "#fff5ea",
-    glow: "#ffe6c0",
-    ridge: "#9e7254",
-    ridgeShadow: "#6f4c36",
-    midDark: "#755032",
-    midLight: "#bb895f",
-    groundTop: "#ad8b4c",
-    groundBottom: "#5d4528",
-    grass: "#987540",
-    grassDark: "#5a4124",
-    water: "#84a3ae",
-    rock: "#8f6646",
-    bark: "#6d5037",
+  "salt-flat": {
+    skyTop: "#b0c0d0", skyBottom: "#dce4e8", haze: "#f0f0ec", glow: "#fffff0",
+    ridge: "#a0a898", ridgeShadow: "#808a78",
+    midDark: "#90987a", midLight: "#b0b89a",
+    groundTop: "#e0dcc8", groundBottom: "#c8c0aa",
+    grass: "#b0a880", grassDark: "#908870", water: "#a0b8c0", rock: "#b0a890", bark: "#8a7a60",
   },
-  volcanic: {
-    skyTop: "#a56f4c",
-    skyBottom: "#d5b58a",
-    haze: "#f8e0c5",
-    glow: "#ffddae",
-    ridge: "#6d514c",
-    ridgeShadow: "#453432",
-    midDark: "#3e2e2c",
-    midLight: "#8b6658",
-    groundTop: "#7f5b32",
-    groundBottom: "#30211e",
-    grass: "#6f5a31",
-    grassDark: "#2d221c",
-    water: "#737f87",
-    rock: "#734e42",
-    bark: "#4f3b36",
+  // --- Jurassic biomes (lush, humid) ---
+  "fern-prairie": {
+    skyTop: "#6a9ad0", skyBottom: "#b0cce8", haze: "#e0ecf4", glow: "#fff8d0",
+    ridge: "#6a8070", ridgeShadow: "#4a6050",
+    midDark: "#4a7a3a", midLight: "#7aa06a",
+    groundTop: "#a0b44a", groundBottom: "#7a9030",
+    grass: "#90a844", grassDark: "#607820", water: "#80a8b8", rock: "#7a7050", bark: "#8a6038",
+  },
+  "conifer-forest": {
+    skyTop: "#5a7a90", skyBottom: "#8aaab8", haze: "#c0d0c4", glow: "#d8e0c8",
+    ridge: "#3a5a3a", ridgeShadow: "#2a4028",
+    midDark: "#2a5028", midLight: "#4a7040",
+    groundTop: "#4a7038", groundBottom: "#2a4a20",
+    grass: "#3a6030", grassDark: "#2a4820", water: "#5a8878", rock: "#5a5a40", bark: "#5a3a20",
+  },
+  "cycad-grove": {
+    skyTop: "#70a0c4", skyBottom: "#b8d0e0", haze: "#e4e8d8", glow: "#ffe8b8",
+    ridge: "#5a7a5a", ridgeShadow: "#3a5a3a",
+    midDark: "#3a7030", midLight: "#5a9048",
+    groundTop: "#8aaa48", groundBottom: "#6a8a30",
+    grass: "#7a9a3a", grassDark: "#5a7a24", water: "#70a8b0", rock: "#7a7048", bark: "#6a4a28",
+  },
+  "lagoon": {
+    skyTop: "#68a0d4", skyBottom: "#a8cce8", haze: "#d8e8f0", glow: "#fff4d8",
+    ridge: "#6a8878", ridgeShadow: "#4a6858",
+    midDark: "#4a7a5a", midLight: "#6a9a7a",
+    groundTop: "#c8b888", groundBottom: "#a89868",
+    grass: "#80a060", grassDark: "#608040", water: "#58a0b8", rock: "#8a8068", bark: "#7a5838",
+  },
+  "swamp": {
+    skyTop: "#5a7068", skyBottom: "#8a9a88", haze: "#a8b0a0", glow: "#c0c8a8",
+    ridge: "#3a4a30", ridgeShadow: "#2a3820",
+    midDark: "#2a4020", midLight: "#4a5a38",
+    groundTop: "#4a5a30", groundBottom: "#2a3a18",
+    grass: "#3a5028", grassDark: "#2a3818", water: "#3a5838", rock: "#4a4830", bark: "#3a2a18",
+  },
+  // --- Cretaceous biomes (most modern, first flowers) ---
+  "flowering-meadow": {
+    skyTop: "#5a98d8", skyBottom: "#a8c8e8", haze: "#d8e8f4", glow: "#fff8d4",
+    ridge: "#5a8068", ridgeShadow: "#3a6048",
+    midDark: "#3a7a38", midLight: "#5aa058",
+    groundTop: "#78b040", groundBottom: "#58902a",
+    grass: "#68a838", grassDark: "#488820", water: "#70a8b4", rock: "#6a7048", bark: "#5a4028",
+  },
+  "redwood-forest": {
+    skyTop: "#4a6070", skyBottom: "#6a8890", haze: "#8aa0a0", glow: "#a8b8a8",
+    ridge: "#2a3a28", ridgeShadow: "#1a2818",
+    midDark: "#1a3818", midLight: "#3a5830",
+    groundTop: "#3a5828", groundBottom: "#1a3810",
+    grass: "#2a4820", grassDark: "#1a3014", water: "#3a6858", rock: "#4a4430", bark: "#4a2010",
+  },
+  "coastal-plain": {
+    skyTop: "#5898d0", skyBottom: "#a0c4e4", haze: "#d4e4f0", glow: "#ffecd0",
+    ridge: "#5a7868", ridgeShadow: "#3a5848",
+    midDark: "#3a6a40", midLight: "#5a8a60",
+    groundTop: "#88a848", groundBottom: "#689030",
+    grass: "#78a040", grassDark: "#588028", water: "#4898c0", rock: "#7a7858", bark: "#6a4830",
+  },
+  "chalk-cliff": {
+    skyTop: "#5890d0", skyBottom: "#a0c0e0", haze: "#d8e4f0", glow: "#fff0d8",
+    ridge: "#8a9a98", ridgeShadow: "#6a7a78",
+    midDark: "#6a8a7a", midLight: "#8aaaa0",
+    groundTop: "#e0dcd0", groundBottom: "#c8c0b0",
+    grass: "#88a870", grassDark: "#688850", water: "#4890c0", rock: "#d0c8b8", bark: "#7a6848",
+  },
+  "river-valley": {
+    skyTop: "#5a98d4", skyBottom: "#a8c8e4", haze: "#d8e8f0", glow: "#fff4d0",
+    ridge: "#4a7a50", ridgeShadow: "#2a5a30",
+    midDark: "#2a6a2a", midLight: "#4a8a48",
+    groundTop: "#68a838", groundBottom: "#488820",
+    grass: "#58a030", grassDark: "#38801a", water: "#4898b8", rock: "#5a6838", bark: "#5a3820",
   },
 };
 
@@ -1818,6 +1815,30 @@ function createAmbientAudio() {
 
   let context = null;
   let enabled = true;
+  // Map new biome names to closest audio profile
+  const audioProfileMap = {
+    // Triassic
+    "desert-scrub": "badlands",
+    "volcanic": "volcanic",
+    "conifer-oasis": "fern",
+    "river-delta": "marsh",
+    "salt-flat": "badlands",
+    // Jurassic
+    "fern-prairie": "fern",
+    "conifer-forest": "woodland",
+    "cycad-grove": "fern",
+    "lagoon": "coast",
+    "swamp": "marsh",
+    // Cretaceous
+    "flowering-meadow": "fern",
+    "redwood-forest": "woodland",
+    "coastal-plain": "coast",
+    "chalk-cliff": "coast",
+    "river-valley": "marsh",
+    // Legacy
+    "shadow-grove": "shadow-grove",
+  };
+
   let profileName = "fern";
   let currentSettings = profileSettings.fern;
 
@@ -1845,7 +1866,8 @@ function createAmbientAudio() {
   }
 
   function setProfile(nextProfile) {
-    profileName = profileSettings[nextProfile] ? nextProfile : "fern";
+    const mapped = audioProfileMap[nextProfile] || nextProfile;
+    profileName = profileSettings[mapped] ? mapped : "fern";
     currentSettings = profileSettings[profileName];
     if (context) {
       applyProfile();
@@ -2281,12 +2303,182 @@ function updateAuthoredSceneAnimation(time) {
   elements.sceneSpriteStrip.style.transform = `translateX(-${offsetPercent}%)`;
 }
 
+// --- Biome helper drawing functions ---
+
+function drawConifer(context, x, baseY, scale, palette) {
+  const trunkW = 4 * scale;
+  const trunkH = 28 * scale;
+  const canopyW = 16 * scale;
+  const canopyH = 35 * scale;
+  context.fillStyle = palette.bark;
+  context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  context.fillStyle = palette.midDark;
+  context.beginPath();
+  context.moveTo(x, baseY - trunkH - canopyH);
+  context.lineTo(x - canopyW / 2, baseY - trunkH + 4);
+  context.lineTo(x + canopyW / 2, baseY - trunkH + 4);
+  context.closePath();
+  context.fill();
+  context.fillStyle = palette.midLight;
+  context.beginPath();
+  context.moveTo(x, baseY - trunkH - canopyH);
+  context.lineTo(x, baseY - trunkH + 4);
+  context.lineTo(x + canopyW / 2, baseY - trunkH + 4);
+  context.closePath();
+  context.fill();
+}
+
+function drawBroadleaf(context, x, baseY, scale, palette) {
+  const trunkW = 3 * scale;
+  const trunkH = 22 * scale;
+  const canopyR = 12 * scale;
+  context.fillStyle = palette.bark;
+  context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  context.fillStyle = palette.midDark;
+  context.beginPath();
+  context.arc(x, baseY - trunkH - canopyR * 0.6, canopyR, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = palette.midLight;
+  context.beginPath();
+  context.arc(x + canopyR * 0.2, baseY - trunkH - canopyR * 0.8, canopyR * 0.6, 0, Math.PI * 2);
+  context.fill();
+}
+
+function drawCycad(context, x, baseY, scale, palette) {
+  const trunkW = 5 * scale;
+  const trunkH = 18 * scale;
+  context.fillStyle = palette.bark;
+  context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  context.strokeStyle = palette.midDark;
+  context.lineWidth = 2 * scale;
+  for (let i = -3; i <= 3; i++) {
+    const angle = (i / 3) * 0.8 - Math.PI / 2;
+    const len = 14 * scale;
+    context.beginPath();
+    context.moveTo(x, baseY - trunkH);
+    const endX = x + Math.cos(angle) * len;
+    const endY = baseY - trunkH + Math.sin(angle) * len;
+    const cpX = x + Math.cos(angle) * len * 0.6;
+    const cpY = baseY - trunkH + Math.sin(angle) * len * 0.4 - 6 * scale;
+    context.quadraticCurveTo(cpX, cpY, endX, endY);
+    context.stroke();
+  }
+  context.fillStyle = palette.midLight;
+  for (let i = -3; i <= 3; i++) {
+    const angle = (i / 3) * 0.8 - Math.PI / 2;
+    const len = 14 * scale;
+    const endX = x + Math.cos(angle) * len;
+    const endY = baseY - trunkH + Math.sin(angle) * len;
+    context.beginPath();
+    context.arc(endX, endY, 3 * scale, 0, Math.PI * 2);
+    context.fill();
+  }
+}
+
+function drawSmallBush(context, x, y, scale, palette) {
+  context.fillStyle = palette.midDark;
+  context.beginPath();
+  context.ellipse(x, y, 6 * scale, 4 * scale, 0, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = palette.midLight;
+  context.beginPath();
+  context.ellipse(x + 2, y - 1, 4 * scale, 3 * scale, 0, 0, Math.PI * 2);
+  context.fill();
+}
+
+function drawJaggedRock(context, x, baseY, scale, palette) {
+  context.fillStyle = palette.rock;
+  context.beginPath();
+  context.moveTo(x - 8 * scale, baseY);
+  context.lineTo(x - 4 * scale, baseY - 18 * scale);
+  context.lineTo(x + 1 * scale, baseY - 12 * scale);
+  context.lineTo(x + 5 * scale, baseY - 22 * scale);
+  context.lineTo(x + 10 * scale, baseY - 8 * scale);
+  context.lineTo(x + 12 * scale, baseY);
+  context.closePath();
+  context.fill();
+}
+
+function drawStump(context, x, baseY, scale, palette) {
+  context.fillStyle = palette.bark;
+  context.fillRect(x - 2 * scale, baseY - 10 * scale, 4 * scale, 10 * scale);
+  context.fillStyle = palette.rock;
+  context.beginPath();
+  context.moveTo(x - 3 * scale, baseY - 10 * scale);
+  context.lineTo(x - 1 * scale, baseY - 14 * scale);
+  context.lineTo(x + 2 * scale, baseY - 11 * scale);
+  context.closePath();
+  context.fill();
+}
+
+function drawHorsetail(context, x, baseY, scale, palette) {
+  context.strokeStyle = palette.grass;
+  context.lineWidth = 1;
+  context.beginPath();
+  context.moveTo(x, baseY);
+  context.lineTo(x, baseY - 16 * scale);
+  context.stroke();
+  for (let i = 0; i < 3; i++) {
+    const ty = baseY - 6 * scale - i * 4 * scale;
+    context.beginPath();
+    context.moveTo(x - 4 * scale, ty);
+    context.lineTo(x + 4 * scale, ty);
+    context.stroke();
+  }
+}
+
+function drawPrimitiveConifer(context, x, baseY, scale, palette) {
+  const trunkW = 3 * scale;
+  const trunkH = 24 * scale;
+  const canopyW = 10 * scale;
+  const canopyH = 30 * scale;
+  context.fillStyle = palette.bark;
+  context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  context.fillStyle = palette.midDark;
+  context.fillRect(x - canopyW / 2, baseY - trunkH - canopyH, canopyW, canopyH + 4);
+  context.fillStyle = palette.midLight;
+  context.fillRect(x, baseY - trunkH - canopyH, canopyW / 2, canopyH + 4);
+}
+
+function drawTreeFern(context, x, baseY, scale, palette) {
+  const trunkW = 2 * scale;
+  const trunkH = 16 * scale;
+  context.fillStyle = palette.bark;
+  context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  context.strokeStyle = palette.midDark;
+  context.lineWidth = 1.5 * scale;
+  for (let i = -2; i <= 2; i++) {
+    const angle = (i / 2) * 0.7 - Math.PI / 2;
+    const len = 10 * scale;
+    context.beginPath();
+    context.moveTo(x, baseY - trunkH);
+    const endX = x + Math.cos(angle) * len;
+    const endY = baseY - trunkH + Math.sin(angle) * len;
+    context.quadraticCurveTo(x + Math.cos(angle) * len * 0.5, baseY - trunkH - 4 * scale, endX, endY);
+    context.stroke();
+  }
+}
+
+// --- End biome helper drawing functions ---
+
 function drawSceneFrame(context, time) {
   const biome = currentBiome();
   const palette = scenePalette(state.periodId, biome);
   const seed = hashString(`${state.periodId}:${state.x}:${state.y}`);
   const rng = mulberry32(seed);
-  const horizonY = biome === "coast" ? 150 : biome === "marsh" ? 158 : 166;
+
+  let horizonY;
+  if (biome === "lagoon" || biome === "coastal-plain") {
+    horizonY = 150;
+  } else if (biome === "swamp" || biome === "river-delta" || biome === "river-valley") {
+    horizonY = 155;
+  } else if (biome === "chalk-cliff") {
+    horizonY = 145;
+  } else if (biome === "conifer-forest" || biome === "redwood-forest") {
+    horizonY = 160;
+  } else {
+    horizonY = 166;
+  }
 
   context.clearRect(0, 0, SCENE_BUFFER_WIDTH, SCENE_BUFFER_HEIGHT);
 
@@ -2366,7 +2558,7 @@ function drawContactFrame(context, time) {
 }
 
 function drawGuidePreviewFrame(context, dino, captured) {
-  const palette = scenePalette(dino.period, dino.period === "triassic" ? "badlands" : dino.period === "jurassic" ? "fern" : "woodland");
+  const palette = scenePalette(dino.period, dino.period === "triassic" ? "desert-scrub" : dino.period === "jurassic" ? "fern-prairie" : "flowering-meadow");
   const gradient = context.createLinearGradient(0, 0, 0, 132);
   gradient.addColorStop(0, mixColor(palette.skyTop, "#ffffff", 0.14));
   gradient.addColorStop(1, mixColor(palette.groundBottom, "#27211a", 0.15));
@@ -2401,7 +2593,7 @@ function drawGuidePreviewFrame(context, dino, captured) {
 }
 
 function scenePalette(periodId, biome) {
-  const base = BIOME_PALETTES[biome] || BIOME_PALETTES.fern;
+  const base = BIOME_PALETTES[biome] || BIOME_PALETTES["fern-prairie"];
   const tint = PERIOD_TINTS[periodId] || PERIOD_TINTS.jurassic;
 
   return {
@@ -2433,7 +2625,10 @@ function drawSky(context, palette, rng, horizonY, time, biome) {
 
   const glowX = 80 + rng() * 260;
   const glowY = 42 + rng() * 24;
-  drawSoftCircle(context, glowX, glowY, 52, withAlpha(palette.glow, biome === "volcanic" ? 0.2 : 0.3));
+  const canopyBiomes = ["redwood-forest", "conifer-forest", "swamp"];
+  const coastalBiomes = ["lagoon", "coastal-plain", "chalk-cliff"];
+  const dimGlow = biome === "volcanic" || canopyBiomes.includes(biome);
+  drawSoftCircle(context, glowX, glowY, 52, withAlpha(palette.glow, dimGlow ? 0.2 : coastalBiomes.includes(biome) ? 0.38 : 0.3));
 
   if (biome === "volcanic") {
     for (let index = 0; index < 4; index += 1) {
@@ -2444,6 +2639,37 @@ function drawSky(context, palette, rng, horizonY, time, biome) {
     return;
   }
 
+  if (biome === "salt-flat") {
+    // Heat shimmer — subtle animated distortion line near horizon
+    for (let x = 0; x < SCENE_LOGICAL_WIDTH; x += 6) {
+      const shimmerY = horizonY - 4 + Math.sin(time * 0.003 + x * 0.08) * 1.5;
+      context.fillStyle = "rgba(255, 255, 255, 0.08)";
+      context.fillRect(x, shimmerY, 4, 1);
+    }
+    return;
+  }
+
+  if (canopyBiomes.includes(biome)) {
+    // Fewer, smaller clouds (canopy blocks sky)
+    for (let index = 0; index < 3; index += 1) {
+      const cloudX = 20 + index * 150 + Math.sin(time * 0.00018 + index * 0.8) * 12;
+      const cloudY = 18 + (index % 2) * 14 + rng() * 10;
+      drawSoftCloud(context, cloudX, cloudY, 60 + rng() * 18, 18 + rng() * 8, "rgba(255, 255, 255, 0.36)", 4);
+    }
+    return;
+  }
+
+  if (coastalBiomes.includes(biome)) {
+    // More, larger, brighter clouds
+    for (let index = 0; index < 8; index += 1) {
+      const cloudX = -60 + index * 72 + Math.sin(time * 0.00018 + index * 0.8) * 12;
+      const cloudY = 22 + (index % 3) * 14 + rng() * 12;
+      drawSoftCloud(context, cloudX, cloudY, 110 + rng() * 34, 30 + rng() * 16, "rgba(255, 255, 255, 0.62)", 7);
+    }
+    return;
+  }
+
+  // Standard cloud rendering
   for (let index = 0; index < 6; index += 1) {
     const cloudX = -40 + index * 96 + Math.sin(time * 0.00018 + index * 0.8) * 12;
     const cloudY = 26 + (index % 3) * 16 + rng() * 12;
@@ -2452,7 +2678,9 @@ function drawSky(context, palette, rng, horizonY, time, biome) {
 }
 
 function drawFarTerrain(context, palette, rng, horizonY, biome, time) {
-  if (biome === "coast") {
+  const waterBiomes = ["lagoon", "coastal-plain", "chalk-cliff"];
+
+  if (waterBiomes.includes(biome)) {
     const waterGradient = context.createLinearGradient(0, horizonY - 2, 0, horizonY + 34);
     waterGradient.addColorStop(0, mixColor(palette.water, "#ffffff", 0.26));
     waterGradient.addColorStop(1, mixColor(palette.water, "#243546", 0.16));
@@ -2460,32 +2688,318 @@ function drawFarTerrain(context, palette, rng, horizonY, biome, time) {
     context.fillRect(0, horizonY - 2, SCENE_LOGICAL_WIDTH, 34);
   }
 
-  drawRidgeLayer(context, horizonY - 8, 42, mixColor(palette.ridge, "#ffffff", 0.08), rng, 0.8, time * 0.00006);
-  drawRidgeLayer(context, horizonY + 8, 24, palette.ridgeShadow, rng, 1.2, time * 0.00009);
+  if (biome === "chalk-cliff") {
+    // White/cream cliff face below the water band
+    context.fillStyle = mixColor("#f0ece0", palette.ridge, 0.1);
+    context.fillRect(0, horizonY + 18, SCENE_LOGICAL_WIDTH, 28);
+    context.fillStyle = mixColor("#e8e2d2", palette.ridgeShadow, 0.08);
+    context.fillRect(0, horizonY + 30, SCENE_LOGICAL_WIDTH, 16);
+  }
+
+  if (biome === "salt-flat") {
+    // Very flat, low ridges — gentle undulation
+    drawRidgeLayer(context, horizonY + 2, 6, mixColor(palette.ridge, "#ffffff", 0.12), rng, 0.3, time * 0.00004);
+  } else if (biome === "volcanic") {
+    // Jagged, angular ridge silhouettes
+    drawRidgeLayer(context, horizonY - 8, 52, mixColor(palette.ridge, "#1a1210", 0.14), rng, 2.4, time * 0.00004);
+    drawRidgeLayer(context, horizonY + 4, 30, palette.ridgeShadow, rng, 2.8, time * 0.00006);
+  } else {
+    // Standard ridge layers
+    drawRidgeLayer(context, horizonY - 8, 42, mixColor(palette.ridge, "#ffffff", 0.08), rng, 0.8, time * 0.00006);
+    drawRidgeLayer(context, horizonY + 8, 24, palette.ridgeShadow, rng, 1.2, time * 0.00009);
+  }
 
   context.fillStyle = withAlpha(palette.haze, 0.6);
   context.fillRect(0, horizonY - 2, SCENE_LOGICAL_WIDTH, 34);
 }
 
 function drawMidground(context, palette, rng, horizonY, biome, time) {
-  if (biome === "woodland" || biome === "fern") {
-    drawForestBand(context, palette, horizonY + 6, rng, biome === "woodland" ? 15 : 11, time);
+  const baseY = horizonY + 10;
+
+  if (biome === "desert-scrub") {
+    // 3-4 low scrubby bushes, 2-3 rocks
+    const bushCount = 3 + Math.floor(rng() * 2);
+    for (let i = 0; i < bushCount; i++) {
+      const bx = 40 + i * 110 + rng() * 40;
+      drawSmallBush(context, bx, baseY + rng() * 8, 1 + rng() * 0.3, palette);
+    }
+    for (let i = 0; i < 2 + Math.floor(rng() * 2); i++) {
+      const rx = 60 + i * 140 + rng() * 50;
+      context.fillStyle = withAlpha(palette.rock, 0.7);
+      context.fillRect(rx, baseY + 2 + rng() * 6, 6 + rng() * 6, 4 + rng() * 3);
+    }
     return;
   }
 
-  if (biome === "marsh") {
-    drawReedBand(context, palette, horizonY + 12, rng, time);
-    drawPools(context, palette, horizonY + 16, rng);
+  if (biome === "volcanic") {
+    // 2-3 jagged rock formations, 1-2 charred stumps
+    for (let i = 0; i < 2 + Math.floor(rng() * 2); i++) {
+      const rx = 50 + i * 160 + rng() * 40;
+      drawJaggedRock(context, rx, baseY + 4, 1.1 + rng() * 0.4, palette);
+    }
+    for (let i = 0; i < 1 + Math.floor(rng() * 2); i++) {
+      const sx = 120 + i * 180 + rng() * 60;
+      drawStump(context, sx, baseY + 2, 1 + rng() * 0.3, palette);
+    }
     return;
   }
 
-  if (biome === "badlands" || biome === "volcanic") {
-    drawMesaBand(context, palette, horizonY + 8, rng, biome === "volcanic");
+  if (biome === "conifer-oasis") {
+    // 3-4 tall primitive conifers + small water pool
+    const treeCount = 3 + Math.floor(rng() * 2);
+    for (let i = 0; i < treeCount; i++) {
+      const tx = 60 + i * 100 + rng() * 30;
+      drawPrimitiveConifer(context, tx, baseY + 4, 1 + rng() * 0.3, palette);
+    }
+    // Small water pool
+    drawSoftEllipse(context, 240 + rng() * 60, baseY + 12, 30 + rng() * 14, 8 + rng() * 3, withAlpha(palette.water, 0.32));
     return;
   }
 
-  if (biome === "coast") {
-    drawCoastalBand(context, palette, horizonY + 10, rng, time);
+  if (biome === "river-delta") {
+    // Horizontal river band
+    const riverY = baseY + 4;
+    const riverGradient = context.createLinearGradient(0, riverY, 0, riverY + 20);
+    riverGradient.addColorStop(0, mixColor(palette.water, palette.groundTop, 0.3));
+    riverGradient.addColorStop(1, palette.water);
+    context.fillStyle = riverGradient;
+    context.fillRect(0, riverY, SCENE_LOGICAL_WIDTH, 20);
+    // Horsetails on banks
+    for (let i = 0; i < 8; i++) {
+      const hx = 20 + i * 56 + rng() * 24;
+      const hy = rng() > 0.5 ? riverY - 1 : riverY + 21;
+      drawHorsetail(context, hx, hy, 0.8 + rng() * 0.3, palette);
+    }
+    return;
+  }
+
+  if (biome === "salt-flat") {
+    // Almost empty — 1 distant tiny bush, subtle cracked ground lines
+    if (rng() > 0.4) {
+      drawSmallBush(context, 200 + rng() * 80, baseY + 6, 0.6, palette);
+    }
+    context.strokeStyle = withAlpha(palette.rock, 0.12);
+    context.lineWidth = 1;
+    for (let i = 0; i < 6; i++) {
+      const lx = rng() * SCENE_LOGICAL_WIDTH;
+      const ly = baseY + rng() * 16;
+      context.beginPath();
+      context.moveTo(lx, ly);
+      context.lineTo(lx + 20 + rng() * 30, ly + rng() * 6 - 3);
+      context.stroke();
+    }
+    return;
+  }
+
+  if (biome === "fern-prairie") {
+    // THE CLASSIC — 4-5 tall conifers, open and spacious
+    drawForestBand(context, palette, baseY, rng, 5, time, drawConifer);
+    return;
+  }
+
+  if (biome === "conifer-forest") {
+    // Dense — 8-10 conifers filling the scene
+    drawForestBand(context, palette, baseY, rng, 9, time, drawConifer);
+    // Mossy ground patches
+    for (let i = 0; i < 5; i++) {
+      drawSoftEllipse(context, rng() * SCENE_LOGICAL_WIDTH, baseY + 8 + rng() * 10, 18 + rng() * 10, 4 + rng() * 2, withAlpha(palette.grass, 0.15));
+    }
+    return;
+  }
+
+  if (biome === "cycad-grove") {
+    // 3-4 cycads and 2-3 tree ferns
+    const cycadCount = 3 + Math.floor(rng() * 2);
+    for (let i = 0; i < cycadCount; i++) {
+      const cx = 40 + i * 110 + rng() * 30;
+      drawCycad(context, cx, baseY + 4, 1 + rng() * 0.3, palette);
+    }
+    for (let i = 0; i < 2 + Math.floor(rng() * 2); i++) {
+      const fx = 80 + i * 130 + rng() * 40;
+      drawTreeFern(context, fx, baseY + 6, 1 + rng() * 0.2, palette);
+    }
+    return;
+  }
+
+  if (biome === "lagoon") {
+    // Water in lower portion, sandy shore, distant conifer silhouettes, rocks
+    context.fillStyle = withAlpha(palette.water, 0.42);
+    context.fillRect(0, baseY + 10, SCENE_LOGICAL_WIDTH, 24);
+    // Sandy shore band
+    context.fillStyle = withAlpha(mixColor(palette.groundTop, "#e8dcc0", 0.4), 0.6);
+    context.fillRect(0, baseY + 4, SCENE_LOGICAL_WIDTH, 8);
+    // Distant conifer silhouettes
+    for (let i = 0; i < 3; i++) {
+      const tx = 80 + i * 140 + rng() * 40;
+      context.fillStyle = withAlpha(palette.midDark, 0.3);
+      context.beginPath();
+      context.moveTo(tx, baseY - 20);
+      context.lineTo(tx - 8, baseY + 4);
+      context.lineTo(tx + 8, baseY + 4);
+      context.closePath();
+      context.fill();
+    }
+    // Rocks in shallows
+    for (let i = 0; i < 3; i++) {
+      context.fillStyle = withAlpha(palette.rock, 0.5);
+      const rx = 60 + i * 140 + rng() * 60;
+      context.fillRect(rx, baseY + 14 + rng() * 6, 5 + rng() * 4, 3 + rng() * 2);
+    }
+    return;
+  }
+
+  if (biome === "swamp") {
+    // Fallen logs, dense fern clusters, dark water pools, overhanging vines
+    // Fallen logs
+    for (let i = 0; i < 1 + Math.floor(rng() * 2); i++) {
+      const lx = 40 + i * 200 + rng() * 60;
+      context.fillStyle = withAlpha(palette.bark, 0.7);
+      context.fillRect(lx, baseY + 6 + rng() * 4, 30 + rng() * 20, 4 + rng() * 2);
+    }
+    // Dense fern clusters
+    for (let i = 0; i < 6; i++) {
+      const fx = 20 + i * 76 + rng() * 20;
+      const fy = baseY + 2 + rng() * 10;
+      context.strokeStyle = withAlpha(palette.midDark, 0.6);
+      context.lineWidth = 1.5;
+      for (let j = 0; j < 4; j++) {
+        context.beginPath();
+        context.arc(fx + j * 3, fy, 5 + rng() * 3, Math.PI, 0);
+        context.stroke();
+      }
+    }
+    // Dark water pools
+    for (let i = 0; i < 3; i++) {
+      drawSoftEllipse(context, 60 + i * 150 + rng() * 30, baseY + 14 + rng() * 6, 28 + rng() * 16, 6 + rng() * 3, withAlpha(palette.water, 0.3));
+    }
+    // Overhanging vine shapes
+    context.strokeStyle = withAlpha(palette.midDark, 0.35);
+    context.lineWidth = 1;
+    for (let i = 0; i < 4; i++) {
+      const vx = 30 + i * 120 + rng() * 30;
+      context.beginPath();
+      context.moveTo(vx, baseY - 16);
+      context.quadraticCurveTo(vx + 6, baseY - 4, vx + 2, baseY + 8);
+      context.stroke();
+    }
+    return;
+  }
+
+  if (biome === "flowering-meadow") {
+    // 2-3 broadleaf trees with round canopies, scattered flower dots
+    const treeCount = 2 + Math.floor(rng() * 2);
+    for (let i = 0; i < treeCount; i++) {
+      const tx = 80 + i * 140 + rng() * 40;
+      drawBroadleaf(context, tx, baseY + 4, 1.1 + rng() * 0.3, palette);
+    }
+    // Scattered flower dots
+    const flowerColors = ["#e8d44d", "#ffffff", "#e898b0"];
+    for (let i = 0; i < 20; i++) {
+      const fx = rng() * SCENE_LOGICAL_WIDTH;
+      const fy = baseY + rng() * 18;
+      context.fillStyle = withAlpha(flowerColors[Math.floor(rng() * 3)], 0.7);
+      context.fillRect(fx, fy, 1 + Math.floor(rng() * 2), 1 + Math.floor(rng() * 2));
+    }
+    return;
+  }
+
+  if (biome === "redwood-forest") {
+    // 3-4 MASSIVE trunks, dense canopy overhead, fern understory
+    const trunkCount = 3 + Math.floor(rng() * 2);
+    for (let i = 0; i < trunkCount; i++) {
+      const tx = 30 + i * 120 + rng() * 30;
+      const tw = 8 + rng() * 4;
+      const th = 80 + rng() * 30;
+      // Massive reddish-brown trunk
+      context.fillStyle = mixColor(palette.bark, "#5c2a1a", 0.3);
+      context.fillRect(tx - tw / 2, baseY - th, tw, th + 10);
+      // Highlight
+      context.fillStyle = withAlpha(mixColor(palette.bark, "#8a5030", 0.3), 0.4);
+      context.fillRect(tx, baseY - th, tw / 3, th + 10);
+    }
+    // Dense canopy band at top
+    context.fillStyle = withAlpha(palette.midDark, 0.5);
+    context.fillRect(0, baseY - 90, SCENE_LOGICAL_WIDTH, 40);
+    context.fillStyle = withAlpha(palette.midLight, 0.2);
+    context.fillRect(0, baseY - 80, SCENE_LOGICAL_WIDTH, 20);
+    // Fern understory
+    for (let i = 0; i < 8; i++) {
+      const fx = 20 + i * 58 + rng() * 20;
+      context.strokeStyle = withAlpha(palette.grass, 0.4);
+      context.lineWidth = 1;
+      context.beginPath();
+      context.arc(fx, baseY + 6, 6 + rng() * 4, Math.PI, 0);
+      context.stroke();
+    }
+    return;
+  }
+
+  if (biome === "coastal-plain") {
+    // Mixed — 1-2 broadleaf, 1-2 conifers, open feel
+    for (let i = 0; i < 1 + Math.floor(rng() * 2); i++) {
+      const tx = 60 + i * 180 + rng() * 40;
+      drawBroadleaf(context, tx, baseY + 4, 1 + rng() * 0.2, palette);
+    }
+    for (let i = 0; i < 1 + Math.floor(rng() * 2); i++) {
+      const tx = 160 + i * 160 + rng() * 40;
+      drawConifer(context, tx, baseY + 4, 0.9 + rng() * 0.2, palette);
+    }
+    return;
+  }
+
+  if (biome === "chalk-cliff") {
+    // White/cream cliff face dominating midground, sparse grass tufts on top
+    context.fillStyle = mixColor("#f0ece0", palette.rock, 0.08);
+    context.beginPath();
+    context.moveTo(0, baseY - 10);
+    context.lineTo(SCENE_LOGICAL_WIDTH * 0.1, baseY - 18);
+    context.lineTo(SCENE_LOGICAL_WIDTH * 0.4, baseY - 14);
+    context.lineTo(SCENE_LOGICAL_WIDTH * 0.7, baseY - 20);
+    context.lineTo(SCENE_LOGICAL_WIDTH, baseY - 12);
+    context.lineTo(SCENE_LOGICAL_WIDTH, baseY + 30);
+    context.lineTo(0, baseY + 30);
+    context.closePath();
+    context.fill();
+    // Shadow line
+    context.fillStyle = withAlpha(mixColor("#d8d0c0", palette.ridgeShadow, 0.12), 0.4);
+    context.fillRect(0, baseY + 6, SCENE_LOGICAL_WIDTH, 4);
+    // Sparse grass tufts on top of cliff
+    for (let i = 0; i < 10; i++) {
+      const gx = rng() * SCENE_LOGICAL_WIDTH;
+      const gy = baseY - 12 - rng() * 6;
+      context.strokeStyle = withAlpha(palette.grass, 0.5);
+      context.lineWidth = 1;
+      context.beginPath();
+      context.moveTo(gx, gy + 4);
+      context.lineTo(gx + (rng() - 0.5) * 4, gy);
+      context.stroke();
+    }
+    return;
+  }
+
+  if (biome === "river-valley") {
+    // Winding blue river, lush broadleaf trees on banks, rolling green hills
+    // Rolling hills
+    drawRidgeLayer(context, baseY + 4, 12, withAlpha(palette.midLight, 0.2), rng, 0.6, time * 0.00004);
+    // River
+    context.save();
+    context.fillStyle = withAlpha(palette.water, 0.5);
+    context.beginPath();
+    context.moveTo(0, baseY + 8);
+    context.quadraticCurveTo(SCENE_LOGICAL_WIDTH * 0.25, baseY - 2, SCENE_LOGICAL_WIDTH * 0.5, baseY + 10);
+    context.quadraticCurveTo(SCENE_LOGICAL_WIDTH * 0.75, baseY + 22, SCENE_LOGICAL_WIDTH, baseY + 6);
+    context.lineTo(SCENE_LOGICAL_WIDTH, baseY + 22);
+    context.quadraticCurveTo(SCENE_LOGICAL_WIDTH * 0.75, baseY + 36, SCENE_LOGICAL_WIDTH * 0.5, baseY + 24);
+    context.quadraticCurveTo(SCENE_LOGICAL_WIDTH * 0.25, baseY + 12, 0, baseY + 22);
+    context.closePath();
+    context.fill();
+    context.restore();
+    // Broadleaf trees on banks
+    for (let i = 0; i < 3; i++) {
+      const tx = 40 + i * 150 + rng() * 40;
+      drawBroadleaf(context, tx, baseY + 2, 1.1 + rng() * 0.3, palette);
+    }
+    return;
   }
 }
 
@@ -2497,7 +3011,22 @@ function drawGround(context, palette, rng, horizonY, biome, time) {
   context.fillStyle = groundGradient;
   context.fillRect(0, horizonY, SCENE_LOGICAL_WIDTH, SCENE_LOGICAL_HEIGHT - horizonY);
 
-  if (biome !== "badlands" && biome !== "volcanic") {
+  const desertBiomes = ["desert-scrub", "salt-flat", "volcanic"];
+  const noGrassBiomes = ["salt-flat", "volcanic", "chalk-cliff"];
+  const waterGroundBiomes = ["swamp", "lagoon", "river-delta", "river-valley"];
+
+  // Desert/rocky texture for arid biomes
+  if (desertBiomes.includes(biome)) {
+    for (let i = 0; i < 15; i++) {
+      const rx = rng() * SCENE_LOGICAL_WIDTH;
+      const ry = horizonY + 10 + rng() * 70;
+      context.fillStyle = withAlpha(palette.rock, 0.1 + rng() * 0.08);
+      context.fillRect(rx, ry, 2 + rng() * 4, 1 + rng() * 2);
+    }
+  }
+
+  // Grass blades for non-barren biomes
+  if (!noGrassBiomes.includes(biome)) {
     for (let x = 0; x < SCENE_LOGICAL_WIDTH; x += 3) {
       const bladeHeight = 6 + ((x * 13) % 9);
       context.strokeStyle = x % 2 === 0 ? withAlpha(palette.grass, 0.56) : withAlpha(palette.grassDark, 0.5);
@@ -2508,11 +3037,23 @@ function drawGround(context, palette, rng, horizonY, biome, time) {
     }
   }
 
-  if (biome === "marsh" || biome === "coast") {
+  // Water features on ground for wet biomes
+  if (waterGroundBiomes.includes(biome)) {
     for (let index = 0; index < 4; index += 1) {
       const poolX = 20 + rng() * 420;
       const poolY = horizonY + 34 + rng() * 48;
       drawSoftEllipse(context, poolX, poolY, 36 + rng() * 18, 8 + rng() * 4, withAlpha(palette.water, 0.18));
+    }
+  }
+
+  // Flower dots for flowering-meadow
+  if (biome === "flowering-meadow") {
+    const flowerColors = ["#e8d44d", "#ffffff", "#e898b0"];
+    for (let i = 0; i < 30; i++) {
+      const fx = rng() * SCENE_LOGICAL_WIDTH;
+      const fy = horizonY + 8 + rng() * 60;
+      context.fillStyle = withAlpha(flowerColors[Math.floor(rng() * 3)], 0.55);
+      context.fillRect(fx, fy, 1 + Math.floor(rng() * 2), 1 + Math.floor(rng() * 2));
     }
   }
 
@@ -2528,15 +3069,20 @@ function drawGround(context, palette, rng, horizonY, biome, time) {
 }
 
 function drawForeground(context, palette, rng, horizonY, biome, time) {
-  if (biome === "woodland" || biome === "fern") {
+  const forestBiomes = ["conifer-forest", "redwood-forest", "fern-prairie", "conifer-oasis"];
+  const waterBiomes = ["lagoon", "coastal-plain", "swamp"];
+  const rockyBiomes = ["volcanic", "desert-scrub", "chalk-cliff"];
+
+  if (forestBiomes.includes(biome)) {
     drawForegroundTree(context, palette, 16, horizonY + 62, 0.88);
   }
 
-  if (biome === "coast") {
-    drawForegroundRock(context, palette, 28, horizonY + 66, 1.2);
+  if (waterBiomes.includes(biome)) {
+    // Foreground reeds/water plants
+    drawReedBand(context, palette, SCENE_LOGICAL_HEIGHT - 20, rng, time);
   }
 
-  if (biome === "badlands" || biome === "volcanic") {
+  if (rockyBiomes.includes(biome)) {
     drawForegroundRock(context, palette, 34, horizonY + 58, 1.45);
   }
 
@@ -2565,7 +3111,16 @@ function drawRidgeLayer(context, baseline, amplitude, color, rng, roughness, off
   context.fill();
 }
 
-function drawForestBand(context, palette, baseY, rng, treeCount, time) {
+function drawForestBand(context, palette, baseY, rng, treeCount, time, treeFn) {
+  if (treeFn) {
+    for (let index = 0; index < treeCount; index += 1) {
+      const x = 10 + index * (SCENE_LOGICAL_WIDTH / treeCount) + rng() * 14;
+      const scale = 0.9 + rng() * 0.3;
+      treeFn(context, x, baseY + 4, scale, palette);
+    }
+    return;
+  }
+  // Legacy fallback — soft ellipse tree crowns
   for (let index = 0; index < treeCount; index += 1) {
     const x = 10 + index * (SCENE_LOGICAL_WIDTH / treeCount) + rng() * 14;
     const trunkWidth = 10 + rng() * 10;
@@ -2699,7 +3254,9 @@ function scenePlacement(dino, biome, seed) {
 
   const base = shapePlacement[dino.shape] || shapePlacement.tyrant;
   const offsetX = -14 + ((seed % 23) - 11);
-  const offsetY = biome === "marsh" ? 4 : biome === "coast" ? 2 : 0;
+  const wetBiomes = ["swamp", "river-delta", "river-valley"];
+  const waterBiomes = ["lagoon", "coastal-plain"];
+  const offsetY = wetBiomes.includes(biome) ? 4 : waterBiomes.includes(biome) ? 2 : 0;
 
   return {
     x: base.x + offsetX,
