@@ -2306,94 +2306,110 @@ function updateAuthoredSceneAnimation(time) {
 // --- Biome helper drawing functions ---
 
 function drawConifer(context, x, baseY, scale, palette) {
-  const trunkW = 4 * scale;
-  const trunkH = 28 * scale;
-  const canopyW = 16 * scale;
-  const canopyH = 35 * scale;
+  const trunkW = 10 * scale;
+  const trunkH = 40 * scale;
+  const canopyW = 36 * scale;
+  const canopyH = 50 * scale;
+  // Thick visible trunk
   context.fillStyle = palette.bark;
   context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  // Trunk highlight
+  context.fillStyle = withAlpha(mixColor(palette.bark, "#c89060", 0.3), 0.5);
+  context.fillRect(x, baseY - trunkH, trunkW / 3, trunkH);
+  // Dark canopy triangle
   context.fillStyle = palette.midDark;
   context.beginPath();
   context.moveTo(x, baseY - trunkH - canopyH);
-  context.lineTo(x - canopyW / 2, baseY - trunkH + 4);
-  context.lineTo(x + canopyW / 2, baseY - trunkH + 4);
+  context.lineTo(x - canopyW / 2, baseY - trunkH + 6);
+  context.lineTo(x + canopyW / 2, baseY - trunkH + 6);
   context.closePath();
   context.fill();
+  // Light half for depth
   context.fillStyle = palette.midLight;
   context.beginPath();
-  context.moveTo(x, baseY - trunkH - canopyH);
-  context.lineTo(x, baseY - trunkH + 4);
-  context.lineTo(x + canopyW / 2, baseY - trunkH + 4);
+  context.moveTo(x + 2, baseY - trunkH - canopyH + 4);
+  context.lineTo(x + 2, baseY - trunkH + 6);
+  context.lineTo(x + canopyW / 2 - 2, baseY - trunkH + 6);
   context.closePath();
   context.fill();
 }
 
 function drawBroadleaf(context, x, baseY, scale, palette) {
-  const trunkW = 3 * scale;
-  const trunkH = 22 * scale;
-  const canopyR = 12 * scale;
+  const trunkW = 8 * scale;
+  const trunkH = 30 * scale;
+  const canopyR = 24 * scale;
+  // Thick trunk
   context.fillStyle = palette.bark;
   context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  // Round canopy — large filled circle
   context.fillStyle = palette.midDark;
   context.beginPath();
-  context.arc(x, baseY - trunkH - canopyR * 0.6, canopyR, 0, Math.PI * 2);
+  context.arc(x, baseY - trunkH - canopyR * 0.4, canopyR, 0, Math.PI * 2);
   context.fill();
+  // Highlight blob
   context.fillStyle = palette.midLight;
   context.beginPath();
-  context.arc(x + canopyR * 0.2, baseY - trunkH - canopyR * 0.8, canopyR * 0.6, 0, Math.PI * 2);
+  context.arc(x + canopyR * 0.25, baseY - trunkH - canopyR * 0.6, canopyR * 0.55, 0, Math.PI * 2);
   context.fill();
 }
 
 function drawCycad(context, x, baseY, scale, palette) {
-  const trunkW = 5 * scale;
-  const trunkH = 18 * scale;
+  const trunkW = 10 * scale;
+  const trunkH = 24 * scale;
+  // Thick stubby trunk
   context.fillStyle = palette.bark;
   context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
-  context.strokeStyle = palette.midDark;
-  context.lineWidth = 2 * scale;
+  // Fan of thick fronds — use filled triangles instead of strokes
+  const frondLen = 22 * scale;
+  const frondW = 6 * scale;
   for (let i = -3; i <= 3; i++) {
-    const angle = (i / 3) * 0.8 - Math.PI / 2;
-    const len = 14 * scale;
+    const angle = (i / 3) * 0.9 - Math.PI / 2;
+    const endX = x + Math.cos(angle) * frondLen;
+    const endY = baseY - trunkH + Math.sin(angle) * frondLen;
+    // Filled frond shape
+    context.fillStyle = i % 2 === 0 ? palette.midDark : palette.midLight;
     context.beginPath();
-    context.moveTo(x, baseY - trunkH);
-    const endX = x + Math.cos(angle) * len;
-    const endY = baseY - trunkH + Math.sin(angle) * len;
-    const cpX = x + Math.cos(angle) * len * 0.6;
-    const cpY = baseY - trunkH + Math.sin(angle) * len * 0.4 - 6 * scale;
-    context.quadraticCurveTo(cpX, cpY, endX, endY);
-    context.stroke();
-  }
-  context.fillStyle = palette.midLight;
-  for (let i = -3; i <= 3; i++) {
-    const angle = (i / 3) * 0.8 - Math.PI / 2;
-    const len = 14 * scale;
-    const endX = x + Math.cos(angle) * len;
-    const endY = baseY - trunkH + Math.sin(angle) * len;
-    context.beginPath();
-    context.arc(endX, endY, 3 * scale, 0, Math.PI * 2);
+    context.moveTo(x - frondW / 2, baseY - trunkH);
+    context.lineTo(endX, endY);
+    context.lineTo(x + frondW / 2, baseY - trunkH);
+    context.closePath();
     context.fill();
   }
+  // Crown circle at center
+  context.fillStyle = palette.midDark;
+  context.beginPath();
+  context.arc(x, baseY - trunkH, 6 * scale, 0, Math.PI * 2);
+  context.fill();
 }
 
 function drawSmallBush(context, x, y, scale, palette) {
   context.fillStyle = palette.midDark;
   context.beginPath();
-  context.ellipse(x, y, 6 * scale, 4 * scale, 0, 0, Math.PI * 2);
+  context.ellipse(x, y, 14 * scale, 8 * scale, 0, 0, Math.PI * 2);
   context.fill();
   context.fillStyle = palette.midLight;
   context.beginPath();
-  context.ellipse(x + 2, y - 1, 4 * scale, 3 * scale, 0, 0, Math.PI * 2);
+  context.ellipse(x + 3, y - 2, 9 * scale, 5 * scale, 0, 0, Math.PI * 2);
   context.fill();
 }
 
 function drawJaggedRock(context, x, baseY, scale, palette) {
   context.fillStyle = palette.rock;
   context.beginPath();
-  context.moveTo(x - 8 * scale, baseY);
-  context.lineTo(x - 4 * scale, baseY - 18 * scale);
-  context.lineTo(x + 1 * scale, baseY - 12 * scale);
-  context.lineTo(x + 5 * scale, baseY - 22 * scale);
-  context.lineTo(x + 10 * scale, baseY - 8 * scale);
+  context.moveTo(x - 14 * scale, baseY);
+  context.lineTo(x - 8 * scale, baseY - 28 * scale);
+  context.lineTo(x, baseY - 18 * scale);
+  context.lineTo(x + 8 * scale, baseY - 34 * scale);
+  context.lineTo(x + 16 * scale, baseY - 12 * scale);
+  context.lineTo(x + 20 * scale, baseY);
+  context.closePath();
+  context.fill();
+  // Highlight edge
+  context.fillStyle = withAlpha(mixColor(palette.rock, "#ffffff", 0.15), 0.5);
+  context.beginPath();
+  context.moveTo(x + 8 * scale, baseY - 34 * scale);
+  context.lineTo(x + 16 * scale, baseY - 12 * scale);
+  context.lineTo(x + 20 * scale, baseY);
   context.lineTo(x + 12 * scale, baseY);
   context.closePath();
   context.fill();
@@ -2401,61 +2417,63 @@ function drawJaggedRock(context, x, baseY, scale, palette) {
 
 function drawStump(context, x, baseY, scale, palette) {
   context.fillStyle = palette.bark;
-  context.fillRect(x - 2 * scale, baseY - 10 * scale, 4 * scale, 10 * scale);
+  context.fillRect(x - 5 * scale, baseY - 14 * scale, 10 * scale, 14 * scale);
   context.fillStyle = palette.rock;
   context.beginPath();
-  context.moveTo(x - 3 * scale, baseY - 10 * scale);
-  context.lineTo(x - 1 * scale, baseY - 14 * scale);
-  context.lineTo(x + 2 * scale, baseY - 11 * scale);
+  context.moveTo(x - 6 * scale, baseY - 14 * scale);
+  context.lineTo(x, baseY - 20 * scale);
+  context.lineTo(x + 6 * scale, baseY - 14 * scale);
   context.closePath();
   context.fill();
 }
 
 function drawHorsetail(context, x, baseY, scale, palette) {
-  context.strokeStyle = palette.grass;
-  context.lineWidth = 1;
-  context.beginPath();
-  context.moveTo(x, baseY);
-  context.lineTo(x, baseY - 16 * scale);
-  context.stroke();
+  // Chunky vertical stalk
+  context.fillStyle = palette.grass;
+  context.fillRect(x - 2 * scale, baseY - 20 * scale, 4 * scale, 20 * scale);
+  // Horizontal whorls as thick bands
   for (let i = 0; i < 3; i++) {
-    const ty = baseY - 6 * scale - i * 4 * scale;
-    context.beginPath();
-    context.moveTo(x - 4 * scale, ty);
-    context.lineTo(x + 4 * scale, ty);
-    context.stroke();
+    const ty = baseY - 8 * scale - i * 5 * scale;
+    context.fillStyle = i % 2 === 0 ? palette.midDark : palette.midLight;
+    context.fillRect(x - 8 * scale, ty, 16 * scale, 3 * scale);
   }
 }
 
 function drawPrimitiveConifer(context, x, baseY, scale, palette) {
-  const trunkW = 3 * scale;
-  const trunkH = 24 * scale;
-  const canopyW = 10 * scale;
-  const canopyH = 30 * scale;
+  const trunkW = 8 * scale;
+  const trunkH = 32 * scale;
+  const canopyW = 20 * scale;
+  const canopyH = 40 * scale;
+  // Visible trunk
   context.fillStyle = palette.bark;
   context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
+  // Columnar canopy
   context.fillStyle = palette.midDark;
-  context.fillRect(x - canopyW / 2, baseY - trunkH - canopyH, canopyW, canopyH + 4);
+  context.fillRect(x - canopyW / 2, baseY - trunkH - canopyH, canopyW, canopyH + 6);
+  // Light side
   context.fillStyle = palette.midLight;
-  context.fillRect(x, baseY - trunkH - canopyH, canopyW / 2, canopyH + 4);
+  context.fillRect(x, baseY - trunkH - canopyH, canopyW / 2, canopyH + 6);
 }
 
 function drawTreeFern(context, x, baseY, scale, palette) {
-  const trunkW = 2 * scale;
-  const trunkH = 16 * scale;
+  const trunkW = 6 * scale;
+  const trunkH = 22 * scale;
+  // Thick trunk
   context.fillStyle = palette.bark;
   context.fillRect(x - trunkW / 2, baseY - trunkH, trunkW, trunkH);
-  context.strokeStyle = palette.midDark;
-  context.lineWidth = 1.5 * scale;
+  // Fan of drooping fronds as filled triangles
+  const frondLen = 18 * scale;
   for (let i = -2; i <= 2; i++) {
-    const angle = (i / 2) * 0.7 - Math.PI / 2;
-    const len = 10 * scale;
+    const angle = (i / 2) * 0.8 - Math.PI / 2;
+    const endX = x + Math.cos(angle) * frondLen;
+    const endY = baseY - trunkH + Math.sin(angle) * frondLen + 4 * scale;
+    context.fillStyle = i % 2 === 0 ? palette.midDark : palette.midLight;
     context.beginPath();
-    context.moveTo(x, baseY - trunkH);
-    const endX = x + Math.cos(angle) * len;
-    const endY = baseY - trunkH + Math.sin(angle) * len;
-    context.quadraticCurveTo(x + Math.cos(angle) * len * 0.5, baseY - trunkH - 4 * scale, endX, endY);
-    context.stroke();
+    context.moveTo(x - 3 * scale, baseY - trunkH);
+    context.lineTo(endX, endY);
+    context.lineTo(x + 3 * scale, baseY - trunkH);
+    context.closePath();
+    context.fill();
   }
 }
 
@@ -2892,13 +2910,13 @@ function drawMidground(context, palette, rng, horizonY, biome, time) {
       const tx = 80 + i * 140 + rng() * 40;
       drawBroadleaf(context, tx, baseY + 4, 1.1 + rng() * 0.3, palette);
     }
-    // Scattered flower dots
-    const flowerColors = ["#e8d44d", "#ffffff", "#e898b0"];
-    for (let i = 0; i < 20; i++) {
+    // Scattered flower dots — 4px blocks
+    const flowerColors = ["#e8d44d", "#ffffff", "#e898b0", "#d06080"];
+    for (let i = 0; i < 16; i++) {
       const fx = rng() * SCENE_LOGICAL_WIDTH;
       const fy = baseY + rng() * 18;
-      context.fillStyle = withAlpha(flowerColors[Math.floor(rng() * 3)], 0.7);
-      context.fillRect(fx, fy, 1 + Math.floor(rng() * 2), 1 + Math.floor(rng() * 2));
+      context.fillStyle = withAlpha(flowerColors[Math.floor(rng() * 4)], 0.75);
+      context.fillRect(fx, fy, 4, 4);
     }
     return;
   }
@@ -3015,25 +3033,22 @@ function drawGround(context, palette, rng, horizonY, biome, time) {
   const noGrassBiomes = ["salt-flat", "volcanic", "chalk-cliff"];
   const waterGroundBiomes = ["swamp", "lagoon", "river-delta", "river-valley"];
 
-  // Desert/rocky texture for arid biomes
+  // Desert/rocky texture for arid biomes — larger patches
   if (desertBiomes.includes(biome)) {
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 12; i++) {
       const rx = rng() * SCENE_LOGICAL_WIDTH;
       const ry = horizonY + 10 + rng() * 70;
-      context.fillStyle = withAlpha(palette.rock, 0.1 + rng() * 0.08);
-      context.fillRect(rx, ry, 2 + rng() * 4, 1 + rng() * 2);
+      context.fillStyle = withAlpha(palette.rock, 0.12 + rng() * 0.1);
+      context.fillRect(rx, ry, 6 + rng() * 8, 3 + rng() * 4);
     }
   }
 
-  // Grass blades for non-barren biomes
+  // Grass tufts for non-barren biomes — thick 3px-wide blades to survive downsampling
   if (!noGrassBiomes.includes(biome)) {
-    for (let x = 0; x < SCENE_LOGICAL_WIDTH; x += 3) {
-      const bladeHeight = 6 + ((x * 13) % 9);
-      context.strokeStyle = x % 2 === 0 ? withAlpha(palette.grass, 0.56) : withAlpha(palette.grassDark, 0.5);
-      context.beginPath();
-      context.moveTo(x, horizonY + 6);
-      context.lineTo(x + ((x % 5) - 2), horizonY + 6 - bladeHeight);
-      context.stroke();
+    for (let x = 0; x < SCENE_LOGICAL_WIDTH; x += 6) {
+      const bladeHeight = 8 + ((x * 13) % 12);
+      context.fillStyle = x % 2 === 0 ? withAlpha(palette.grass, 0.6) : withAlpha(palette.grassDark, 0.55);
+      context.fillRect(x, horizonY + 6 - bladeHeight, 3, bladeHeight);
     }
   }
 
@@ -3046,14 +3061,14 @@ function drawGround(context, palette, rng, horizonY, biome, time) {
     }
   }
 
-  // Flower dots for flowering-meadow
+  // Flower dots for flowering-meadow — 4px dots to survive downsampling
   if (biome === "flowering-meadow") {
-    const flowerColors = ["#e8d44d", "#ffffff", "#e898b0"];
-    for (let i = 0; i < 30; i++) {
+    const flowerColors = ["#e8d44d", "#ffffff", "#e898b0", "#d06080"];
+    for (let i = 0; i < 25; i++) {
       const fx = rng() * SCENE_LOGICAL_WIDTH;
       const fy = horizonY + 8 + rng() * 60;
-      context.fillStyle = withAlpha(flowerColors[Math.floor(rng() * 3)], 0.55);
-      context.fillRect(fx, fy, 1 + Math.floor(rng() * 2), 1 + Math.floor(rng() * 2));
+      context.fillStyle = withAlpha(flowerColors[Math.floor(rng() * 4)], 0.7);
+      context.fillRect(fx, fy, 4, 4);
     }
   }
 
@@ -3197,10 +3212,12 @@ function drawCoastalBand(context, palette, baseY, rng, time) {
 }
 
 function drawForegroundTree(context, palette, x, y, scale) {
-  context.fillStyle = mixColor(palette.bark, "#000000", 0.25);
-  context.fillRect(x, y - 46 * scale, 10 * scale, 54 * scale);
-  drawSoftEllipse(context, x + 8 * scale, y - 56 * scale, 30 * scale, 42 * scale, withAlpha(palette.midLight, 0.4));
-  drawSoftEllipse(context, x + 8 * scale, y - 52 * scale, 22 * scale, 30 * scale, withAlpha(palette.midDark, 0.72));
+  // Thick dark trunk
+  context.fillStyle = mixColor(palette.bark, "#000000", 0.35);
+  context.fillRect(x, y - 56 * scale, 16 * scale, 66 * scale);
+  // Large canopy mass
+  drawSoftEllipse(context, x + 10 * scale, y - 66 * scale, 40 * scale, 50 * scale, withAlpha(palette.midDark, 0.75));
+  drawSoftEllipse(context, x + 16 * scale, y - 60 * scale, 28 * scale, 36 * scale, withAlpha(palette.midLight, 0.45));
 }
 
 function drawForegroundRock(context, palette, x, y, scale) {
@@ -3218,15 +3235,18 @@ function drawForegroundRock(context, palette, x, y, scale) {
 }
 
 function drawForegroundFronds(context, palette, x, y, scale) {
-  context.strokeStyle = withAlpha(palette.grassDark, 0.7);
-  context.lineWidth = 2;
-
-  for (let index = 0; index < 5; index += 1) {
-    const bend = -10 + index * 5;
+  // Thick filled frond shapes instead of thin strokes
+  for (let index = 0; index < 4; index += 1) {
+    const bend = -8 + index * 5;
+    const tipX = x + bend * scale * 1.5;
+    const tipY = y - 28 * scale;
+    context.fillStyle = index % 2 === 0 ? withAlpha(palette.grassDark, 0.75) : withAlpha(palette.grass, 0.65);
     context.beginPath();
-    context.moveTo(x, y);
-    context.quadraticCurveTo(x + bend * scale, y - 14 * scale, x + bend * scale * 1.5, y - 28 * scale);
-    context.stroke();
+    context.moveTo(x - 2, y);
+    context.quadraticCurveTo(x + bend * scale - 3, y - 14 * scale, tipX, tipY);
+    context.quadraticCurveTo(x + bend * scale + 3, y - 14 * scale, x + 2, y);
+    context.closePath();
+    context.fill();
   }
 }
 
