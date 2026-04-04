@@ -45,6 +45,54 @@ const PALETTE = {
   trexTeeth: hex("#e8dcc4"), // teeth/claws
   eye: hex("#1d120d"),
   black: hex("#11100f"),
+  // Coelophysis – small Triassic runner
+  coelo0: hex("#6b56af"),   // body purple
+  coelo1: hex("#8470c8"),   // lighter purple
+  coelo2: hex("#534098"),   // dark purple shadow
+  coelo3: hex("#a08de0"),   // highlight
+  coeloBelly: hex("#c4b8e6"),
+  // Plateosaurus – medium Triassic prosauropod
+  plateo0: hex("#7f6242"),  // body brown
+  plateo1: hex("#9a7a55"),  // lighter
+  plateo2: hex("#604830"),  // dark shadow
+  plateo3: hex("#b89770"),  // highlight
+  plateoBelly: hex("#c8b498"),
+  // Postosuchus – Triassic croc-like runner
+  posto0: hex("#87523c"),   // reddish-brown body
+  posto1: hex("#a06a50"),   // lighter
+  posto2: hex("#6a3c28"),   // dark shadow
+  posto3: hex("#c08868"),   // highlight
+  postoBelly: hex("#c8a888"),
+  postoArmor: hex("#5e3822"),
+  // Stegosaurus – Jurassic plated dino
+  stego0: hex("#b06d3f"),   // orange-brown body
+  stego1: hex("#c88555"),   // lighter
+  stego2: hex("#8a5530"),   // dark shadow
+  stego3: hex("#daa070"),   // highlight
+  stegoBelly: hex("#d8c098"),
+  stegoPlate: hex("#c45a2a"), // plate accent
+  // Allosaurus – Jurassic large theropod
+  allo0: hex("#944632"),    // red body
+  allo1: hex("#ae5a44"),    // lighter
+  allo2: hex("#7a3424"),    // dark shadow
+  allo3: hex("#c87058"),    // highlight
+  alloBelly: hex("#c8a080"),
+  alloTeeth: hex("#e8dcc4"),
+  // Parasaurolophus – Cretaceous crested hadrosaur
+  para0: hex("#618f70"),    // green body
+  para1: hex("#78a888"),    // lighter
+  para2: hex("#4a7058"),    // dark shadow
+  para3: hex("#90c0a0"),    // highlight
+  paraBelly: hex("#b0d0b8"),
+  paraCrest: hex("#3e6850"), // crest accent
+  // Triceratops – Cretaceous horned ceratopsian
+  trice0: hex("#866f4b"),   // brown body
+  trice1: hex("#a08860"),   // lighter
+  trice2: hex("#6a5538"),   // dark shadow
+  trice3: hex("#baa478"),   // highlight
+  triceBelly: hex("#c8b898"),
+  triceFrill: hex("#9a7a50"), // frill accent
+  triceHorn: hex("#e8dcc0"), // horn color
 };
 
 function main() {
@@ -60,6 +108,41 @@ function main() {
   writePng(path.join(OUT_DIR, "tyrannosaurus", "strip.png"), makeTyrannosaurusStrip());
   writePng(path.join(OUT_DIR, "tyrannosaurus", "contact.png"), makeTyrannosaurusContact());
   writePng(path.join(OUT_DIR, "tyrannosaurus", "guide.png"), makeTyrannosaurusGuide());
+
+  ensureDir(path.join(OUT_DIR, "coelophysis"));
+  writePng(path.join(OUT_DIR, "coelophysis", "strip.png"), makeCoelophysisStrip());
+  writePng(path.join(OUT_DIR, "coelophysis", "contact.png"), makeCoelophysisContact());
+  writePng(path.join(OUT_DIR, "coelophysis", "guide.png"), makeCoelophysisGuide());
+
+  ensureDir(path.join(OUT_DIR, "plateosaurus"));
+  writePng(path.join(OUT_DIR, "plateosaurus", "strip.png"), makePlateosaurusStrip());
+  writePng(path.join(OUT_DIR, "plateosaurus", "contact.png"), makePlateosaurusContact());
+  writePng(path.join(OUT_DIR, "plateosaurus", "guide.png"), makePlateosaurusGuide());
+
+  ensureDir(path.join(OUT_DIR, "postosuchus"));
+  writePng(path.join(OUT_DIR, "postosuchus", "strip.png"), makePostosuchusStrip());
+  writePng(path.join(OUT_DIR, "postosuchus", "contact.png"), makePostosuchusContact());
+  writePng(path.join(OUT_DIR, "postosuchus", "guide.png"), makePostosuchusGuide());
+
+  ensureDir(path.join(OUT_DIR, "stegosaurus"));
+  writePng(path.join(OUT_DIR, "stegosaurus", "strip.png"), makeStegosaurusStrip());
+  writePng(path.join(OUT_DIR, "stegosaurus", "contact.png"), makeStegosaurusContact());
+  writePng(path.join(OUT_DIR, "stegosaurus", "guide.png"), makeStegosaurusGuide());
+
+  ensureDir(path.join(OUT_DIR, "allosaurus"));
+  writePng(path.join(OUT_DIR, "allosaurus", "strip.png"), makeAllosaurusStrip());
+  writePng(path.join(OUT_DIR, "allosaurus", "contact.png"), makeAllosaurusContact());
+  writePng(path.join(OUT_DIR, "allosaurus", "guide.png"), makeAllosaurusGuide());
+
+  ensureDir(path.join(OUT_DIR, "parasaurolophus"));
+  writePng(path.join(OUT_DIR, "parasaurolophus", "strip.png"), makeParasaurolophusStrip());
+  writePng(path.join(OUT_DIR, "parasaurolophus", "contact.png"), makeParasaurolophusContact());
+  writePng(path.join(OUT_DIR, "parasaurolophus", "guide.png"), makeParasaurolophusGuide());
+
+  ensureDir(path.join(OUT_DIR, "triceratops"));
+  writePng(path.join(OUT_DIR, "triceratops", "strip.png"), makeTriceratopsStrip());
+  writePng(path.join(OUT_DIR, "triceratops", "contact.png"), makeTriceratopsContact());
+  writePng(path.join(OUT_DIR, "triceratops", "guide.png"), makeTriceratopsGuide());
 }
 
 function makeShadowGroveBackground() {
@@ -222,6 +305,907 @@ function makeTyrannosaurusGuide() {
   drawShadowPatch(image, 112, 98, 56, 14, 0.12);
   applyFilmGrain(image, 0.05, 7033);
   return image;
+}
+
+// ─── Coelophysis ───────────────────────────────────────────────────────
+
+function makeCoelophysisStrip() {
+  const fw = 72, fh = 96, frames = 8;
+  const strip = surface(fw * frames, fh, PALETTE.transparent);
+  for (let i = 0; i < frames; i++) {
+    const frame = surface(fw, fh, PALETTE.transparent);
+    drawCoelophysis(frame, i, frames);
+    blit(strip, frame, i * fw, 0);
+  }
+  return strip;
+}
+
+function makeCoelophysisContact() {
+  const image = surface(210, 120, PALETTE.cream0);
+  gradientRect(image, 0, 0, 210, 120, PALETTE.cream0, PALETTE.cream1);
+  fillRect(image, 0, 88, 210, 32, [0, 0, 0, 16]);
+  const silhouette = surface(140, 86, PALETTE.transparent);
+  drawCoelophysis(silhouette, 1, 8, { body: PALETTE.black, shadow: PALETTE.black, highlight: PALETTE.black, eye: PALETTE.black });
+  tintAlpha(silhouette, PALETTE.black);
+  blitScaled(image, silhouette, 34, 16, 140, 86);
+  return image;
+}
+
+function makeCoelophysisGuide() {
+  const image = surface(220, 132, PALETTE.cream0);
+  gradientRect(image, 0, 0, 220, 68, PALETTE.sky0, PALETTE.sky2);
+  gradientRect(image, 0, 68, 220, 64, PALETTE.dirt0, PALETTE.dirt2);
+  drawCloudBand(image, 88, 30, 130, 14, 5, [255, 255, 255, 88], 7041);
+  drawCloudBand(image, 176, 24, 76, 12, 4, [255, 255, 255, 64], 7042);
+  const dino = surface(120, 96, PALETTE.transparent);
+  drawCoelophysis(dino, 2, 8);
+  blitScaled(image, dino, 54, 18, 112, 92);
+  drawShadowPatch(image, 112, 98, 56, 14, 0.12);
+  applyFilmGrain(image, 0.05, 7043);
+  return image;
+}
+
+function drawCoelophysis(image, frameIndex, frameCount, overridePalette = null) {
+  const palette = overridePalette || {
+    body: PALETTE.coelo0,
+    shadow: PALETTE.coelo2,
+    highlight: PALETTE.coelo3,
+    bodyAlt: PALETTE.coelo1,
+    belly: PALETTE.coeloBelly,
+    eye: PALETTE.eye,
+  };
+
+  const phase = (frameIndex / frameCount) * Math.PI * 2;
+  const bob = Math.sin(phase) * 1.0;
+  const headBob = Math.cos(phase) * 1.2;
+  const tailSway = Math.sin(phase) * 5;
+  const legShift = Math.sin(phase) * 2.2;
+
+  // Ground shadow
+  drawGroundShadow(image, 36, 88 + bob, 22, 5, overridePalette ? 0.12 : 0.18);
+
+  // Tail – long, thin, extends left
+  drawTube(image, [
+    [4 + tailSway * 0.5, 52 + bob],
+    [10 + tailSway * 0.3, 50 + bob],
+    [18 + tailSway * 0.1, 50 + bob],
+    [26, 52 + bob],
+  ], 1.2, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Hind legs
+  const kneeA = Math.sin(phase) * 2;
+  const kneeB = Math.sin(phase + Math.PI) * 2;
+  drawTube(image, [
+    [32, 56 + bob], [30 + kneeA, 68 + bob], [32, 78 + bob], [33, 88 + bob + legShift],
+  ], 3.2, 1.8, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [38, 56 + bob], [40 + kneeB, 68 + bob], [38, 78 + bob], [37, 88 + bob - legShift],
+  ], 3.5, 2.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Feet
+  fillEllipse(image, 33, 89 + bob + legShift, 3, 1.5, palette.shadow);
+  fillEllipse(image, 37, 89 + bob - legShift, 3, 1.5, palette.shadow);
+
+  // Body – small, slim
+  drawEllipsoid(image, 36, 52 + bob, 10, 7, palette.body, palette.shadow, palette.highlight);
+  // Belly
+  fillEllipse(image, 36, 56 + bob, 7, 3, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 60]);
+
+  // Neck – long thin
+  drawTube(image, [
+    [42, 48 + bob],
+    [48, 42 + bob + headBob * 0.3],
+    [54, 36 + bob + headBob * 0.6],
+    [58, 32 + bob + headBob],
+  ], 3.5, 2.2, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Head – small, narrow snout
+  const hx = 60, hy = 30 + bob + headBob;
+  drawEllipsoid(image, hx, hy, 5, 4, palette.body, palette.shadow, palette.highlight);
+  drawEllipsoid(image, hx + 4, hy + 1, 3, 2.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Jaw line
+  drawLine(image, hx, hy + 2, hx + 6, hy + 3, palette.shadow);
+  // Eye
+  setPixel(image, hx - 1, hy - 1, palette.eye);
+  setPixel(image, hx, hy - 1, palette.eye);
+
+  // Tiny arms
+  drawTube(image, [
+    [40, 48 + bob], [42, 52 + bob], [43, 55 + bob],
+  ], 1.2, 0.6, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Texture
+  stippleEllipse(image, 36, 52 + bob, 8, 5, palette.shadow, 0.1, 8200 + frameIndex);
+}
+
+// ─── Plateosaurus ──────────────────────────────────────────────────────
+
+function makePlateosaurusStrip() {
+  const fw = 72, fh = 96, frames = 8;
+  const strip = surface(fw * frames, fh, PALETTE.transparent);
+  for (let i = 0; i < frames; i++) {
+    const frame = surface(fw, fh, PALETTE.transparent);
+    drawPlateosaurus(frame, i, frames);
+    blit(strip, frame, i * fw, 0);
+  }
+  return strip;
+}
+
+function makePlateosaurusContact() {
+  const image = surface(210, 120, PALETTE.cream0);
+  gradientRect(image, 0, 0, 210, 120, PALETTE.cream0, PALETTE.cream1);
+  fillRect(image, 0, 88, 210, 32, [0, 0, 0, 16]);
+  const silhouette = surface(140, 86, PALETTE.transparent);
+  drawPlateosaurus(silhouette, 1, 8, { body: PALETTE.black, shadow: PALETTE.black, highlight: PALETTE.black, eye: PALETTE.black });
+  tintAlpha(silhouette, PALETTE.black);
+  blitScaled(image, silhouette, 34, 16, 140, 86);
+  return image;
+}
+
+function makePlateosaurusGuide() {
+  const image = surface(220, 132, PALETTE.cream0);
+  gradientRect(image, 0, 0, 220, 68, PALETTE.sky0, PALETTE.sky2);
+  gradientRect(image, 0, 68, 220, 64, PALETTE.dirt0, PALETTE.dirt2);
+  drawCloudBand(image, 88, 30, 130, 14, 5, [255, 255, 255, 88], 7051);
+  drawCloudBand(image, 176, 24, 76, 12, 4, [255, 255, 255, 64], 7052);
+  const dino = surface(120, 96, PALETTE.transparent);
+  drawPlateosaurus(dino, 2, 8);
+  blitScaled(image, dino, 54, 18, 112, 92);
+  drawShadowPatch(image, 112, 98, 56, 14, 0.12);
+  applyFilmGrain(image, 0.05, 7053);
+  return image;
+}
+
+function drawPlateosaurus(image, frameIndex, frameCount, overridePalette = null) {
+  const palette = overridePalette || {
+    body: PALETTE.plateo0,
+    shadow: PALETTE.plateo2,
+    highlight: PALETTE.plateo3,
+    bodyAlt: PALETTE.plateo1,
+    belly: PALETTE.plateoBelly,
+    eye: PALETTE.eye,
+  };
+
+  const phase = (frameIndex / frameCount) * Math.PI * 2;
+  const bob = Math.sin(phase) * 1.4;
+  const headBob = Math.cos(phase) * 2.0;
+  const tailSway = Math.sin(phase) * 4;
+  const legShift = Math.sin(phase) * 1.8;
+
+  drawGroundShadow(image, 34, 86 + bob, 26, 7, overridePalette ? 0.12 : 0.2);
+
+  // Thick tail
+  drawTube(image, [
+    [2 + tailSway * 0.4, 54 + bob],
+    [8 + tailSway * 0.2, 52 + bob],
+    [16, 50 + bob],
+    [24, 50 + bob],
+  ], 2.0, 5.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Hind legs
+  const kneeA = Math.sin(phase) * 1.5;
+  const kneeB = Math.sin(phase + Math.PI) * 1.5;
+  drawTube(image, [
+    [28, 56 + bob], [26 + kneeA, 68 + bob], [28, 78 + bob], [29, 88 + bob + legShift],
+  ], 4.8, 2.8, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [36, 56 + bob], [38 + kneeB, 68 + bob], [36, 78 + bob], [35, 88 + bob - legShift],
+  ], 5.0, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 29, 89 + bob + legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 35, 89 + bob - legShift, 4, 2, palette.shadow);
+
+  // Body – medium barrel
+  drawEllipsoid(image, 34, 50 + bob, 14, 10, palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 34, 55 + bob, 10, 4, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 55]);
+
+  // Front legs (can be semi-bipedal, shorter)
+  drawTube(image, [
+    [44, 54 + bob], [46, 64 + bob], [45, 74 + bob], [44, 88 + bob + legShift * 0.5],
+  ], 3.0, 1.8, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [48, 54 + bob], [50, 64 + bob], [49, 74 + bob], [48, 88 + bob - legShift * 0.5],
+  ], 2.8, 1.6, palette.body, palette.shadow, palette.highlight);
+
+  // Neck – longish
+  drawTube(image, [
+    [44, 46 + bob],
+    [50, 38 + bob + headBob * 0.3],
+    [56, 30 + bob + headBob * 0.6],
+    [60, 24 + bob + headBob],
+  ], 4.5, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Head – small
+  const hx = 62, hy = 22 + bob + headBob;
+  drawEllipsoid(image, hx, hy, 5, 4, palette.body, palette.shadow, palette.highlight);
+  drawEllipsoid(image, hx + 3, hy + 1, 3, 2.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  drawLine(image, hx, hy + 2, hx + 5, hy + 3, palette.shadow);
+  setPixel(image, hx - 1, hy - 1, palette.eye);
+  setPixel(image, hx, hy - 1, palette.eye);
+
+  stippleEllipse(image, 34, 50 + bob, 11, 7, palette.shadow, 0.1, 8300 + frameIndex);
+}
+
+// ─── Postosuchus ───────────────────────────────────────────────────────
+
+function makePostosuchusStrip() {
+  const fw = 72, fh = 96, frames = 8;
+  const strip = surface(fw * frames, fh, PALETTE.transparent);
+  for (let i = 0; i < frames; i++) {
+    const frame = surface(fw, fh, PALETTE.transparent);
+    drawPostosuchus(frame, i, frames);
+    blit(strip, frame, i * fw, 0);
+  }
+  return strip;
+}
+
+function makePostosuchusContact() {
+  const image = surface(210, 120, PALETTE.cream0);
+  gradientRect(image, 0, 0, 210, 120, PALETTE.cream0, PALETTE.cream1);
+  fillRect(image, 0, 88, 210, 32, [0, 0, 0, 16]);
+  const silhouette = surface(140, 86, PALETTE.transparent);
+  drawPostosuchus(silhouette, 1, 8, { body: PALETTE.black, shadow: PALETTE.black, highlight: PALETTE.black, eye: PALETTE.black });
+  tintAlpha(silhouette, PALETTE.black);
+  blitScaled(image, silhouette, 34, 16, 140, 86);
+  return image;
+}
+
+function makePostosuchusGuide() {
+  const image = surface(220, 132, PALETTE.cream0);
+  gradientRect(image, 0, 0, 220, 68, PALETTE.sky0, PALETTE.sky2);
+  gradientRect(image, 0, 68, 220, 64, PALETTE.dirt0, PALETTE.dirt2);
+  drawCloudBand(image, 88, 30, 130, 14, 5, [255, 255, 255, 88], 7061);
+  drawCloudBand(image, 176, 24, 76, 12, 4, [255, 255, 255, 64], 7062);
+  const dino = surface(120, 96, PALETTE.transparent);
+  drawPostosuchus(dino, 2, 8);
+  blitScaled(image, dino, 54, 18, 112, 92);
+  drawShadowPatch(image, 112, 98, 56, 14, 0.12);
+  applyFilmGrain(image, 0.05, 7063);
+  return image;
+}
+
+function drawPostosuchus(image, frameIndex, frameCount, overridePalette = null) {
+  const palette = overridePalette || {
+    body: PALETTE.posto0,
+    shadow: PALETTE.posto2,
+    highlight: PALETTE.posto3,
+    bodyAlt: PALETTE.posto1,
+    belly: PALETTE.postoBelly,
+    armor: PALETTE.postoArmor,
+    eye: PALETTE.eye,
+  };
+
+  const phase = (frameIndex / frameCount) * Math.PI * 2;
+  const bob = Math.sin(phase) * 0.8;
+  const headBob = Math.cos(phase) * 1.0;
+  const tailSway = Math.sin(phase) * 4;
+  const legShift = Math.sin(phase) * 1.6;
+
+  // Low-slung body, crocodilian posture
+  drawGroundShadow(image, 36, 88 + bob, 28, 6, overridePalette ? 0.12 : 0.22);
+
+  // Heavy muscular tail
+  drawTube(image, [
+    [2 + tailSway * 0.5, 62 + bob],
+    [8 + tailSway * 0.3, 60 + bob],
+    [16 + tailSway * 0.1, 58 + bob],
+    [24, 58 + bob],
+  ], 2.5, 5.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Sprawled legs – short and wide-set
+  const kneeA = Math.sin(phase) * 1.5;
+  const kneeB = Math.sin(phase + Math.PI) * 1.5;
+  // Hind legs
+  drawTube(image, [
+    [26, 62 + bob], [22 + kneeA, 72 + bob], [24, 80 + bob], [26, 88 + bob + legShift],
+  ], 4.5, 2.5, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [32, 62 + bob], [36 + kneeB, 72 + bob], [34, 80 + bob], [32, 88 + bob - legShift],
+  ], 5.0, 2.8, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Front legs
+  drawTube(image, [
+    [48, 62 + bob], [44, 72 + bob], [46, 80 + bob], [48, 88 + bob + legShift * 0.6],
+  ], 3.5, 2.0, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [54, 62 + bob], [58, 72 + bob], [56, 80 + bob], [54, 88 + bob - legShift * 0.6],
+  ], 3.8, 2.2, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Feet
+  fillEllipse(image, 26, 89 + bob + legShift, 3.5, 1.5, palette.shadow);
+  fillEllipse(image, 32, 89 + bob - legShift, 3.5, 1.5, palette.shadow);
+  fillEllipse(image, 48, 89 + bob + legShift * 0.6, 3, 1.5, palette.shadow);
+  fillEllipse(image, 54, 89 + bob - legShift * 0.6, 3, 1.5, palette.shadow);
+
+  // Body – long, low, horizontal
+  drawEllipsoid(image, 38, 58 + bob, 18, 8, palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 38, 62 + bob, 14, 4, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 55]);
+
+  // Armor ridge along back
+  const armorColor = palette.armor || palette.shadow;
+  for (let i = 0; i < 8; i++) {
+    const ax = 22 + i * 4;
+    const ay = 52 + bob - Math.abs(i - 3.5) * 0.5;
+    setPixel(image, ax, ay, armorColor);
+    setPixel(image, ax, ay - 1, armorColor);
+    setPixel(image, ax + 1, ay, armorColor);
+  }
+
+  // Neck – short, thick, forward
+  drawTube(image, [
+    [52, 56 + bob],
+    [58, 54 + bob + headBob * 0.3],
+    [62, 52 + bob + headBob * 0.6],
+  ], 5.0, 4.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Head – long snout, crocodilian
+  const hx = 64, hy = 52 + bob + headBob;
+  drawEllipsoid(image, hx, hy, 6, 4.5, palette.body, palette.shadow, palette.highlight);
+  // Long snout
+  drawEllipsoid(image, hx + 5, hy + 1, 4, 3, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Jaw
+  drawLine(image, hx - 2, hy + 3, hx + 8, hy + 3, palette.shadow);
+  // Teeth
+  for (let t = 0; t < 3; t++) {
+    setPixel(image, hx + 2 + t * 3, hy + 4, palette.highlight);
+  }
+  // Eye
+  setPixel(image, hx - 2, hy - 1, palette.eye);
+  setPixel(image, hx - 1, hy - 1, palette.eye);
+
+  stippleEllipse(image, 38, 58 + bob, 14, 6, palette.shadow, 0.12, 8400 + frameIndex);
+}
+
+// ─── Stegosaurus ───────────────────────────────────────────────────────
+
+function makeStegosaurusStrip() {
+  const fw = 72, fh = 96, frames = 8;
+  const strip = surface(fw * frames, fh, PALETTE.transparent);
+  for (let i = 0; i < frames; i++) {
+    const frame = surface(fw, fh, PALETTE.transparent);
+    drawStegosaurus(frame, i, frames);
+    blit(strip, frame, i * fw, 0);
+  }
+  return strip;
+}
+
+function makeStegosaurusContact() {
+  const image = surface(210, 120, PALETTE.cream0);
+  gradientRect(image, 0, 0, 210, 120, PALETTE.cream0, PALETTE.cream1);
+  fillRect(image, 0, 88, 210, 32, [0, 0, 0, 16]);
+  const silhouette = surface(140, 86, PALETTE.transparent);
+  drawStegosaurus(silhouette, 1, 8, { body: PALETTE.black, shadow: PALETTE.black, highlight: PALETTE.black, eye: PALETTE.black });
+  tintAlpha(silhouette, PALETTE.black);
+  blitScaled(image, silhouette, 34, 16, 140, 86);
+  return image;
+}
+
+function makeStegosaurusGuide() {
+  const image = surface(220, 132, PALETTE.cream0);
+  gradientRect(image, 0, 0, 220, 68, PALETTE.sky0, PALETTE.sky2);
+  gradientRect(image, 0, 68, 220, 64, PALETTE.dirt0, PALETTE.dirt2);
+  drawCloudBand(image, 88, 30, 130, 14, 5, [255, 255, 255, 88], 7071);
+  drawCloudBand(image, 176, 24, 76, 12, 4, [255, 255, 255, 64], 7072);
+  const dino = surface(120, 96, PALETTE.transparent);
+  drawStegosaurus(dino, 2, 8);
+  blitScaled(image, dino, 54, 18, 112, 92);
+  drawShadowPatch(image, 112, 98, 56, 14, 0.12);
+  applyFilmGrain(image, 0.05, 7073);
+  return image;
+}
+
+function drawStegosaurus(image, frameIndex, frameCount, overridePalette = null) {
+  const palette = overridePalette || {
+    body: PALETTE.stego0,
+    shadow: PALETTE.stego2,
+    highlight: PALETTE.stego3,
+    bodyAlt: PALETTE.stego1,
+    belly: PALETTE.stegoBelly,
+    plate: PALETTE.stegoPlate,
+    eye: PALETTE.eye,
+  };
+
+  const phase = (frameIndex / frameCount) * Math.PI * 2;
+  const bob = Math.sin(phase) * 1.0;
+  const headBob = Math.cos(phase) * 1.2;
+  const tailSway = Math.sin(phase) * 3;
+  const legShift = Math.sin(phase) * 1.4;
+
+  drawGroundShadow(image, 34, 88 + bob, 28, 7, overridePalette ? 0.12 : 0.22);
+
+  // Tail with thagomizer spikes
+  drawTube(image, [
+    [2 + tailSway * 0.5, 56 + bob],
+    [8 + tailSway * 0.3, 56 + bob],
+    [16, 56 + bob],
+    [22, 58 + bob],
+  ], 2.0, 5.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Thagomizer – 4 spikes at tail tip
+  const plateColor = palette.plate || palette.highlight;
+  const tx = 2 + tailSway * 0.5, ty = 56 + bob;
+  fillPolygon(image, [[tx, ty - 2], [tx - 4, ty - 8], [tx - 2, ty - 2]], plateColor);
+  fillPolygon(image, [[tx + 2, ty - 2], [tx - 1, ty - 10], [tx + 4, ty - 2]], plateColor);
+  fillPolygon(image, [[tx, ty + 2], [tx - 4, ty + 8], [tx - 2, ty + 2]], plateColor);
+  fillPolygon(image, [[tx + 2, ty + 2], [tx - 1, ty + 9], [tx + 4, ty + 2]], plateColor);
+
+  // Legs – short front, taller hind
+  const kneeA = Math.sin(phase) * 1.2;
+  const kneeB = Math.sin(phase + Math.PI) * 1.2;
+  // Hind legs (taller)
+  drawTube(image, [
+    [24, 62 + bob], [22 + kneeA, 72 + bob], [24, 80 + bob], [25, 88 + bob + legShift],
+  ], 5.0, 3.0, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [30, 62 + bob], [32 + kneeB, 72 + bob], [30, 80 + bob], [29, 88 + bob - legShift],
+  ], 5.5, 3.2, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Front legs (shorter)
+  drawTube(image, [
+    [48, 64 + bob], [46, 74 + bob], [48, 82 + bob], [49, 88 + bob + legShift * 0.5],
+  ], 3.8, 2.2, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [54, 64 + bob], [56, 74 + bob], [54, 82 + bob], [53, 88 + bob - legShift * 0.5],
+  ], 4.0, 2.4, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Feet
+  fillEllipse(image, 25, 89 + bob + legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 29, 89 + bob - legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 49, 89 + bob + legShift * 0.5, 3, 1.5, palette.shadow);
+  fillEllipse(image, 53, 89 + bob - legShift * 0.5, 3, 1.5, palette.shadow);
+
+  // Body – barrel shaped, arched back
+  drawEllipsoid(image, 36, 60 + bob, 18, 10, palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 36, 65 + bob, 14, 5, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 55]);
+
+  // PLATES – 5 diamond/kite shapes along arched spine (the iconic feature!)
+  const plateSizes = [5, 7, 9, 7, 5];
+  const plateXs = [24, 30, 36, 42, 48];
+  for (let i = 0; i < 5; i++) {
+    const px = plateXs[i];
+    const archY = 52 + bob - Math.sin((i / 4) * Math.PI) * 4; // arched spine
+    const sz = plateSizes[i];
+    // Diamond shape pointing up
+    fillPolygon(image, [
+      [px, archY - sz],       // top
+      [px + sz * 0.45, archY], // right
+      [px, archY + 2],        // bottom
+      [px - sz * 0.45, archY], // left
+    ], plateColor);
+    // Plate outline/shadow
+    drawLine(image, px, archY - sz, px + Math.floor(sz * 0.45), archY, palette.shadow);
+    drawLine(image, px, archY - sz, px - Math.floor(sz * 0.45), archY, palette.highlight);
+  }
+
+  // Neck – short, sloping down
+  drawTube(image, [
+    [50, 60 + bob],
+    [56, 62 + bob + headBob * 0.3],
+    [60, 64 + bob + headBob * 0.6],
+  ], 4.5, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Head – small, held low
+  const hx = 63, hy = 66 + bob + headBob;
+  drawEllipsoid(image, hx, hy, 5, 3.5, palette.body, palette.shadow, palette.highlight);
+  drawEllipsoid(image, hx + 3, hy, 3, 2.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  drawLine(image, hx, hy + 2, hx + 5, hy + 2, palette.shadow);
+  setPixel(image, hx - 1, hy - 1, palette.eye);
+  setPixel(image, hx, hy - 1, palette.eye);
+
+  stippleEllipse(image, 36, 60 + bob, 14, 7, palette.shadow, 0.1, 8500 + frameIndex);
+}
+
+// ─── Allosaurus ────────────────────────────────────────────────────────
+
+function makeAllosaurusStrip() {
+  const fw = 72, fh = 96, frames = 8;
+  const strip = surface(fw * frames, fh, PALETTE.transparent);
+  for (let i = 0; i < frames; i++) {
+    const frame = surface(fw, fh, PALETTE.transparent);
+    drawAllosaurus(frame, i, frames);
+    blit(strip, frame, i * fw, 0);
+  }
+  return strip;
+}
+
+function makeAllosaurusContact() {
+  const image = surface(210, 120, PALETTE.cream0);
+  gradientRect(image, 0, 0, 210, 120, PALETTE.cream0, PALETTE.cream1);
+  fillRect(image, 0, 88, 210, 32, [0, 0, 0, 16]);
+  const silhouette = surface(140, 86, PALETTE.transparent);
+  drawAllosaurus(silhouette, 1, 8, { body: PALETTE.black, shadow: PALETTE.black, highlight: PALETTE.black, eye: PALETTE.black });
+  tintAlpha(silhouette, PALETTE.black);
+  blitScaled(image, silhouette, 34, 16, 140, 86);
+  return image;
+}
+
+function makeAllosaurusGuide() {
+  const image = surface(220, 132, PALETTE.cream0);
+  gradientRect(image, 0, 0, 220, 68, PALETTE.sky0, PALETTE.sky2);
+  gradientRect(image, 0, 68, 220, 64, PALETTE.dirt0, PALETTE.dirt2);
+  drawCloudBand(image, 88, 30, 130, 14, 5, [255, 255, 255, 88], 7081);
+  drawCloudBand(image, 176, 24, 76, 12, 4, [255, 255, 255, 64], 7082);
+  const dino = surface(120, 96, PALETTE.transparent);
+  drawAllosaurus(dino, 2, 8);
+  blitScaled(image, dino, 54, 18, 112, 92);
+  drawShadowPatch(image, 112, 98, 56, 14, 0.12);
+  applyFilmGrain(image, 0.05, 7083);
+  return image;
+}
+
+function drawAllosaurus(image, frameIndex, frameCount, overridePalette = null) {
+  const palette = overridePalette || {
+    body: PALETTE.allo0,
+    shadow: PALETTE.allo2,
+    highlight: PALETTE.allo3,
+    bodyAlt: PALETTE.allo1,
+    bodyDark: PALETTE.allo2,
+    belly: PALETTE.alloBelly,
+    teeth: PALETTE.alloTeeth,
+    eye: PALETTE.eye,
+  };
+
+  const phase = (frameIndex / frameCount) * Math.PI * 2;
+  const bob = Math.sin(phase) * 1.2;
+  const headBob = Math.cos(phase) * 1.5;
+  const tailSway = Math.sin(phase) * 4;
+  const legShift = Math.sin(phase) * 1.8;
+  const jawOpen = Math.max(0, Math.sin(phase * 0.5)) * 2.5;
+
+  drawGroundShadow(image, 36, 86 + bob, 28, 7, overridePalette ? 0.12 : 0.22);
+
+  // Tail
+  drawTube(image, [
+    [4 + tailSway * 0.4, 46 + bob],
+    [10 + tailSway * 0.2, 46 + bob],
+    [18, 46 + bob],
+  ], 2.0, 4.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Hind legs
+  const kneeA = Math.sin(phase) * 1.5;
+  const kneeB = Math.sin(phase + Math.PI) * 1.5;
+  drawTube(image, [
+    [28, 54 + bob], [25 + kneeA, 66 + bob], [27, 76 + bob], [28, 88 + bob + legShift],
+  ], 5.2, 2.8, palette.bodyDark || palette.body, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [36, 54 + bob], [39 + kneeB, 66 + bob], [37, 76 + bob], [36, 88 + bob - legShift],
+  ], 5.5, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 28, 89 + bob + legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 36, 89 + bob - legShift, 4, 2, palette.shadow);
+  // Toe claws
+  setPixel(image, 25, 90 + bob + legShift, palette.teeth || palette.highlight);
+  setPixel(image, 31, 90 + bob + legShift, palette.teeth || palette.highlight);
+  setPixel(image, 33, 90 + bob - legShift, palette.teeth || palette.highlight);
+  setPixel(image, 39, 90 + bob - legShift, palette.teeth || palette.highlight);
+
+  // Body
+  drawEllipsoid(image, 34, 46 + bob, 16, 11, palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 36, 52 + bob, 11, 5, [
+    (palette.belly || palette.highlight)[0],
+    (palette.belly || palette.highlight)[1],
+    (palette.belly || palette.highlight)[2], 60,
+  ]);
+  drawEllipsoid(image, 34, 46 + bob, 14, 9, palette.body, palette.shadow, palette.highlight);
+
+  // Neck
+  drawTube(image, [
+    [46, 44 + bob],
+    [50, 40 + bob + headBob * 0.3],
+    [54, 38 + bob + headBob * 0.6],
+  ], 5.5, 4.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Head – big, with brow ridges
+  const hx = 58, hy = 36 + bob + headBob;
+  drawEllipsoid(image, hx, hy, 9, 6, palette.body, palette.shadow, palette.highlight);
+  drawEllipsoid(image, hx + 5, hy + 1, 5, 4.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Lower jaw
+  const jawY = hy + 4 + jawOpen;
+  drawEllipsoid(image, hx + 3, jawY, 7, 2.5, palette.bodyDark || palette.body, palette.shadow, palette.highlight);
+
+  // Teeth
+  if (jawOpen > 0.8) {
+    const tc = palette.teeth || palette.highlight;
+    for (let t = 0; t < 3; t++) {
+      const ttx = hx + t * 3;
+      if (ttx < 71) { setPixel(image, ttx, hy + 4, tc); setPixel(image, ttx, hy + 5, tc); }
+    }
+  }
+
+  // Eye
+  setPixel(image, hx - 3, hy - 2, palette.eye);
+  setPixel(image, hx - 2, hy - 2, palette.eye);
+
+  // Brow ridges – distinctive crests above each eye
+  drawLine(image, hx - 5, hy - 4, hx, hy - 4, palette.shadow);
+  drawLine(image, hx - 5, hy - 5, hx, hy - 5, palette.bodyDark || palette.shadow);
+  // Triangular crest bump
+  fillPolygon(image, [[hx - 4, hy - 5], [hx - 3, hy - 8], [hx - 1, hy - 5]], [180, 50, 30, 200]);
+
+  // Nostril
+  setPixel(image, Math.min(hx + 9, 70), hy, palette.shadow);
+
+  // Small arms (slightly bigger than T-Rex)
+  drawTube(image, [
+    [44, 46 + bob], [46, 50 + bob], [48, 54 + bob], [49, 56 + bob],
+  ], 2.0, 1.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  setPixel(image, 50, 57 + bob, palette.teeth || palette.highlight);
+
+  stippleEllipse(image, 34, 46 + bob, 12, 7, palette.shadow, 0.1, 8600 + frameIndex);
+}
+
+// ─── Parasaurolophus ───────────────────────────────────────────────────
+
+function makeParasaurolophusStrip() {
+  const fw = 72, fh = 96, frames = 8;
+  const strip = surface(fw * frames, fh, PALETTE.transparent);
+  for (let i = 0; i < frames; i++) {
+    const frame = surface(fw, fh, PALETTE.transparent);
+    drawParasaurolophus(frame, i, frames);
+    blit(strip, frame, i * fw, 0);
+  }
+  return strip;
+}
+
+function makeParasaurolophusContact() {
+  const image = surface(210, 120, PALETTE.cream0);
+  gradientRect(image, 0, 0, 210, 120, PALETTE.cream0, PALETTE.cream1);
+  fillRect(image, 0, 88, 210, 32, [0, 0, 0, 16]);
+  const silhouette = surface(140, 86, PALETTE.transparent);
+  drawParasaurolophus(silhouette, 1, 8, { body: PALETTE.black, shadow: PALETTE.black, highlight: PALETTE.black, eye: PALETTE.black });
+  tintAlpha(silhouette, PALETTE.black);
+  blitScaled(image, silhouette, 34, 16, 140, 86);
+  return image;
+}
+
+function makeParasaurolophusGuide() {
+  const image = surface(220, 132, PALETTE.cream0);
+  gradientRect(image, 0, 0, 220, 68, PALETTE.sky0, PALETTE.sky2);
+  gradientRect(image, 0, 68, 220, 64, PALETTE.dirt0, PALETTE.dirt2);
+  drawCloudBand(image, 88, 30, 130, 14, 5, [255, 255, 255, 88], 7091);
+  drawCloudBand(image, 176, 24, 76, 12, 4, [255, 255, 255, 64], 7092);
+  const dino = surface(120, 96, PALETTE.transparent);
+  drawParasaurolophus(dino, 2, 8);
+  blitScaled(image, dino, 54, 18, 112, 92);
+  drawShadowPatch(image, 112, 98, 56, 14, 0.12);
+  applyFilmGrain(image, 0.05, 7093);
+  return image;
+}
+
+function drawParasaurolophus(image, frameIndex, frameCount, overridePalette = null) {
+  const palette = overridePalette || {
+    body: PALETTE.para0,
+    shadow: PALETTE.para2,
+    highlight: PALETTE.para3,
+    bodyAlt: PALETTE.para1,
+    belly: PALETTE.paraBelly,
+    crest: PALETTE.paraCrest,
+    eye: PALETTE.eye,
+  };
+
+  const phase = (frameIndex / frameCount) * Math.PI * 2;
+  const bob = Math.sin(phase) * 1.2;
+  const headBob = Math.cos(phase) * 1.5;
+  const tailSway = Math.sin(phase) * 4;
+  const legShift = Math.sin(phase) * 1.6;
+
+  drawGroundShadow(image, 34, 88 + bob, 26, 7, overridePalette ? 0.12 : 0.2);
+
+  // Tail – long, flat
+  drawTube(image, [
+    [4 + tailSway * 0.4, 52 + bob],
+    [10 + tailSway * 0.2, 50 + bob],
+    [18, 48 + bob],
+    [24, 48 + bob],
+  ], 2.0, 5.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Hind legs – sturdy
+  const kneeA = Math.sin(phase) * 1.5;
+  const kneeB = Math.sin(phase + Math.PI) * 1.5;
+  drawTube(image, [
+    [26, 56 + bob], [24 + kneeA, 68 + bob], [26, 78 + bob], [27, 88 + bob + legShift],
+  ], 5.0, 2.8, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [34, 56 + bob], [36 + kneeB, 68 + bob], [34, 78 + bob], [33, 88 + bob - legShift],
+  ], 5.5, 3.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 27, 89 + bob + legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 33, 89 + bob - legShift, 4, 2, palette.shadow);
+
+  // Body – upright bipedal posture
+  drawEllipsoid(image, 34, 48 + bob, 15, 11, palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 34, 54 + bob, 11, 5, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 55]);
+
+  // Small arms
+  drawTube(image, [
+    [42, 46 + bob], [44, 50 + bob], [45, 54 + bob],
+  ], 2.0, 1.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Neck – medium
+  drawTube(image, [
+    [42, 42 + bob],
+    [46, 36 + bob + headBob * 0.3],
+    [50, 30 + bob + headBob * 0.6],
+  ], 5.0, 3.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Head – duck-billed, with iconic crest
+  const hx = 52, hy = 28 + bob + headBob;
+  drawEllipsoid(image, hx, hy, 6, 5, palette.body, palette.shadow, palette.highlight);
+  // Duck bill – flattened snout
+  drawEllipsoid(image, hx + 5, hy + 2, 4, 3, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Bill flat end
+  drawLine(image, hx + 7, hy, hx + 8, hy + 4, palette.highlight);
+
+  // CREST – the iconic long curved tube sweeping backward
+  const crestColor = palette.crest || palette.shadow;
+  drawTube(image, [
+    [hx - 1, hy - 3],
+    [hx - 6, hy - 10],
+    [hx - 12, hy - 14],
+    [hx - 18, hy - 12],
+  ], 2.5, 1.2, crestColor, palette.shadow, palette.highlight);
+  // Crest highlight
+  drawLine(image, hx - 1, hy - 4, hx - 12, hy - 15, palette.highlight);
+
+  // Eye
+  setPixel(image, hx - 2, hy - 1, palette.eye);
+  setPixel(image, hx - 1, hy - 1, palette.eye);
+  // Nostril
+  setPixel(image, hx + 7, hy + 1, palette.shadow);
+
+  stippleEllipse(image, 34, 48 + bob, 12, 8, palette.shadow, 0.1, 8700 + frameIndex);
+}
+
+// ─── Triceratops ───────────────────────────────────────────────────────
+
+function makeTriceratopsStrip() {
+  const fw = 72, fh = 96, frames = 8;
+  const strip = surface(fw * frames, fh, PALETTE.transparent);
+  for (let i = 0; i < frames; i++) {
+    const frame = surface(fw, fh, PALETTE.transparent);
+    drawTriceratops(frame, i, frames);
+    blit(strip, frame, i * fw, 0);
+  }
+  return strip;
+}
+
+function makeTriceratopsContact() {
+  const image = surface(210, 120, PALETTE.cream0);
+  gradientRect(image, 0, 0, 210, 120, PALETTE.cream0, PALETTE.cream1);
+  fillRect(image, 0, 88, 210, 32, [0, 0, 0, 16]);
+  const silhouette = surface(140, 86, PALETTE.transparent);
+  drawTriceratops(silhouette, 1, 8, { body: PALETTE.black, shadow: PALETTE.black, highlight: PALETTE.black, eye: PALETTE.black });
+  tintAlpha(silhouette, PALETTE.black);
+  blitScaled(image, silhouette, 34, 16, 140, 86);
+  return image;
+}
+
+function makeTriceratopsGuide() {
+  const image = surface(220, 132, PALETTE.cream0);
+  gradientRect(image, 0, 0, 220, 68, PALETTE.sky0, PALETTE.sky2);
+  gradientRect(image, 0, 68, 220, 64, PALETTE.dirt0, PALETTE.dirt2);
+  drawCloudBand(image, 88, 30, 130, 14, 5, [255, 255, 255, 88], 7101);
+  drawCloudBand(image, 176, 24, 76, 12, 4, [255, 255, 255, 64], 7102);
+  const dino = surface(120, 96, PALETTE.transparent);
+  drawTriceratops(dino, 2, 8);
+  blitScaled(image, dino, 54, 18, 112, 92);
+  drawShadowPatch(image, 112, 98, 56, 14, 0.12);
+  applyFilmGrain(image, 0.05, 7103);
+  return image;
+}
+
+function drawTriceratops(image, frameIndex, frameCount, overridePalette = null) {
+  const palette = overridePalette || {
+    body: PALETTE.trice0,
+    shadow: PALETTE.trice2,
+    highlight: PALETTE.trice3,
+    bodyAlt: PALETTE.trice1,
+    belly: PALETTE.triceBelly,
+    frill: PALETTE.triceFrill,
+    horn: PALETTE.triceHorn,
+    eye: PALETTE.eye,
+  };
+
+  const phase = (frameIndex / frameCount) * Math.PI * 2;
+  const bob = Math.sin(phase) * 1.0;
+  const headBob = Math.cos(phase) * 1.0;
+  const tailSway = Math.sin(phase) * 3;
+  const legShift = Math.sin(phase) * 1.4;
+
+  drawGroundShadow(image, 34, 88 + bob, 28, 7, overridePalette ? 0.12 : 0.22);
+
+  // Short tail
+  drawTube(image, [
+    [6 + tailSway * 0.4, 58 + bob],
+    [12 + tailSway * 0.2, 56 + bob],
+    [18, 56 + bob],
+  ], 2.5, 5.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // Four thick legs
+  const kneeA = Math.sin(phase) * 1.2;
+  const kneeB = Math.sin(phase + Math.PI) * 1.2;
+  // Hind legs
+  drawTube(image, [
+    [22, 62 + bob], [20 + kneeA, 72 + bob], [22, 80 + bob], [23, 88 + bob + legShift],
+  ], 5.5, 3.2, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [30, 62 + bob], [32 + kneeB, 72 + bob], [30, 80 + bob], [29, 88 + bob - legShift],
+  ], 6.0, 3.5, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Front legs
+  drawTube(image, [
+    [46, 62 + bob], [44 + kneeB * 0.5, 72 + bob], [46, 80 + bob], [47, 88 + bob + legShift * 0.5],
+  ], 5.0, 3.0, palette.shadow, palette.shadow, palette.highlight);
+  drawTube(image, [
+    [52, 62 + bob], [54 + kneeA * 0.5, 72 + bob], [52, 80 + bob], [51, 88 + bob - legShift * 0.5],
+  ], 5.2, 3.2, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+  // Feet
+  fillEllipse(image, 23, 89 + bob + legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 29, 89 + bob - legShift, 4, 2, palette.shadow);
+  fillEllipse(image, 47, 89 + bob + legShift * 0.5, 4, 2, palette.shadow);
+  fillEllipse(image, 51, 89 + bob - legShift * 0.5, 4, 2, palette.shadow);
+
+  // Bulky body
+  drawEllipsoid(image, 34, 56 + bob, 18, 12, palette.body, palette.shadow, palette.highlight);
+  fillEllipse(image, 34, 62 + bob, 14, 5, [(palette.belly || palette.body)[0], (palette.belly || palette.body)[1], (palette.belly || palette.body)[2], 55]);
+
+  // Neck – short, thick
+  drawTube(image, [
+    [48, 54 + bob],
+    [54, 50 + bob + headBob * 0.3],
+    [58, 48 + bob + headBob * 0.6],
+  ], 6.0, 5.0, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // FRILL – large shield behind head (draw before head so head overlaps)
+  const frillColor = palette.frill || palette.bodyAlt || palette.body;
+  const fx = 56, fy = 42 + bob + headBob;
+  fillPolygon(image, [
+    [fx - 2, fy + 6],     // bottom-left of frill
+    [fx - 8, fy - 2],     // left edge
+    [fx - 6, fy - 10],    // top-left
+    [fx, fy - 14],         // top center
+    [fx + 6, fy - 10],    // top-right
+    [fx + 8, fy - 2],     // right edge
+    [fx + 2, fy + 6],     // bottom-right
+  ], frillColor);
+  // Frill edge highlights
+  drawLine(image, fx - 6, fy - 10, fx, fy - 14, palette.highlight);
+  drawLine(image, fx, fy - 14, fx + 6, fy - 10, palette.shadow);
+  // Scalloped edge detail
+  for (let i = -2; i <= 2; i++) {
+    setPixel(image, fx + i * 3, fy - 13 + Math.abs(i), palette.highlight);
+  }
+
+  // Head – large relative to body
+  const hx = 60, hy = 50 + bob + headBob;
+  drawEllipsoid(image, hx, hy, 7, 5, palette.body, palette.shadow, palette.highlight);
+  // Beak/snout
+  drawEllipsoid(image, hx + 5, hy + 1, 4, 3, palette.bodyAlt || palette.body, palette.shadow, palette.highlight);
+
+  // THREE HORNS
+  const hornColor = palette.horn || palette.highlight;
+  // Nose horn (short)
+  fillPolygon(image, [
+    [hx + 7, hy - 1],
+    [hx + 9, hy - 5],
+    [hx + 8, hy + 1],
+  ], hornColor);
+  // Brow horns (two long ones, sweeping up and forward)
+  fillPolygon(image, [
+    [hx - 2, hy - 4],
+    [hx + 2, hy - 14],
+    [hx + 4, hy - 12],
+    [hx, hy - 3],
+  ], hornColor);
+  fillPolygon(image, [
+    [hx + 2, hy - 4],
+    [hx + 6, hy - 14],
+    [hx + 8, hy - 12],
+    [hx + 4, hy - 3],
+  ], hornColor);
+
+  // Eye
+  setPixel(image, hx - 2, hy - 1, palette.eye);
+  setPixel(image, hx - 1, hy - 1, palette.eye);
+  // Nostril
+  setPixel(image, Math.min(hx + 8, 70), hy + 1, palette.shadow);
+
+  // Beak detail
+  drawLine(image, hx + 3, hy + 3, hx + 8, hy + 3, palette.shadow);
+
+  stippleEllipse(image, 34, 56 + bob, 14, 8, palette.shadow, 0.1, 8800 + frameIndex);
 }
 
 function drawHills(image) {

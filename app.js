@@ -255,6 +255,34 @@ const AUTHORED_DINOSAURS = {
       height: 136,
     },
   },
+  coelophysis: {
+    contact: "./assets/authored/coelophysis/contact.png",
+    guide: "./assets/authored/coelophysis/guide.png",
+  },
+  plateosaurus: {
+    contact: "./assets/authored/plateosaurus/contact.png",
+    guide: "./assets/authored/plateosaurus/guide.png",
+  },
+  postosuchus: {
+    contact: "./assets/authored/postosuchus/contact.png",
+    guide: "./assets/authored/postosuchus/guide.png",
+  },
+  stegosaurus: {
+    contact: "./assets/authored/stegosaurus/contact.png",
+    guide: "./assets/authored/stegosaurus/guide.png",
+  },
+  allosaurus: {
+    contact: "./assets/authored/allosaurus/contact.png",
+    guide: "./assets/authored/allosaurus/guide.png",
+  },
+  parasaurolophus: {
+    contact: "./assets/authored/parasaurolophus/contact.png",
+    guide: "./assets/authored/parasaurolophus/guide.png",
+  },
+  triceratops: {
+    contact: "./assets/authored/triceratops/contact.png",
+    guide: "./assets/authored/triceratops/guide.png",
+  },
 };
 
 const AUTHORED_SCENES = {
