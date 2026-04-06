@@ -1,6 +1,11 @@
 # Dino Safari Tribute
 
-A small browser prototype inspired by the 1996 `Dinosaur Safari` loop: move through prehistoric regions, wait for a dinosaur to appear, and photograph it into a field guide.
+A small browser prototype inspired by the 1996 `Dinosaur Safari` loop: move through prehistoric regions, wait for a dinosaur to appear, and photograph it into a field guide. 
+
+Made in a weekend to share with my 5 year old. Pass it along.
+
+<img width="1612" height="991" alt="Screenshot 2026-04-05 at 9 16 38 PM" src="https://github.com/user-attachments/assets/895e9b92-ff47-4474-854b-9dbe5a69cb96" />
+
 
 ## What is in here
 
